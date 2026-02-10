@@ -306,6 +306,12 @@ body {
   height: 120px;
 }
 
+.animation-note {
+  font-size: 0.9rem;
+  color: var(--md-text-muted);
+  margin-top: 4px;
+}
+
 .complete-card {
   text-align: center;
   padding: 24px 18px;

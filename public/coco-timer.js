@@ -8,25 +8,25 @@
       {
         timeSec: 0,
         actionType: "switch_close_pour",
-        name: { ja: "蒸らし", en: "Initial Bloom" },
+        name: { ja: "閉じて蒸らし", en: "Initial Bloom" },
         waterAmountType: "flavor1",
       },
       {
         timeSec: 40,
         actionType: "switch_open_pour",
-        name: { ja: "風味を抽出", en: "Flavor Extraction" },
+        name: { ja: "開けて1湯目", en: "Flavor Extraction" },
         waterAmountType: "flavor2",
       },
       {
         timeSec: 90,
         actionType: "pour_cool",
-        name: { ja: "透過式で抽出", en: "Percolation Extraction" },
+        name: { ja: "2湯目", en: "Percolation Extraction" },
         waterAmountType: "strength",
       },
       {
         timeSec: 130,
         actionType: "switch_close_pour",
-        name: { ja: "低温の浸漬式で抽出", en: "Cool Immersion" },
+        name: { ja: "閉じて低温の3湯目", en: "Cool Immersion" },
         waterAmountType: "strength",
       },
       {
@@ -69,6 +69,7 @@
       up: "上",
       down: "下",
       enjoyCoffee: "美味しいコーヒーをどうぞ☕️",
+      coolTo: "70℃まで下げる",
     },
     en: {
       currentStep: "Current Step",
@@ -99,6 +100,7 @@
       up: "UP",
       down: "Down",
       enjoyCoffee: "Enjoy your coffee☕️",
+      coolTo: "Cool to 70℃",
     },
   };
 
@@ -115,6 +117,12 @@
     lastAnnouncedStep: -1,
     lastFinishAnnounced: false,
     overlayStepIndex: null,
+    animationCountActive: false,
+    animationCountStart: 0,
+    animationCountFrom: 0,
+    animationCountTo: 0,
+    animationCountRaf: null,
+    animationCountStep: null,
   };
 
   const elements = {
@@ -132,6 +140,7 @@
     animationCard: document.getElementById("animation-card"),
     labelNextStep: document.getElementById("label-next-step"),
     animationText: document.getElementById("animation-text"),
+    animationNote: document.getElementById("animation-note"),
     lottieContainer: document.getElementById("lottie-container"),
     openSettings: document.getElementById("open-settings"),
     settingsModal: document.getElementById("settings-modal"),
@@ -287,22 +296,35 @@
     return state.lang === "ja" ? "WAIT" : "WAIT";
   };
 
-  const subActionText = (step) => {
+  const getInstructionText = (step, amountOverride = null) => {
     if (!step) return "-";
     const t = texts[state.lang];
+    const amount = amountOverride ?? step.cumulative ?? 0;
     if (step.actionType === "none") {
-      return t.enjoyCoffee;
+      return state.lang === "ja" ? "完成" : t.enjoyCoffee;
+    }
+    if (step.actionType === "switch_close_pour") {
+      return state.lang === "ja"
+        ? `閉じて <span class="pour-amount">${amount}g</span> まで注ぐ`
+        : `Close, pour to <span class="pour-amount">${amount}g</span>`;
+    }
+    if (step.actionType === "switch_open_pour") {
+      return state.lang === "ja"
+        ? `開けて <span class="pour-amount">${amount}g</span> まで注ぐ`
+        : `Open, pour to <span class="pour-amount">${amount}g</span>`;
+    }
+    if (step.actionType === "pour_cool") {
+      return state.lang === "ja"
+        ? `<span class="pour-amount">${amount}g</span> まで注ぎ、<span class="pour-amount">70℃</span> まで下げる`
+        : `Pour to <span class="pour-amount">${amount}g</span>, cool to <span class="pour-amount">70℃</span>`;
     }
     if (step.actionType === "switch_open") {
-      return t.waitNoPour;
+      return state.lang === "ja" ? "開ける" : "Open";
     }
-    if (step.actionType === "switch_close_pour" || step.actionType === "switch_open_pour" || step.actionType === "pour_cool") {
-      return state.lang === "ja"
-        ? `<span class="pour-amount">${step.cumulative}g</span> ${t.pourUntil}`
-        : `${t.pourUntil} <span class="pour-amount">${step.cumulative}g</span>`;
-    }
-    return t.waitNoPour;
+    return state.lang === "ja" ? "待つ（注がない）" : t.waitNoPour;
   };
+
+  const subActionText = (step) => getInstructionText(step);
 
   const updateMainCard = () => {
     const currentIndex = getCurrentStepIndex();
@@ -372,6 +394,10 @@
       lottieInstance = null;
     }
     const next = lottieQueue.shift();
+    if (next === "pour") {
+      startAnimationCounting();
+    }
+
     lottieInstance = window.lottie.loadAnimation({
       container: elements.lottieContainer,
       renderer: "svg",
@@ -381,6 +407,7 @@
     });
     lottieInstance.addEventListener("complete", () => {
       if (!lottieQueue.length) {
+        stopAnimationCounting(true);
         if (onDone) onDone();
         return;
       }
@@ -393,16 +420,63 @@
     state.overlayStepIndex = stepIndex;
     elements.animationCard.hidden = false;
     elements.labelNextStep.textContent = texts[state.lang].nextStep;
-    elements.animationText.innerHTML = subActionText(step);
+    elements.animationText.innerHTML = getInstructionText(step);
+    const isPour = step.actionType === "switch_close_pour" || step.actionType === "switch_open_pour" || step.actionType === "pour_cool";
+    const prevAmount = stepIndex && stepIndex > 0 ? computedSteps[stepIndex - 1].cumulative : 0;
+    state.animationCountFrom = prevAmount;
+    state.animationCountTo = step.cumulative || prevAmount;
+    state.animationCountStep = step;
+    elements.animationText.dataset.isPour = isPour ? "1" : "0";
+    elements.animationText.dataset.template = getInstructionText(step);
+    elements.animationText.innerHTML = isPour
+      ? getInstructionText(step, prevAmount)
+      : getInstructionText(step);
+    elements.animationNote.textContent = "";
     playLottieQueue(buildLottieQueue(step.actionType));
   };
 
   const hideOverlay = () => {
     elements.animationCard.hidden = true;
     state.overlayStepIndex = null;
+    stopAnimationCounting(true);
     if (lottieInstance) {
       lottieInstance.destroy();
       lottieInstance = null;
+    }
+  };
+
+  const startAnimationCounting = () => {
+    stopAnimationCounting();
+    const from = state.animationCountFrom;
+    const to = state.animationCountTo;
+    const step = state.animationCountStep;
+    if (from === to) return;
+    state.animationCountActive = true;
+    state.animationCountStart = performance.now();
+    const duration = 1000;
+    const tickCount = (ts) => {
+      if (!state.animationCountActive) return;
+      const elapsed = ts - state.animationCountStart;
+      const progress = Math.min(1, elapsed / duration);
+      const value = Math.round(from + (to - from) * progress);
+      elements.animationText.innerHTML = getInstructionText(step, value);
+      if (progress < 1) {
+        state.animationCountRaf = requestAnimationFrame(tickCount);
+      } else {
+        elements.animationText.innerHTML = getInstructionText(step, to);
+      }
+    };
+    state.animationCountRaf = requestAnimationFrame(tickCount);
+  };
+
+  const stopAnimationCounting = (snapToTarget = false) => {
+    state.animationCountActive = false;
+    if (state.animationCountRaf) {
+      cancelAnimationFrame(state.animationCountRaf);
+      state.animationCountRaf = null;
+    }
+    if (snapToTarget) {
+      elements.animationText.innerHTML = getInstructionText(state.animationCountStep, state.animationCountTo);
     }
   };
 
@@ -462,7 +536,7 @@
       setTimeout(() => {
         hideOverlay();
         beginCountdown();
-      }, 2000);
+      }, 5000);
       return;
     }
 
