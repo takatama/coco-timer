@@ -60,10 +60,11 @@
 - 味わい選択（Sweet / Balance / Sour）
 
 **Sections**
-- App Bar: COCO Timer + Settings
+- App Bar: BrewSteps
 - Beans Amount Control
 - Flavor Selection
 - Start Button（タイマー画面へ遷移）
+- Step Water Card（ステップごとの湯量、開始ボタンの下）
 
 ### 7.1 Main Timer Screen
 **Primary focus**
