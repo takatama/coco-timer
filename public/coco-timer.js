@@ -57,21 +57,23 @@
       notifyVibrate: "バイブ",
       notifyNone: "なし",
       animOn: "表示",
-      animOff: "非表示",
-      debugTitle: "デバッグ",
-      debugHint: "タイマーを高速再生します",
-      debugOff: "オフ",
-      debugX5: "x5倍速",
-      waitNoPour: "待つ（注がない）",
-      pourUntil: "まで注ぐ",
-      closeUp: "閉じる",
-      openDown: "開ける",
-      up: "上",
-      down: "下",
-      enjoyCoffee: "美味しいコーヒーをどうぞ☕️",
-      coolTo: "70℃まで下げる",
-    },
-    en: {
+    animOff: "非表示",
+    debugTitle: "デバッグ",
+    debugHint: "タイマーを高速再生します",
+    debugOff: "オフ",
+    debugX5: "x5倍速",
+    waitNoPour: "待つ（注がない）",
+    pourUntil: "まで注ぐ",
+    closeUp: "閉じる",
+    openDown: "開ける",
+    up: "上",
+    down: "下",
+    enjoyCoffee: "美味しいコーヒーをどうぞ☕️",
+    coolTo: "70℃まで下げる",
+    finishLabel: "完成",
+    waitLabel: "待つ",
+  },
+  en: {
       currentStep: "Current Step",
       nextStep: "Next Step is...",
       remaining: "Remaining",
@@ -88,21 +90,23 @@
       notifyVibrate: "Vibrate",
       notifyNone: "None",
       animOn: "Show",
-      animOff: "Hide",
-      debugTitle: "Debug",
-      debugHint: "Speed up timer playback",
-      debugOff: "Off",
-      debugX5: "x5 Speed",
-      waitNoPour: "Wait (no pour)",
-      pourUntil: "Pour until",
-      closeUp: "CLOSE",
-      openDown: "OPEN",
-      up: "UP",
-      down: "Down",
-      enjoyCoffee: "Enjoy your coffee☕️",
-      coolTo: "Cool to 70℃",
-    },
-  };
+    animOff: "Hide",
+    debugTitle: "Debug",
+    debugHint: "Speed up timer playback",
+    debugOff: "Off",
+    debugX5: "x5 Speed",
+    waitNoPour: "Wait (no pour)",
+    pourUntil: "Pour until",
+    closeUp: "CLOSE",
+    openDown: "OPEN",
+    up: "UP",
+    down: "Down",
+    enjoyCoffee: "Enjoy your coffee☕️",
+    coolTo: "Cool to 70℃",
+    finishLabel: "FINISH",
+    waitLabel: "WAIT",
+  },
+};
 
   const state = {
     running: false,
@@ -267,33 +271,29 @@
     return Math.max(0, nextStep.timeSec - state.currentTime);
   };
 
-  const actionText = (step) => {
+  const withParenNote = (label, note) => {
+    const open = state.lang === "ja" ? "（" : "(";
+    const close = state.lang === "ja" ? "）" : ")";
+    return `${label}<span class="verb-note">${open}${note}${close}</span>`;
+  };
+
+  const getVerbText = (step) => {
     if (!step) return "-";
     const t = texts[state.lang];
     if (step.actionType === "switch_close_pour") {
-      return state.lang === "ja"
-        ? `${t.closeUp}<span class="verb-note">（${t.up}）</span>`
-        : `${t.closeUp}<span class="verb-note">(${t.up})</span>`;
+      return withParenNote(t.closeUp, t.up);
     }
-    if (step.actionType === "switch_open_pour") {
-      return state.lang === "ja"
-        ? `${t.openDown}<span class="verb-note">（${t.down}）</span>`
-        : `${t.openDown}<span class="verb-note">(${t.down})</span>`;
-    }
-    if (step.actionType === "pour_cool") {
-      return state.lang === "ja"
-        ? `${t.openDown}<span class="verb-note">（${t.down}）</span>`
-        : `${t.openDown}<span class="verb-note">(${t.down})</span>`;
-    }
-    if (step.actionType === "switch_open") {
-      return state.lang === "ja"
-        ? `${t.openDown}<span class="verb-note">（${t.down}）</span>`
-        : `${t.openDown}<span class="verb-note">(${t.down})</span>`;
+    if (step.actionType === "switch_open_pour" || step.actionType === "pour_cool" || step.actionType === "switch_open") {
+      return withParenNote(t.openDown, t.down);
     }
     if (step.actionType === "none") {
-      return state.lang === "ja" ? "FINISH" : "FINISH";
+      return t.finishLabel;
     }
-    return state.lang === "ja" ? "WAIT" : "WAIT";
+    return t.waitLabel;
+  };
+
+  const actionText = (step) => {
+    return getVerbText(step);
   };
 
   const getInstructionText = (step, amountOverride = null) => {
@@ -321,7 +321,7 @@
     if (step.actionType === "switch_open") {
       return state.lang === "ja" ? "開ける" : "Open";
     }
-    return state.lang === "ja" ? "待つ（注がない）" : t.waitNoPour;
+    return t.waitNoPour;
   };
 
   const subActionText = (step) => getInstructionText(step);
