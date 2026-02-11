@@ -7,7 +7,12 @@
   </head>
   <body>
     <script>
-      const seen = localStorage.getItem("brewsteps_intro_seen");
+      let seen = null;
+      try {
+        seen = localStorage.getItem("brewsteps_intro_seen");
+      } catch {
+        seen = null;
+      }
       window.location.href = seen ? "./setup.html" : "./intro.html";
     </script>
   </body>
