@@ -1,6 +1,6 @@
 import "./recipe-data.js";
 import { mountSharedLayout } from "./shared-layout.js";
-import { applySeoMetaTags, detectLanguage, switchLanguage } from "./i18n-routing.js";
+import { applySeoMetaTags, buildLocalizedPagePath, detectLanguage, switchLanguage } from "./i18n-routing.js";
 
 const audioAssetMap = {
   "ja-male-next-step": new URL("./assets/audio/ja-male-next-step.wav", import.meta.url).href,
@@ -842,7 +842,7 @@ const lottieAssetMap = {
         beans: String(state.beansAmount),
         flavor: state.flavor,
       });
-      window.location.href = `./setup?${params.toString()}`;
+      window.location.href = `${buildLocalizedPagePath(state.lang, "setup")}?${params.toString()}`;
     });
 
     elements.openSettings.addEventListener('click', () => {

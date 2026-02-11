@@ -1,5 +1,5 @@
 import { mountSharedLayout } from "./shared-layout.js";
-import { applySeoMetaTags, detectLanguage, switchLanguage } from "./i18n-routing.js";
+import { applySeoMetaTags, buildLocalizedPagePath, detectLanguage, switchLanguage } from "./i18n-routing.js";
 
 (() => {
   mountSharedLayout();
@@ -204,13 +204,13 @@ import { applySeoMetaTags, detectLanguage, switchLanguage } from "./i18n-routing
     elements.start.addEventListener("click", () => {
       const saved = markSeen();
       const fallback = saved ? "" : "?intro_seen=1";
-      window.location.href = `./setup${fallback}`;
+      window.location.href = `${buildLocalizedPagePath(langFromUrl, "setup")}${fallback}`;
     });
 
     elements.skip.addEventListener("click", () => {
       const saved = markSeen();
       const fallback = saved ? "" : "?intro_seen=1";
-      window.location.href = `./setup${fallback}`;
+      window.location.href = `${buildLocalizedPagePath(langFromUrl, "setup")}${fallback}`;
     });
   };
 

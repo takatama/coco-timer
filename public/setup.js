@@ -1,6 +1,6 @@
 import "./recipe-data.js";
 import { mountSharedLayout } from "./shared-layout.js";
-import { applySeoMetaTags, detectLanguage, switchLanguage } from "./i18n-routing.js";
+import { applySeoMetaTags, buildLocalizedPagePath, detectLanguage, switchLanguage } from "./i18n-routing.js";
 
 (() => {
   mountSharedLayout();
@@ -213,7 +213,7 @@ import { applySeoMetaTags, detectLanguage, switchLanguage } from "./i18n-routing
     }
 
     if (!introSeenByStorage && !introSeenByParam) {
-      window.location.href = `./intro`;
+      window.location.href = buildLocalizedPagePath(state.lang, "intro");
       return;
     }
 
@@ -283,7 +283,7 @@ import { applySeoMetaTags, detectLanguage, switchLanguage } from "./i18n-routing
         beans: String(state.beans),
         flavor: state.flavor,
       });
-      window.location.href = `./coco-timer?${params.toString()}`;
+      window.location.href = `${buildLocalizedPagePath(state.lang, "coco-timer")}?${params.toString()}`;
     });
 
     elements.openSettings.addEventListener("click", () => {

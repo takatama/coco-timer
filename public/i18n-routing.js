@@ -1,5 +1,6 @@
 const SUPPORTED_LANGS = ["ja", "en"];
 const STORAGE_KEY = "coco-timer-settings";
+const LOCALIZED_PAGES = new Set(["", "intro", "setup", "coco-timer"]);
 
 const safeStorageGet = (key) => {
   try {
@@ -69,8 +70,29 @@ export const buildLanguagePath = (targetLang, pathname = window.location.pathnam
   return `/${normalizedLang}${contentPath}`;
 };
 
+export const buildLocalizedPagePath = (lang, page) => {
+  const normalizedLang = SUPPORTED_LANGS.includes(lang) ? lang : "en";
+  const normalizedPage = String(page || "").replace(/^\/+|\/+$/g, "");
+  if (!normalizedPage) return `/${normalizedLang}/`;
+  return `/${normalizedLang}/${normalizedPage}`;
+};
+
+const normalizeLocalizedPath = (pathname) => {
+  const lang = extractLangFromPath(pathname);
+  if (!lang) return null;
+
+  const cleaned = pathname.replace(/\/+$/, "");
+  const normalized = cleaned || "/";
+  const segments = normalized.split("/").filter(Boolean);
+  const page = segments[1] || "";
+
+  if (!LOCALIZED_PAGES.has(page)) return null;
+  return buildLocalizedPagePath(lang, page);
+};
+
 const redirect = (target) => {
-  if (window.location.pathname + window.location.search + window.location.hash === target) return;
+  const current = window.location.pathname + window.location.search + window.location.hash;
+  if (current === target) return;
   window.location.replace(target);
 };
 
@@ -94,6 +116,12 @@ export const detectLanguage = () => {
     const fallback = getStoredLanguage() || (hasJapanese() ? "ja" : "en");
     const target = buildLanguagePath(fallback, pathname);
     redirect(`${target}${search}${hash}`);
+    return null;
+  }
+
+  const normalizedLocalizedPath = normalizeLocalizedPath(pathname);
+  if (normalizedLocalizedPath && normalizedLocalizedPath !== pathname) {
+    redirect(`${normalizedLocalizedPath}${search}${hash}`);
     return null;
   }
 
