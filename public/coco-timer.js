@@ -100,6 +100,7 @@ const lottieAssetMap = {
       pause: '一時停止',
       reset: 'リセット',
       recipe: '新しいハイブリッドメソッド',
+      editParams: '設定を変更',
       timeline: 'タイムライン',
       settings: '設定',
       notifyHint: '5秒前に通知します',
@@ -133,6 +134,7 @@ const lottieAssetMap = {
       pause: 'Pause',
       reset: 'Reset',
       recipe: 'New Hybrid Method',
+      editParams: 'Edit settings',
       timeline: 'Timeline',
       settings: 'Settings',
       notifyHint: 'Notify 5 seconds before',
@@ -340,12 +342,11 @@ const lottieAssetMap = {
     if (step.actionType === 'switch_close_pour') {
       return withParenNote(t.closeUp, t.up);
     }
-    if (
-      step.actionType === 'switch_open_pour' ||
-      step.actionType === 'pour_cool' ||
-      step.actionType === 'switch_open'
-    ) {
+    if (step.actionType === 'switch_open_pour' || step.actionType === 'pour_cool') {
       return withParenNote(t.openDown, t.down);
+    }
+    if (step.actionType === 'switch_open') {
+      return t.waitLabel;
     }
     if (step.actionType === 'none') {
       return t.finishLabel;
@@ -380,7 +381,7 @@ const lottieAssetMap = {
         : `Pour to <span class="pour-amount">${amount}g</span>, cool to <span class="pour-amount">70℃</span>`;
     }
     if (step.actionType === 'switch_open') {
-      return state.lang === 'ja' ? '開ける' : 'Open';
+      return t.waitNoPour;
     }
     return t.waitNoPour;
   };
@@ -404,10 +405,10 @@ const lottieAssetMap = {
         : `Pour to <span class="pour-amount">${amount}g</span>, cool to <span class="pour-amount">70℃</span>`;
     }
     if (step.actionType === 'switch_open') {
-      return state.lang === texts[state.lang].waitLabel;
+      return texts[state.lang].waitNoPour;
     }
     if (step.actionType === 'none') {
-      return state.lang === texts[state.lang].enjoyCoffee;
+      return texts[state.lang].enjoyCoffee;
     }
     return texts[state.lang].waitNoPour;
   };
@@ -735,6 +736,7 @@ const lottieAssetMap = {
     const t = texts[state.lang];
     document.documentElement.lang = state.lang;
     elements.labelTimeline.textContent = t.timeline;
+    elements.editParams.textContent = t.editParams;
     elements.labelSettings.textContent = t.settings;
     elements.labelLanguage.textContent =
       state.lang === 'ja' ? '言語' : 'Language';
