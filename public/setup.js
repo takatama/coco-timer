@@ -1,6 +1,8 @@
 import "./recipe-data.js";
+import { mountSharedLayout } from "./shared-layout.js";
 
 (() => {
+  mountSharedLayout();
   const getBasePath = () =>
     window.location.pathname.replace(/\/[^/]*$/, '/');
   const getDefaultLang = () =>
@@ -54,6 +56,9 @@ import "./recipe-data.js";
     langChoices: document.getElementById("lang-choices"),
     notifyChoices: document.getElementById("notify-choices"),
     voiceChoices: document.getElementById("voice-choices"),
+    debugChoices: document.getElementById("debug-choices"),
+    labelDebug: document.getElementById("label-debug"),
+    labelDebugHint: document.getElementById("label-debug-hint"),
   };
 
   const description = {
@@ -177,6 +182,9 @@ import "./recipe-data.js";
     elements.labelNotifyHint.textContent =
       state.lang === "ja" ? "5秒前に通知します" : "Notify 5 seconds before";
     elements.labelVoice.textContent = state.lang === "ja" ? "音声" : "Voice";
+    elements.labelDebug.textContent = state.lang === "ja" ? "デバッグ" : "Debug";
+    elements.labelDebugHint.textContent =
+      state.lang === "ja" ? "タイマーを高速再生します" : "Speed up timer playback";
     elements.saveSettings.textContent = state.lang === "ja" ? "保存" : "Save";
     elements.closeSettings.textContent = state.lang === "ja" ? "閉じる" : "Close";
 
@@ -191,6 +199,12 @@ import "./recipe-data.js";
     voiceButtons.forEach((btn) => {
       if (btn.dataset.value === "male") btn.textContent = state.lang === "ja" ? "男性" : "Male";
       if (btn.dataset.value === "female") btn.textContent = state.lang === "ja" ? "女性" : "Female";
+    });
+
+    const debugButtons = elements.debugChoices.querySelectorAll(".choice");
+    debugButtons.forEach((btn) => {
+      if (btn.dataset.value === "off") btn.textContent = state.lang === "ja" ? "オフ" : "Off";
+      if (btn.dataset.value === "x5") btn.textContent = state.lang === "ja" ? "x5倍速" : "x5 Speed";
     });
 
     const buttons = elements.flavorChoices.querySelectorAll(".choice");
@@ -228,11 +242,11 @@ import "./recipe-data.js";
 
     const getSettings = () => {
       const raw = safeStorageGet("coco-timer-settings");
-      if (!raw) return { notifyMode: "sound", voice: "male", language: state.lang };
+      if (!raw) return { notifyMode: "sound", voice: "male", language: state.lang, debugSpeed: 1 };
       try {
         return JSON.parse(raw);
       } catch {
-        return { notifyMode: "sound", voice: "male", language: state.lang };
+        return { notifyMode: "sound", voice: "male", language: state.lang, debugSpeed: 1 };
       }
     };
 
@@ -245,6 +259,10 @@ import "./recipe-data.js";
       });
       Array.from(elements.voiceChoices.querySelectorAll(".choice")).forEach((btn) => {
         btn.classList.toggle("active", btn.dataset.value === settings.voice);
+      });
+      Array.from(elements.debugChoices.querySelectorAll(".choice")).forEach((btn) => {
+        const selected = settings.debugSpeed === 5 ? "x5" : "off";
+        btn.classList.toggle("active", btn.dataset.value === selected);
       });
     };
 
@@ -316,6 +334,16 @@ import "./recipe-data.js";
       const value = target.dataset.value;
       if (!value) return;
       settings.voice = value;
+      safeStorageSet("coco-timer-settings", JSON.stringify(settings));
+      applySettings(settings);
+    });
+
+    elements.debugChoices.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      const value = target.dataset.value;
+      if (!value) return;
+      settings.debugSpeed = value === "x5" ? 5 : 1;
       safeStorageSet("coco-timer-settings", JSON.stringify(settings));
       applySettings(settings);
     });

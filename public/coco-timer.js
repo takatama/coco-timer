@@ -1,4 +1,5 @@
 import "./recipe-data.js";
+import { mountSharedLayout } from "./shared-layout.js";
 
 const audioAssetMap = {
   "ja-male-next-step": new URL("./assets/audio/ja-male-next-step.wav", import.meta.url).href,
@@ -19,6 +20,7 @@ const lottieAssetMap = {
 };
 
 (() => {
+  mountSharedLayout();
   const getBasePath = () =>
     window.location.pathname.replace(/\/[^/]*$/, '/');
   const getDefaultLang = () => {
@@ -688,6 +690,7 @@ const lottieAssetMap = {
     if (state.currentTime === 0 && state.animation) {
       showOverlayForStep(computedSteps[0], 0);
       setTimeout(() => {
+  mountSharedLayout();
         hideOverlay();
         beginCountdown();
       }, 5000);

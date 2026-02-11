@@ -11,30 +11,11 @@
       href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="/settings-common.css" />
   </head>
   <body>
     <div class="app">
-      <header class="app-bar">
-        <div class="app-title">COCO Timer</div>
-        <button class="icon-btn" id="open-settings" aria-label="Settings">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path
-              d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.8"
-            />
-            <path
-              d="M19.4 15a1.7 1.7 0 0 0 .33 1.87l.05.05a2 2 0 1 1-2.83 2.83l-.05-.05a1.7 1.7 0 0 0-1.87-.33 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.08a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.33l-.05.05a2 2 0 1 1-2.83-2.83l.05-.05A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.08a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.33-1.87l-.05-.05a2 2 0 1 1 2.83-2.83l.05.05A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.08a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.33l.05-.05a2 2 0 1 1 2.83 2.83l-.05.05A1.7 1.7 0 0 0 19.4 9c.07.2.1.41.1.62s-.03.42-.1.62a1.7 1.7 0 0 0 .33 1.87"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.6"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-        </button>
-      </header>
+      <div id="shared-header"></div>
 
       <main class="content">
         <section class="card">
@@ -98,40 +79,7 @@
       </main>
     </div>
 
-    <div class="settings-modal" id="settings-modal">
-      <div class="settings-card">
-        <h3 id="label-settings">設定</h3>
-        <div class="settings-section">
-          <div class="settings-title" id="label-language">言語</div>
-          <div class="choice-row" id="lang-choices">
-            <button class="choice" data-value="ja">日本語</button>
-            <button class="choice" data-value="en">English</button>
-          </div>
-        </div>
-        <div class="settings-section">
-          <div class="settings-title" id="label-notify">通知</div>
-          <div class="choice-row" id="notify-choices">
-            <button class="choice" data-value="sound">音声</button>
-            <button class="choice" data-value="vibrate">バイブ</button>
-            <button class="choice" data-value="none">なし</button>
-          </div>
-          <div class="hint" id="label-notify-hint">5秒前に通知します</div>
-        </div>
-        <div class="settings-section">
-          <div class="settings-title" id="label-voice">音声</div>
-          <div class="choice-row" id="voice-choices">
-            <button class="choice" data-value="male">男性</button>
-            <button class="choice" data-value="female">女性</button>
-          </div>
-        </div>
-        <div class="controls">
-          <button class="btn-primary" id="save-settings">保存</button>
-          <button class="btn-primary btn-ghost" id="close-settings">
-            閉じる
-          </button>
-        </div>
-      </div>
-    </div>
+    <div id="shared-settings-root"></div>
 
     <script type="module" src="./setup.js"></script>
   </body>
