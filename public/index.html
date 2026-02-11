@@ -13,7 +13,9 @@
       // only "/" performs redirect, and it goes directly to localized setup.
       if (window.location.pathname === "/") {
         const lang = detectLanguage();
-        window.location.replace(buildLocalizedPagePath(lang, "setup"));
+        if (lang) {
+          window.location.replace(buildLocalizedPagePath(lang, "setup"));
+        }
       } else {
         // No redirects for non-root pages.
         detectLanguage();

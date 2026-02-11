@@ -70,9 +70,22 @@ export const buildLocalizedPagePath = (lang, page) => {
 };
 
 // Priority: URL > localStorage > en
-// No redirect here; this function only resolves and synchronizes.
+// Redirect only when URL has no language segment.
 export const detectLanguage = () => {
-  const langFromUrl = extractLangFromPath(window.location.pathname);
+  const { pathname, search, hash } = window.location;
+  const langFromUrl = extractLangFromPath(pathname);
+
+  if (!langFromUrl) {
+    const fallback = getStoredLanguage() || "en";
+    const target = buildLanguagePath(fallback, pathname);
+    const current = `${pathname}${search}${hash}`;
+    const next = `${target}${search}${hash}`;
+    if (current !== next) {
+      window.location.replace(next);
+      return null;
+    }
+  }
+
   const resolved = langFromUrl || getStoredLanguage() || "en";
   persistLanguage(resolved);
   document.documentElement.lang = resolved;
