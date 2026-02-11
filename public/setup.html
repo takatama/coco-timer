@@ -16,11 +16,12 @@
     <div class="app">
       <header class="app-bar">
         <div class="app-title">BrewSteps</div>
+        <button class="icon-btn" id="open-settings" aria-label="Settings">⚙️</button>
       </header>
 
       <main class="content">
         <section class="card">
-          <div class="card-title">豆の量</div>
+          <div class="card-title" id="label-beans">豆の量</div>
           <div class="stepper-row">
             <button class="btn-icon" id="beans-minus" aria-label="decrease">−</button>
             <div class="beans-value" id="beans-value">20g</div>
@@ -29,7 +30,7 @@
         </section>
 
         <section class="card">
-          <div class="card-title">味わい</div>
+          <div class="card-title" id="label-flavor">味わい</div>
           <div class="choice-row" id="flavor-choices">
             <button class="choice" data-value="sweet">甘味</button>
             <button class="choice" data-value="neutral">バランス</button>
@@ -37,14 +38,69 @@
           </div>
         </section>
 
+        <details class="card" id="recipe-details">
+          <summary id="label-details">レシピの説明</summary>
+          <div class="details-body">
+            <img
+              class="details-image"
+              src="./assets/images/goran-ivos-1JsjRW6Sbwg-unsplash.jpg"
+              alt="New Hybrid Method"
+            />
+            <div class="details-text" id="details-text"></div>
+            <div class="details-video">
+              <iframe
+                id="details-youtube"
+                src="https://www.youtube.com/embed/4FeUp_zNiiY"
+                title="YouTube video player"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+              ></iframe>
+            </div>
+          </div>
+        </details>
+
         <button class="btn-primary" id="start-btn">タイマーを開始</button>
 
         <section class="card">
-          <div class="card-title">ステップごとの湯量</div>
+          <div class="card-title" id="label-steps">ステップごとの湯量</div>
           <div class="hint" id="total-water">合計: 300g</div>
           <div class="step-list" id="step-list"></div>
         </section>
       </main>
+    </div>
+
+    <div class="settings-modal" id="settings-modal">
+      <div class="settings-card">
+        <h3 id="label-settings">設定</h3>
+        <div class="settings-section">
+          <div class="settings-title" id="label-language">言語</div>
+          <div class="choice-row" id="lang-choices">
+            <button class="choice" data-value="ja">日本語</button>
+            <button class="choice" data-value="en">English</button>
+          </div>
+        </div>
+        <div class="settings-section">
+          <div class="settings-title" id="label-notify">通知</div>
+          <div class="choice-row" id="notify-choices">
+            <button class="choice" data-value="sound">音声</button>
+            <button class="choice" data-value="vibrate">バイブ</button>
+            <button class="choice" data-value="none">なし</button>
+          </div>
+          <div class="hint" id="label-notify-hint">5秒前に通知します</div>
+        </div>
+        <div class="settings-section">
+          <div class="settings-title" id="label-voice">音声</div>
+          <div class="choice-row" id="voice-choices">
+            <button class="choice" data-value="male">男性</button>
+            <button class="choice" data-value="female">女性</button>
+          </div>
+        </div>
+        <div class="controls">
+          <button class="btn-primary" id="save-settings">保存</button>
+          <button class="btn-primary btn-ghost" id="close-settings">閉じる</button>
+        </div>
+      </div>
     </div>
 
     <script src="./setup.js"></script>

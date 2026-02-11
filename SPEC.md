@@ -43,7 +43,8 @@
 - ユーザーアカウント
 
 ## 6. Information Architecture
-- Input（Beans + Flavor）
+- Intro（初回のみ）
+- Setup（Beans + Flavor）
 - Home（Main Timer）
   - Top App Bar
   - Recipe Summary
@@ -54,7 +55,7 @@
 - Settings
 
 ## 7. Core Screens
-### 7.0 Input Screen (Screen 1)
+### 7.0 Setup Screen (Screen 1)
 **Primary focus**
 - 豆量の調整（- / +）
 - 味わい選択（Sweet / Balance / Sour）
@@ -65,6 +66,11 @@
 - Flavor Selection
 - Start Button（タイマー画面へ遷移）
 - Step Water Card（ステップごとの湯量、開始ボタンの下）
+- Recipe Details（折りたたみ、画像・説明・YouTube）
+
+### 7.0.1 Intro Screen (First-time only)
+- 画像、レシピ説明、YouTubeを表示
+- 「始める」「スキップ」でSetupへ遷移
 
 ### 7.1 Main Timer Screen
 **Primary focus**
@@ -79,7 +85,7 @@
 - Timeline: 参照専用（低優先度、横数直線）
 
 ### 7.2 Settings Screen
-- 言語、通知（音/バイブ）、音声ガイド、アニメーション表示
+- 言語、通知（音/バイブ/なし）、音声（男性/女性）
 - デバッグ（x5倍速）
 
 ## 8. UI Components (MD Mapping)
@@ -120,6 +126,7 @@
   - "5,4,3,2,1,美味しいコーヒーができました"
 - 音声再生はwavファイルを利用
 - 具体的な生成方法は別途定義
+ - ファイル配置: public/audio/{lang}-{voice}-{type}.wav
 
 ## 13. Key Metrics (Priority)
 - どこまで注ぐか（Pour until XXXg）
@@ -128,6 +135,7 @@
 
 ## 14. Assets
 - Lottie animations: src/assets/lottie/*.json
+- Recipe image: public/assets/images/*
 
 ## 15. Open Questions
 - 音声wavファイルの配置パスと読み込み方法
