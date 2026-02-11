@@ -109,7 +109,7 @@
 - Two prompt types per language/voice:
   - “5,4,3,2,1, next step”
   - “5,4,3,2,1, brew complete”
-- File location: public/audio/{lang}-{voice}-{type}.wav
+- File location: public/assets/audio/{lang}-{voice}-{type}.wav
 
 ## 13. Assets
 - Lottie: public/assets/lottie/*.json

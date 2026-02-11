@@ -19,7 +19,7 @@ Accessible from the header on every screen:
 
 Audio files live in:
 ```
-public/audio/{lang}-{voice}-{type}.wav
+public/assets/audio/{lang}-{voice}-{type}.wav
 ```
 Where:
 - `lang`: `ja` or `en`
