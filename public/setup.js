@@ -55,6 +55,11 @@ import { applySeoMetaTags, buildLocalizedPagePath, detectLanguage, switchLanguag
     debugChoices: document.getElementById("debug-choices"),
     labelDebug: document.getElementById("label-debug"),
     labelDebugHint: document.getElementById("label-debug-hint"),
+    introGate: document.getElementById("intro-gate"),
+    introGateTitle: document.getElementById("intro-gate-title"),
+    introGateBody: document.getElementById("intro-gate-body"),
+    introGateSkip: document.getElementById("intro-gate-skip"),
+    introGateOpen: document.getElementById("intro-gate-open"),
   };
 
   const description = {
@@ -75,6 +80,10 @@ import { applySeoMetaTags, buildLocalizedPagePath, detectLanguage, switchLanguag
       steps: "ステップごとの湯量",
       start: "タイマーを開始",
       details: "レシピの説明",
+      introGateTitle: "レシピ紹介を確認しますか？",
+      introGateBody: "最初にイントロを見ると抽出の流れが分かりやすくなります。",
+      introGateSkip: "このまま続ける",
+      introGateOpen: "イントロを見る",
     },
     en: {
       beans: "Beans",
@@ -86,6 +95,10 @@ import { applySeoMetaTags, buildLocalizedPagePath, detectLanguage, switchLanguag
       steps: "Water per step",
       start: "Start Timer",
       details: "Recipe details",
+      introGateTitle: "Would you like to view the intro first?",
+      introGateBody: "Watching the intro helps you understand the brew flow.",
+      introGateSkip: "Continue",
+      introGateOpen: "Open Intro",
     },
   };
 
@@ -159,6 +172,10 @@ import { applySeoMetaTags, buildLocalizedPagePath, detectLanguage, switchLanguag
     elements.labelFlavor.textContent = t.flavor;
     elements.labelSteps.textContent = t.steps;
     elements.startBtn.textContent = t.start;
+    elements.introGateTitle.textContent = t.introGateTitle;
+    elements.introGateBody.textContent = t.introGateBody;
+    elements.introGateSkip.textContent = t.introGateSkip;
+    elements.introGateOpen.textContent = t.introGateOpen;
 
     elements.labelSettings.textContent = state.lang === "ja" ? "設定" : "Settings";
     elements.labelLanguage.textContent = state.lang === "ja" ? "言語" : "Language";
@@ -212,11 +229,6 @@ import { applySeoMetaTags, buildLocalizedPagePath, detectLanguage, switchLanguag
       safeStorageSet("brewsteps_intro_seen", "1");
     }
 
-    if (!introSeenByStorage && !introSeenByParam) {
-      window.location.href = buildLocalizedPagePath(state.lang, "intro");
-      return;
-    }
-
     const beansParam = Number(params.get("beans"));
     const flavorParam = params.get("flavor");
     if (beansParam && !Number.isNaN(beansParam)) {
@@ -259,6 +271,11 @@ import { applySeoMetaTags, buildLocalizedPagePath, detectLanguage, switchLanguag
     safeStorageSet("coco-timer-settings", JSON.stringify(settings));
     applySettings(settings);
 
+    const shouldShowIntroGate = !introSeenByStorage && !introSeenByParam;
+    if (shouldShowIntroGate) {
+      elements.introGate.hidden = false;
+    }
+
     elements.beansMinus.addEventListener("click", () => {
       state.beans = Math.max(1, state.beans - 1);
       render();
@@ -294,6 +311,14 @@ import { applySeoMetaTags, buildLocalizedPagePath, detectLanguage, switchLanguag
     });
     elements.saveSettings.addEventListener("click", () => {
       elements.settingsModal.classList.remove("active");
+    });
+
+    elements.introGateSkip.addEventListener("click", () => {
+      elements.introGate.hidden = true;
+    });
+
+    elements.introGateOpen.addEventListener("click", () => {
+      window.location.href = buildLocalizedPagePath(state.lang, "intro");
     });
 
     elements.langChoices.addEventListener("click", (event) => {
