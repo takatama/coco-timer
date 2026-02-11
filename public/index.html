@@ -9,7 +9,24 @@
     <script type="module">
       import { detectLanguage } from "/i18n-routing.js";
 
-      detectLanguage();
+      const safeStorageGet = (key) => {
+        try {
+          return localStorage.getItem(key);
+        } catch {
+          return null;
+        }
+      };
+
+      const langFromUrl = detectLanguage();
+      if (!langFromUrl) {
+        // detectLanguage already redirected.
+      } else {
+        const introSeen = safeStorageGet("brewsteps_intro_seen") === "1";
+        const destination = introSeen ? `/${langFromUrl}/setup` : `/${langFromUrl}/intro`;
+        if (window.location.pathname !== destination) {
+          window.location.replace(destination);
+        }
+      }
     </script>
   </body>
 </html>
