@@ -82,5 +82,6 @@ public/
 
 ### Cloudflare Pages Function
 `functions/[[path]].js`:
+- redirects non-localized app routes (`/setup`, `/intro`, `/coco-timer`) to `/en/...`
 - rewrites `/ja/` and `/en/` directly to Setup HTML to avoid extra redirect hops
 - rewrites `/ja/*` and `/en/*` routes to static HTML assets
