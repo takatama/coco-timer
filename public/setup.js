@@ -212,9 +212,8 @@ import "./recipe-data.js";
     }
 
     if (!introSeenByStorage && !introSeenByParam) {
-      // If storage is unavailable (or hosting rewrites routes), avoid redirect loops.
-      // The setup page can still operate without forcing users back to intro.
-      safeStorageSet("brewsteps_intro_seen", "1");
+      window.location.href = `${getBasePath()}intro.html`;
+      return;
     }
 
     const beansParam = Number(params.get("beans"));

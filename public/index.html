@@ -7,7 +7,6 @@
   </head>
   <body>
     <script>
-      const currentUrl = new URL(window.location.href);
       let seen = null;
       try {
         seen = localStorage.getItem("brewsteps_intro_seen");
@@ -15,17 +14,7 @@
         seen = null;
       }
 
-      const target = seen ? "./setup.html" : "./intro.html";
-      const targetUrl = new URL(target, currentUrl);
-
-      // Guard against self-redirect loops when this file is served for other routes.
-      if (
-        targetUrl.pathname !== currentUrl.pathname ||
-        targetUrl.search !== currentUrl.search ||
-        targetUrl.hash !== currentUrl.hash
-      ) {
-        window.location.replace(targetUrl.toString());
-      }
+      window.location.replace(seen ? "./setup.html" : "./intro.html");
     </script>
   </body>
 </html>
