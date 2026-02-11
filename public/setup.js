@@ -163,6 +163,15 @@
       window.location.href = "./intro.html";
       return;
     }
+    const params = new URLSearchParams(window.location.search);
+    const beansParam = Number(params.get("beans"));
+    const flavorParam = params.get("flavor");
+    if (beansParam && !Number.isNaN(beansParam)) {
+      state.beans = beansParam;
+    }
+    if (["sweet", "neutral", "sour"].includes(flavorParam)) {
+      state.flavor = flavorParam;
+    }
     render();
 
     const getSettings = () => {
