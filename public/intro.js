@@ -3,6 +3,23 @@
     window.location.pathname.replace(/\/[^/]*$/, '/');
   const getDefaultLang = () =>
     navigator.language.startsWith("ja") ? "ja" : "en";
+
+  const safeStorageGet = (key) => {
+    try {
+      return localStorage.getItem(key);
+    } catch {
+      return null;
+    }
+  };
+
+  const safeStorageSet = (key, value) => {
+    try {
+      localStorage.setItem(key, value);
+      return true;
+    } catch {
+      return false;
+    }
+  };
   const description = {
     ja:
       "粕谷哲氏の新しいハイブリッドメソッドは、Hario Switchで抽出方法の良いとこ取りを実現。他の抽出法と異なり、最初に粉全体をしっかり浸すことで自然な甘みを引き出し、その後ドリップで華やかな風味を、最後に低温浸漬でまろやかさをプラス。結果、濃厚なボディと抜群の甘み、クリアな味わいが楽しめる一杯に。ぜひこのレシピを試してみてください。",
@@ -46,7 +63,7 @@
   };
 
   const getSettings = () => {
-    const stored = localStorage.getItem("coco-timer-settings");
+    const stored = safeStorageGet("coco-timer-settings");
     if (stored) {
       try {
         return JSON.parse(stored);
@@ -102,11 +119,11 @@
   };
 
   const saveSettings = (settings) => {
-    localStorage.setItem("coco-timer-settings", JSON.stringify(settings));
+    safeStorageSet("coco-timer-settings", JSON.stringify(settings));
   };
 
   const markSeen = () => {
-    localStorage.setItem("brewsteps_intro_seen", "1");
+    return safeStorageSet("brewsteps_intro_seen", "1");
   };
 
   const init = () => {
@@ -157,13 +174,15 @@
     });
 
     elements.start.addEventListener("click", () => {
-      markSeen();
-      window.location.href = `${getBasePath()}setup.html`;
+      const saved = markSeen();
+      const fallback = saved ? "" : "?intro_seen=1";
+      window.location.href = `${getBasePath()}setup.html${fallback}`;
     });
 
     elements.skip.addEventListener("click", () => {
-      markSeen();
-      window.location.href = `${getBasePath()}setup.html`;
+      const saved = markSeen();
+      const fallback = saved ? "" : "?intro_seen=1";
+      window.location.href = `${getBasePath()}setup.html${fallback}`;
     });
   };
 

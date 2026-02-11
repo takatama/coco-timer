@@ -1,8 +1,27 @@
+import "./recipe-data.js";
+
 (() => {
   const getBasePath = () =>
     window.location.pathname.replace(/\/[^/]*$/, '/');
   const getDefaultLang = () =>
     navigator.language.startsWith("ja") ? "ja" : "en";
+
+  const safeStorageGet = (key) => {
+    try {
+      return localStorage.getItem(key);
+    } catch {
+      return null;
+    }
+  };
+
+  const safeStorageSet = (key, value) => {
+    try {
+      localStorage.setItem(key, value);
+      return true;
+    } catch {
+      return false;
+    }
+  };
   const state = {
     beans: 20,
     flavor: "neutral",
@@ -70,7 +89,7 @@
   };
 
   const getLang = () => {
-    const stored = localStorage.getItem("coco-timer-settings");
+    const stored = safeStorageGet("coco-timer-settings");
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
@@ -184,11 +203,19 @@
 
   const init = () => {
     state.lang = getLang();
-    if (!localStorage.getItem("brewsteps_intro_seen")) {
+    const params = new URLSearchParams(window.location.search);
+    const introSeenByParam = params.get("intro_seen") === "1";
+    const introSeenByStorage = safeStorageGet("brewsteps_intro_seen");
+
+    if (introSeenByParam) {
+      safeStorageSet("brewsteps_intro_seen", "1");
+    }
+
+    if (!introSeenByStorage && !introSeenByParam) {
       window.location.href = `${getBasePath()}intro.html`;
       return;
     }
-    const params = new URLSearchParams(window.location.search);
+
     const beansParam = Number(params.get("beans"));
     const flavorParam = params.get("flavor");
     if (beansParam && !Number.isNaN(beansParam)) {
@@ -200,7 +227,7 @@
     render();
 
     const getSettings = () => {
-      const raw = localStorage.getItem("coco-timer-settings");
+      const raw = safeStorageGet("coco-timer-settings");
       if (!raw) return { notifyMode: "sound", voice: "male", language: state.lang };
       try {
         return JSON.parse(raw);
@@ -268,7 +295,7 @@
       if (!value) return;
       settings.language = value;
       state.lang = value;
-      localStorage.setItem("coco-timer-settings", JSON.stringify(settings));
+      safeStorageSet("coco-timer-settings", JSON.stringify(settings));
       render();
       applySettings(settings);
     });
@@ -279,7 +306,7 @@
       const value = target.dataset.value;
       if (!value) return;
       settings.notifyMode = value;
-      localStorage.setItem("coco-timer-settings", JSON.stringify(settings));
+      safeStorageSet("coco-timer-settings", JSON.stringify(settings));
       applySettings(settings);
     });
 
@@ -289,7 +316,7 @@
       const value = target.dataset.value;
       if (!value) return;
       settings.voice = value;
-      localStorage.setItem("coco-timer-settings", JSON.stringify(settings));
+      safeStorageSet("coco-timer-settings", JSON.stringify(settings));
       applySettings(settings);
     });
   };

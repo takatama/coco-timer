@@ -1,3 +1,23 @@
+import "./recipe-data.js";
+
+const audioAssetMap = {
+  "ja-male-next-step": new URL("./assets/audio/ja-male-next-step.wav", import.meta.url).href,
+  "ja-male-finish": new URL("./assets/audio/ja-male-finish.wav", import.meta.url).href,
+  "ja-female-next-step": new URL("./assets/audio/ja-female-next-step.wav", import.meta.url).href,
+  "ja-female-finish": new URL("./assets/audio/ja-female-finish.wav", import.meta.url).href,
+  "en-male-next-step": new URL("./assets/audio/en-male-next-step.wav", import.meta.url).href,
+  "en-male-finish": new URL("./assets/audio/en-male-finish.wav", import.meta.url).href,
+  "en-female-next-step": new URL("./assets/audio/en-female-next-step.wav", import.meta.url).href,
+  "en-female-finish": new URL("./assets/audio/en-female-finish.wav", import.meta.url).href,
+};
+
+const lottieAssetMap = {
+  switch_open: new URL("./assets/lottie/switch_open.json", import.meta.url).href,
+  switch_close: new URL("./assets/lottie/switch_close.json", import.meta.url).href,
+  pour: new URL("./assets/lottie/pour.json", import.meta.url).href,
+  cool: new URL("./assets/lottie/cool.json", import.meta.url).href,
+};
+
 (() => {
   const getBasePath = () =>
     window.location.pathname.replace(/\/[^/]*$/, '/');
@@ -80,6 +100,7 @@
       pause: '一時停止',
       reset: 'リセット',
       recipe: '新しいハイブリッドメソッド',
+      editParams: '設定を変更',
       timeline: 'タイムライン',
       settings: '設定',
       notifyHint: '5秒前に通知します',
@@ -113,6 +134,7 @@
       pause: 'Pause',
       reset: 'Reset',
       recipe: 'New Hybrid Method',
+      editParams: 'Edit settings',
       timeline: 'Timeline',
       settings: 'Settings',
       notifyHint: 'Notify 5 seconds before',
@@ -208,16 +230,12 @@
   const getAudio = (type) => {
     const lang = state.lang;
     const voice = state.voice;
-    const file = `/assets/audio/${lang}-${voice}-${type}.wav`;
+    const file = audioAssetMap[`${lang}-${voice}-${type}`];
+    if (!file) return null;
     return new Audio(file);
   };
 
-  const lottieMap = {
-    switch_open: '/assets/lottie/switch_open.json',
-    switch_close: '/assets/lottie/switch_close.json',
-    pour: '/assets/lottie/pour.json',
-    cool: '/assets/lottie/cool.json',
-  };
+  const lottieMap = lottieAssetMap;
 
   let lottieInstance = null;
   let lottieQueue = [];
@@ -324,12 +342,11 @@
     if (step.actionType === 'switch_close_pour') {
       return withParenNote(t.closeUp, t.up);
     }
-    if (
-      step.actionType === 'switch_open_pour' ||
-      step.actionType === 'pour_cool' ||
-      step.actionType === 'switch_open'
-    ) {
+    if (step.actionType === 'switch_open_pour' || step.actionType === 'pour_cool') {
       return withParenNote(t.openDown, t.down);
+    }
+    if (step.actionType === 'switch_open') {
+      return t.waitLabel;
     }
     if (step.actionType === 'none') {
       return t.finishLabel;
@@ -364,7 +381,7 @@
         : `Pour to <span class="pour-amount">${amount}g</span>, cool to <span class="pour-amount">70℃</span>`;
     }
     if (step.actionType === 'switch_open') {
-      return state.lang === 'ja' ? '開ける' : 'Open';
+      return t.waitNoPour;
     }
     return t.waitNoPour;
   };
@@ -388,10 +405,10 @@
         : `Pour to <span class="pour-amount">${amount}g</span>, cool to <span class="pour-amount">70℃</span>`;
     }
     if (step.actionType === 'switch_open') {
-      return state.lang === texts[state.lang].waitLabel;
+      return texts[state.lang].waitNoPour;
     }
     if (step.actionType === 'none') {
-      return state.lang === texts[state.lang].enjoyCoffee;
+      return texts[state.lang].enjoyCoffee;
     }
     return texts[state.lang].waitNoPour;
   };
@@ -480,6 +497,7 @@
     }
     if (state.notifyMode === 'sound') {
       const audioEl = getAudio(isFinish ? 'finish' : 'next-step');
+      if (!audioEl) return;
       audioEl.currentTime = 0;
       audioEl.play().catch(() => {});
     }
@@ -505,6 +523,11 @@
     const next = lottieQueue.shift();
     if (next === 'pour') {
       startAnimationCounting();
+    }
+
+    if (!window.lottie || typeof window.lottie.loadAnimation !== 'function') {
+      onDone();
+      return;
     }
 
     lottieInstance = window.lottie.loadAnimation({
@@ -713,6 +736,7 @@
     const t = texts[state.lang];
     document.documentElement.lang = state.lang;
     elements.labelTimeline.textContent = t.timeline;
+    elements.editParams.textContent = t.editParams;
     elements.labelSettings.textContent = t.settings;
     elements.labelLanguage.textContent =
       state.lang === 'ja' ? '言語' : 'Language';
