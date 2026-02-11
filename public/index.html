@@ -7,19 +7,10 @@
   </head>
   <body>
     <script type="module">
-      import { buildLocalizedPagePath, detectLanguage } from "/i18n-routing.js";
+      import { detectLanguage } from "/i18n-routing.js";
 
-      // Single redirect responsibility:
-      // only "/" performs redirect, and it goes directly to localized setup.
-      if (window.location.pathname === "/") {
-        const lang = detectLanguage();
-        if (lang) {
-          window.location.replace(buildLocalizedPagePath(lang, "setup"));
-        }
-      } else {
-        // No redirects for non-root pages.
-        detectLanguage();
-      }
+      // URL canonicalization is handled only by Edge (Pages Functions).
+      detectLanguage();
     </script>
   </body>
 </html>

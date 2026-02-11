@@ -1,6 +1,5 @@
 const SUPPORTED_LANGS = ["ja", "en"];
-const PAGE_CANDIDATES = new Set(["", "intro", "setup", "coco-timer"]);
-const NON_LOCALIZED_PAGES = new Set(["intro", "setup", "coco-timer"]);
+const PAGE_CANDIDATES = new Set(["intro", "setup", "coco-timer"]);
 
 const stripTrailingSlash = (value) => (value.endsWith("/") && value !== "/" ? value.slice(0, -1) : value);
 
@@ -10,17 +9,23 @@ export async function onRequest(context) {
   const normalized = stripTrailingSlash(url.pathname);
   const segments = normalized.split("/").filter(Boolean);
 
+  // Canonical entry URL (Edge decides):
+  // / -> /en/setup
   if (normalized === "/") {
-    return env.ASSETS.fetch(request);
+    return Response.redirect(`${url.origin}/en/setup${url.search}${url.hash}`, 302);
   }
 
   const first = segments[0] || "";
   const firstPage = first.replace(/\.html$/i, "");
 
-  // Force non-localized app routes to language-prefixed URLs.
-  if (!SUPPORTED_LANGS.includes(first) && NON_LOCALIZED_PAGES.has(firstPage)) {
-    const target = `/${"en"}/${firstPage}${url.search}${url.hash}`;
-    return Response.redirect(`${url.origin}${target}`, 302);
+  // Non-localized app routes -> /en/<page>
+  if (!SUPPORTED_LANGS.includes(first) && PAGE_CANDIDATES.has(firstPage)) {
+    return Response.redirect(`${url.origin}/en/${firstPage}${url.search}${url.hash}`, 302);
+  }
+
+  // Language root -> /<lang>/setup
+  if (SUPPORTED_LANGS.includes(first) && segments.length === 1) {
+    return Response.redirect(`${url.origin}/${first}/setup${url.search}${url.hash}`, 302);
   }
 
   if (!SUPPORTED_LANGS.includes(first)) {
@@ -33,8 +38,7 @@ export async function onRequest(context) {
     return env.ASSETS.fetch(request);
   }
 
-  // Serve setup at language root directly to avoid extra redirect hops.
-  const filePath = page === "" ? "/setup.html" : `/${page}.html`;
+  const filePath = `/${page}.html`;
   const assetUrl = new URL(filePath + url.search, url.origin);
   const rewrittenRequest = new Request(assetUrl.toString(), request);
   return env.ASSETS.fetch(rewrittenRequest);

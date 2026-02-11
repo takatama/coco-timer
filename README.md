@@ -68,7 +68,7 @@ public/
   - `/ja/...` always renders Japanese
   - `/en/...` always renders English
 - `localStorage` (`coco-timer-settings.language`) is synchronized from URL on page load.
-- `/` is an entry point only and redirects to language path.
+- URL canonicalization is handled at Edge (Pages Functions), not client-side replace logic.
 
 ### Route examples
 - `/ja/intro`, `/ja/setup`, `/ja/coco-timer`
@@ -82,6 +82,7 @@ public/
 
 ### Cloudflare Pages Function
 `functions/[[path]].js`:
+- redirects `/` to `/en/setup`
 - redirects non-localized app routes (`/setup`, `/intro`, `/coco-timer`) to `/en/...`
-- rewrites `/ja/` and `/en/` directly to Setup HTML to avoid extra redirect hops
-- rewrites `/ja/*` and `/en/*` routes to static HTML assets
+- redirects language root (`/ja`, `/en`) to `/<lang>/setup`
+- rewrites localized app routes (`/<lang>/intro|setup|coco-timer`) to static HTML assets

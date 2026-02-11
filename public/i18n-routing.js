@@ -58,34 +58,20 @@ export const getPathWithoutLang = (pathname = window.location.pathname) => {
 export const buildLanguagePath = (targetLang, pathname = window.location.pathname) => {
   const normalizedLang = SUPPORTED_LANGS.includes(targetLang) ? targetLang : "en";
   const contentPath = getPathWithoutLang(pathname);
-  if (contentPath === "/") return `/${normalizedLang}/`;
+  if (contentPath === "/") return `/${normalizedLang}/setup`;
   return `/${normalizedLang}${contentPath}`;
 };
 
 export const buildLocalizedPagePath = (lang, page) => {
   const normalizedLang = SUPPORTED_LANGS.includes(lang) ? lang : "en";
   const normalizedPage = String(page || "").replace(/^\/+|\/+$/g, "");
-  if (!normalizedPage) return `/${normalizedLang}/`;
+  if (!normalizedPage) return `/${normalizedLang}/setup`;
   return `/${normalizedLang}/${normalizedPage}`;
 };
 
-// Priority: URL > localStorage > en
-// Redirect only when URL has no language segment.
+// Client never redirects; Edge (Pages Functions) decides canonical URL.
 export const detectLanguage = () => {
-  const { pathname, search, hash } = window.location;
-  const langFromUrl = extractLangFromPath(pathname);
-
-  if (!langFromUrl) {
-    const fallback = getStoredLanguage() || "en";
-    const target = buildLanguagePath(fallback, pathname);
-    const current = `${pathname}${search}${hash}`;
-    const next = `${target}${search}${hash}`;
-    if (current !== next) {
-      window.location.replace(next);
-      return null;
-    }
-  }
-
+  const langFromUrl = extractLangFromPath(window.location.pathname);
   const resolved = langFromUrl || getStoredLanguage() || "en";
   persistLanguage(resolved);
   document.documentElement.lang = resolved;
@@ -105,7 +91,7 @@ export const applySeoMetaTags = ({ origin = window.location.origin } = {}) => {
 
   const normalizedOrigin = origin.replace(/\/$/, "");
   const pathWithoutLang = getPathWithoutLang(window.location.pathname);
-  const suffix = pathWithoutLang === "/" ? "/" : pathWithoutLang;
+  const suffix = pathWithoutLang === "/" ? "/setup" : pathWithoutLang;
 
   const urls = {
     ja: `${normalizedOrigin}/ja${suffix}`,
