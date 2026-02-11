@@ -56,6 +56,11 @@ body {
   color: var(--md-text);
 }
 
+.icon-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
 .content {
   padding: 16px;
   display: flex;

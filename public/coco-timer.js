@@ -1,4 +1,12 @@
 (() => {
+  const getBasePath = () =>
+    window.location.pathname.replace(/\/[^/]*$/, '/');
+  const getDefaultLang = () => {
+    const htmlLang = document.documentElement.lang;
+    if (htmlLang === 'ja' || htmlLang === 'en') return htmlLang;
+    return navigator.language.startsWith('ja') ? 'ja' : 'en';
+  };
+
   const stepLabels = window.RECIPE_STEP_LABELS || {
     ja: [
       '閉じて蒸らし',
@@ -200,15 +208,15 @@
   const getAudio = (type) => {
     const lang = state.lang;
     const voice = state.voice;
-    const file = `./audio/${lang}-${voice}-${type}.wav`;
+    const file = `/audio/${lang}-${voice}-${type}.wav`;
     return new Audio(file);
   };
 
   const lottieMap = {
-    switch_open: './assets/lottie/switch_open.json',
-    switch_close: './assets/lottie/switch_close.json',
-    pour: './assets/lottie/pour.json',
-    cool: './assets/lottie/cool.json',
+    switch_open: '/assets/lottie/switch_open.json',
+    switch_close: '/assets/lottie/switch_close.json',
+    pour: '/assets/lottie/pour.json',
+    cool: '/assets/lottie/cool.json',
   };
 
   let lottieInstance = null;
@@ -777,6 +785,7 @@
   };
 
   const init = () => {
+    state.lang = getDefaultLang();
     const params = new URLSearchParams(window.location.search);
     const beansParam = Number(params.get('beans'));
     const flavorParam = params.get('flavor');
@@ -807,7 +816,7 @@
         beans: String(state.beansAmount),
         flavor: state.flavor,
       });
-      window.location.href = `./setup.html?${params.toString()}`;
+      window.location.href = `${getBasePath()}setup.html?${params.toString()}`;
     });
 
     elements.openSettings.addEventListener('click', () => {
