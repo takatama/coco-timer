@@ -208,7 +208,7 @@
   const getAudio = (type) => {
     const lang = state.lang;
     const voice = state.voice;
-    const file = `/audio/${lang}-${voice}-${type}.wav`;
+    const file = `/assets/audio/${lang}-${voice}-${type}.wav`;
     return new Audio(file);
   };
 
