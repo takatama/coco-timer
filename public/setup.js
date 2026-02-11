@@ -1,3 +1,5 @@
+import "./recipe-data.js";
+
 (() => {
   const getBasePath = () =>
     window.location.pathname.replace(/\/[^/]*$/, '/');
