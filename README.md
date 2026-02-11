@@ -82,5 +82,5 @@ public/
 
 ### Cloudflare Pages Function
 `functions/[[path]].js`:
-- redirects `/` to `/ja/` or `/en/` using `Accept-Language`
+- keeps `/` on static entry (`index.html`), where frontend resolves language by priority: URL > localStorage > en
 - rewrites `/ja/*` and `/en/*` routes to static HTML assets

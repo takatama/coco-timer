@@ -1,6 +1,5 @@
 const SUPPORTED_LANGS = ["ja", "en"];
 const STORAGE_KEY = "coco-timer-settings";
-const LOCALIZED_PAGES = new Set(["", "intro", "setup", "coco-timer"]);
 
 const safeStorageGet = (key) => {
   try {
@@ -30,6 +29,12 @@ const parseSettings = () => {
   }
 };
 
+const getStoredLanguage = () => {
+  const settings = parseSettings();
+  const lang = settings.language || settings.lang;
+  return SUPPORTED_LANGS.includes(lang) ? lang : null;
+};
+
 const persistLanguage = (lang) => {
   if (!SUPPORTED_LANGS.includes(lang)) return;
   const settings = parseSettings();
@@ -38,17 +43,10 @@ const persistLanguage = (lang) => {
   safeStorageSet(STORAGE_KEY, JSON.stringify(settings));
 };
 
-const getStoredLanguage = () => {
-  const settings = parseSettings();
-  const lang = settings.language || settings.lang;
-  return SUPPORTED_LANGS.includes(lang) ? lang : null;
-};
-
-const hasJapanese = () => {
-  if (Array.isArray(navigator.languages)) {
-    return navigator.languages.some((entry) => String(entry).toLowerCase().startsWith("ja"));
-  }
-  return String(navigator.language || "").toLowerCase().startsWith("ja");
+const redirect = (target) => {
+  const current = window.location.pathname + window.location.search + window.location.hash;
+  if (current === target) return;
+  window.location.replace(target);
 };
 
 export const extractLangFromPath = (pathname = window.location.pathname) => {
@@ -77,51 +75,20 @@ export const buildLocalizedPagePath = (lang, page) => {
   return `/${normalizedLang}/${normalizedPage}`;
 };
 
-const normalizeLocalizedPath = (pathname) => {
-  const lang = extractLangFromPath(pathname);
-  if (!lang) return null;
-
-  const cleaned = pathname.replace(/\/+$/, "");
-  const normalized = cleaned || "/";
-  const segments = normalized.split("/").filter(Boolean);
-  const page = segments[1] || "";
-
-  if (!LOCALIZED_PAGES.has(page)) return null;
-  return buildLocalizedPagePath(lang, page);
-};
-
-const redirect = (target) => {
-  const current = window.location.pathname + window.location.search + window.location.hash;
-  if (current === target) return;
-  window.location.replace(target);
-};
-
 export const detectLanguage = () => {
   const { pathname, search, hash } = window.location;
 
   if (pathname === "/") {
-    const storedLang = getStoredLanguage();
-    if (storedLang) {
-      redirect(`/${storedLang}/${search}${hash}`);
-      return null;
-    }
-
-    const detected = hasJapanese() ? "ja" : "en";
-    redirect(`/${detected}/${search}${hash}`);
+    const fallback = getStoredLanguage() || "en";
+    redirect(`/${fallback}/${search}${hash}`);
     return null;
   }
 
   const langFromUrl = extractLangFromPath(pathname);
   if (!langFromUrl) {
-    const fallback = getStoredLanguage() || (hasJapanese() ? "ja" : "en");
+    const fallback = getStoredLanguage() || "en";
     const target = buildLanguagePath(fallback, pathname);
     redirect(`${target}${search}${hash}`);
-    return null;
-  }
-
-  const normalizedLocalizedPath = normalizeLocalizedPath(pathname);
-  if (normalizedLocalizedPath && normalizedLocalizedPath !== pathname) {
-    redirect(`${normalizedLocalizedPath}${search}${hash}`);
     return null;
   }
 
