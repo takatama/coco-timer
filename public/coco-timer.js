@@ -1,5 +1,23 @@
 import "./recipe-data.js";
 
+const audioAssetMap = {
+  "ja-male-next-step": new URL("./assets/audio/ja-male-next-step.wav", import.meta.url).href,
+  "ja-male-finish": new URL("./assets/audio/ja-male-finish.wav", import.meta.url).href,
+  "ja-female-next-step": new URL("./assets/audio/ja-female-next-step.wav", import.meta.url).href,
+  "ja-female-finish": new URL("./assets/audio/ja-female-finish.wav", import.meta.url).href,
+  "en-male-next-step": new URL("./assets/audio/en-male-next-step.wav", import.meta.url).href,
+  "en-male-finish": new URL("./assets/audio/en-male-finish.wav", import.meta.url).href,
+  "en-female-next-step": new URL("./assets/audio/en-female-next-step.wav", import.meta.url).href,
+  "en-female-finish": new URL("./assets/audio/en-female-finish.wav", import.meta.url).href,
+};
+
+const lottieAssetMap = {
+  switch_open: new URL("./assets/lottie/switch_open.json", import.meta.url).href,
+  switch_close: new URL("./assets/lottie/switch_close.json", import.meta.url).href,
+  pour: new URL("./assets/lottie/pour.json", import.meta.url).href,
+  cool: new URL("./assets/lottie/cool.json", import.meta.url).href,
+};
+
 (() => {
   const getBasePath = () =>
     window.location.pathname.replace(/\/[^/]*$/, '/');
@@ -210,16 +228,12 @@ import "./recipe-data.js";
   const getAudio = (type) => {
     const lang = state.lang;
     const voice = state.voice;
-    const file = `/assets/audio/${lang}-${voice}-${type}.wav`;
+    const file = audioAssetMap[`${lang}-${voice}-${type}`];
+    if (!file) return null;
     return new Audio(file);
   };
 
-  const lottieMap = {
-    switch_open: '/assets/lottie/switch_open.json',
-    switch_close: '/assets/lottie/switch_close.json',
-    pour: '/assets/lottie/pour.json',
-    cool: '/assets/lottie/cool.json',
-  };
+  const lottieMap = lottieAssetMap;
 
   let lottieInstance = null;
   let lottieQueue = [];
@@ -482,6 +496,7 @@ import "./recipe-data.js";
     }
     if (state.notifyMode === 'sound') {
       const audioEl = getAudio(isFinish ? 'finish' : 'next-step');
+      if (!audioEl) return;
       audioEl.currentTime = 0;
       audioEl.play().catch(() => {});
     }
@@ -507,6 +522,11 @@ import "./recipe-data.js";
     const next = lottieQueue.shift();
     if (next === 'pour') {
       startAnimationCounting();
+    }
+
+    if (!window.lottie || typeof window.lottie.loadAnimation !== 'function') {
+      onDone();
+      return;
     }
 
     lottieInstance = window.lottie.loadAnimation({
