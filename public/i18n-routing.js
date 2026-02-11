@@ -43,12 +43,6 @@ const persistLanguage = (lang) => {
   safeStorageSet(STORAGE_KEY, JSON.stringify(settings));
 };
 
-const redirect = (target) => {
-  const current = window.location.pathname + window.location.search + window.location.hash;
-  if (current === target) return;
-  window.location.replace(target);
-};
-
 export const extractLangFromPath = (pathname = window.location.pathname) => {
   const [, firstSegment] = pathname.split("/");
   return SUPPORTED_LANGS.includes(firstSegment) ? firstSegment : null;
@@ -75,26 +69,14 @@ export const buildLocalizedPagePath = (lang, page) => {
   return `/${normalizedLang}/${normalizedPage}`;
 };
 
+// Priority: URL > localStorage > en
+// No redirect here; this function only resolves and synchronizes.
 export const detectLanguage = () => {
-  const { pathname, search, hash } = window.location;
-
-  if (pathname === "/") {
-    const fallback = getStoredLanguage() || "en";
-    redirect(`/${fallback}/${search}${hash}`);
-    return null;
-  }
-
-  const langFromUrl = extractLangFromPath(pathname);
-  if (!langFromUrl) {
-    const fallback = getStoredLanguage() || "en";
-    const target = buildLanguagePath(fallback, pathname);
-    redirect(`${target}${search}${hash}`);
-    return null;
-  }
-
-  persistLanguage(langFromUrl);
-  document.documentElement.lang = langFromUrl;
-  return langFromUrl;
+  const langFromUrl = extractLangFromPath(window.location.pathname);
+  const resolved = langFromUrl || getStoredLanguage() || "en";
+  persistLanguage(resolved);
+  document.documentElement.lang = resolved;
+  return resolved;
 };
 
 export const switchLanguage = (targetLang) => {

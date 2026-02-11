@@ -7,7 +7,7 @@
   </head>
   <body>
     <script type="module">
-      import { detectLanguage } from "/i18n-routing.js";
+      import { buildLocalizedPagePath, detectLanguage, extractLangFromPath } from "/i18n-routing.js";
 
       const safeStorageGet = (key) => {
         try {
@@ -17,14 +17,26 @@
         }
       };
 
-      const langFromUrl = detectLanguage();
-      if (!langFromUrl) {
-        // detectLanguage already redirected.
+      const { pathname, search, hash } = window.location;
+
+      if (pathname === "/") {
+        const lang = detectLanguage();
+        window.location.replace(`/${lang}/${search}${hash}`);
       } else {
-        const introSeen = safeStorageGet("brewsteps_intro_seen") === "1";
-        const destination = introSeen ? `/${langFromUrl}/setup` : `/${langFromUrl}/intro`;
-        if (window.location.pathname !== destination) {
-          window.location.replace(destination);
+        const langFromUrl = extractLangFromPath(pathname);
+        const isLanguageRoot = /^\/(ja|en)\/?$/.test(pathname);
+
+        if (langFromUrl && isLanguageRoot) {
+          detectLanguage();
+          const introSeen = safeStorageGet("brewsteps_intro_seen") === "1";
+          const destination = introSeen
+            ? buildLocalizedPagePath(langFromUrl, "setup")
+            : buildLocalizedPagePath(langFromUrl, "intro");
+          if (window.location.pathname !== destination) {
+            window.location.replace(destination);
+          }
+        } else {
+          detectLanguage();
         }
       }
     </script>
