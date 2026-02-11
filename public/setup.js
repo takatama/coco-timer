@@ -1,6 +1,8 @@
 import "./recipe-data.js";
+import { mountSharedLayout } from "./shared-layout.js";
 
 (() => {
+  mountSharedLayout();
   const getBasePath = () =>
     window.location.pathname.replace(/\/[^/]*$/, '/');
   const getDefaultLang = () =>
