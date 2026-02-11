@@ -122,6 +122,7 @@
     lang: 'ja',
     notifyMode: 'sound',
     animation: true,
+    voice: 'male',
     debugSpeed: 1,
     lastAnnouncedStep: -1,
     lastFinishAnnounced: false,
@@ -132,6 +133,8 @@
     animationCountTo: 0,
     animationCountRaf: null,
     animationCountStep: null,
+    wakeLock: null,
+    keepScreenOn: false,
   };
 
   const elements = {
@@ -155,14 +158,14 @@
     settingsModal: document.getElementById('settings-modal'),
     langChoices: document.getElementById('lang-choices'),
     notifyChoices: document.getElementById('notify-choices'),
-    animChoices: document.getElementById('anim-choices'),
+    voiceChoices: document.getElementById('voice-choices'),
     debugChoices: document.getElementById('debug-choices'),
     labelTimeline: document.getElementById('label-timeline'),
     labelSettings: document.getElementById('label-settings'),
     labelLanguage: document.getElementById('label-language'),
     labelNotify: document.getElementById('label-notify'),
     labelNotifyHint: document.getElementById('label-notify-hint'),
-    labelAnimation: document.getElementById('label-animation'),
+    labelVoice: document.getElementById('label-voice'),
     labelDebug: document.getElementById('label-debug'),
     labelDebugHint: document.getElementById('label-debug-hint'),
     saveSettings: document.getElementById('save-settings'),
@@ -171,11 +174,14 @@
     currentStepCard: document.getElementById('current-step-card'),
     timelineCard: document.getElementById('timeline-card'),
     controlsCard: document.getElementById('controls-card'),
+    screenStatus: document.getElementById('screen-status'),
   };
 
-  const audio = {
-    next: new Audio('./assets/audio/next-step.wav'),
-    finish: new Audio('./assets/audio/finish.wav'),
+  const getAudio = (type) => {
+    const lang = state.lang;
+    const voice = state.voice;
+    const file = `./audio/${lang}-${voice}-${type}.wav`;
+    return new Audio(file);
   };
 
   const lottieMap = {
@@ -413,7 +419,31 @@
     if (isComplete) {
       hideOverlay();
       elements.playBtn.textContent = texts[state.lang].play;
+      releaseWakeLock();
     }
+  };
+
+  const requestWakeLock = async () => {
+    state.keepScreenOn = true;
+    elements.screenStatus.hidden = false;
+    if (!('wakeLock' in navigator)) return;
+    try {
+      if (!state.wakeLock) {
+        state.wakeLock = await navigator.wakeLock.request('screen');
+        state.wakeLock.addEventListener('release', () => {
+          state.wakeLock = null;
+        });
+      }
+    } catch {}
+  };
+
+  const releaseWakeLock = () => {
+    if (state.wakeLock) {
+      state.wakeLock.release().catch(() => {});
+      state.wakeLock = null;
+    }
+    state.keepScreenOn = false;
+    elements.screenStatus.hidden = true;
   };
 
   const triggerNotification = (isFinish) => {
@@ -421,7 +451,7 @@
       navigator.vibrate([150, 80, 150]);
     }
     if (state.notifyMode === 'sound') {
-      const audioEl = isFinish ? audio.finish : audio.next;
+      const audioEl = getAudio(isFinish ? 'finish' : 'next-step');
       audioEl.currentTime = 0;
       audioEl.play().catch(() => {});
     }
@@ -600,6 +630,7 @@
     const beginCountdown = () => {
       state.running = true;
       elements.playBtn.textContent = texts[state.lang].pause;
+      requestWakeLock();
       state.intervalId = setInterval(tick, 1000);
     };
 
@@ -631,6 +662,7 @@
     state.lastFinishAnnounced = false;
     state.overlayStepIndex = null;
     hideOverlay();
+    releaseWakeLock();
     updateMainCard();
     updateTimeline();
     updateCompleteScreen();
@@ -638,13 +670,14 @@
 
   const applySettingsUI = () => {
     const setActive = (container, value) => {
+      if (!container) return;
       Array.from(container.querySelectorAll('.choice')).forEach((btn) => {
         btn.classList.toggle('active', btn.dataset.value === value);
       });
     };
     setActive(elements.langChoices, state.lang);
     setActive(elements.notifyChoices, state.notifyMode);
-    setActive(elements.animChoices, state.animation ? 'on' : 'off');
+    setActive(elements.voiceChoices, state.voice);
     setActive(elements.debugChoices, state.debugSpeed === 5 ? 'x5' : 'off');
   };
 
@@ -658,8 +691,7 @@
     elements.labelNotify.textContent =
       state.lang === 'ja' ? '通知' : 'Notification';
     elements.labelNotifyHint.textContent = t.notifyHint;
-    elements.labelAnimation.textContent =
-      state.lang === 'ja' ? 'アニメーション' : 'Animation';
+    elements.labelVoice.textContent = state.lang === 'ja' ? '音声' : 'Voice';
     elements.labelDebug.textContent = t.debugTitle;
     elements.labelDebugHint.textContent = t.debugHint;
     elements.playBtn.textContent = state.running ? t.pause : t.play;
@@ -667,6 +699,8 @@
     elements.labelNextStep.textContent = t.nextStep;
     elements.saveSettings.textContent = t.save;
     elements.closeSettingsBtn.textContent = t.close;
+    elements.screenStatus.textContent =
+      state.lang === 'ja' ? '画面はオンのままです' : 'Screen will stay on';
 
     const notifyButtons = elements.notifyChoices.querySelectorAll('.choice');
     notifyButtons.forEach((btn) => {
@@ -675,10 +709,12 @@
       if (btn.dataset.value === 'none') btn.textContent = t.notifyNone;
     });
 
-    const animButtons = elements.animChoices.querySelectorAll('.choice');
-    animButtons.forEach((btn) => {
-      if (btn.dataset.value === 'on') btn.textContent = t.animOn;
-      if (btn.dataset.value === 'off') btn.textContent = t.animOff;
+    const voiceButtons = elements.voiceChoices.querySelectorAll('.choice');
+    voiceButtons.forEach((btn) => {
+      if (btn.dataset.value === 'male')
+        btn.textContent = state.lang === 'ja' ? '男性' : 'Male';
+      if (btn.dataset.value === 'female')
+        btn.textContent = state.lang === 'ja' ? '女性' : 'Female';
     });
 
     const debugButtons = elements.debugChoices.querySelectorAll('.choice');
@@ -692,9 +728,9 @@
     localStorage.setItem(
       'coco-timer-settings',
       JSON.stringify({
-        lang: state.lang,
+        language: state.lang,
         notifyMode: state.notifyMode,
-        animation: state.animation,
+        voice: state.voice,
         debugSpeed: state.debugSpeed,
       }),
     );
@@ -705,10 +741,10 @@
     if (!raw) return;
     try {
       const parsed = JSON.parse(raw);
+      if (parsed.language) state.lang = parsed.language;
       if (parsed.lang) state.lang = parsed.lang;
       if (parsed.notifyMode) state.notifyMode = parsed.notifyMode;
-      if (typeof parsed.animation === 'boolean')
-        state.animation = parsed.animation;
+      if (parsed.voice) state.voice = parsed.voice;
       if (typeof parsed.debugSpeed === 'number')
         state.debugSpeed = parsed.debugSpeed;
     } catch {}
@@ -770,8 +806,8 @@
       state.notifyMode = value;
       applySettingsUI();
     });
-    bindChoiceButtons(elements.animChoices, (value) => {
-      state.animation = value === 'on';
+    bindChoiceButtons(elements.voiceChoices, (value) => {
+      state.voice = value;
       applySettingsUI();
     });
 
@@ -780,15 +816,11 @@
       applySettingsUI();
     });
 
-    if (window.location.protocol === 'file:') {
-      state.animation = false;
-      Array.from(elements.animChoices.querySelectorAll('.choice')).forEach(
-        (btn) => {
-          btn.disabled = true;
-        },
-      );
-      applySettingsUI();
-    }
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && state.keepScreenOn) {
+        requestWakeLock();
+      }
+    });
 
     window.addEventListener('beforeunload', saveSettings);
   };

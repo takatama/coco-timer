@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BrewSteps Intro</title>
+    <link rel="stylesheet" href="./intro.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="app">
+      <header class="app-bar">
+        <div class="app-title">BrewSteps</div>
+        <button class="icon-btn" id="open-settings" aria-label="Settings">⚙️</button>
+      </header>
+
+      <main class="content">
+        <section class="card hero-card">
+          <img
+            class="hero-image"
+            src="./assets/images/goran-ivos-1JsjRW6Sbwg-unsplash.jpg"
+            alt="New Hybrid Method"
+          />
+          <div class="hero-title" id="recipe-title">新しいハイブリッドメソッド</div>
+          <div class="hero-desc" id="recipe-desc"></div>
+        </section>
+
+        <section class="card">
+          <div class="card-title" id="label-youtube">動画で確認</div>
+          <div class="video-wrap">
+            <iframe
+              id="youtube"
+              src="https://www.youtube.com/embed/4FeUp_zNiiY"
+              title="YouTube video player"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+            ></iframe>
+          </div>
+        </section>
+
+        <div class="actions">
+          <button class="btn primary" id="start-btn">始める</button>
+          <button class="btn ghost" id="skip-btn">スキップ</button>
+        </div>
+      </main>
+    </div>
+
+    <div class="settings-modal" id="settings-modal">
+      <div class="settings-card">
+        <h3 id="label-settings">設定</h3>
+        <div class="settings-section">
+          <div class="settings-title" id="label-language">言語</div>
+          <div class="choice-row" id="lang-choices">
+            <button class="choice" data-value="ja">日本語</button>
+            <button class="choice" data-value="en">English</button>
+          </div>
+        </div>
+        <div class="settings-section">
+          <div class="settings-title" id="label-notify">通知</div>
+          <div class="choice-row" id="notify-choices">
+            <button class="choice" data-value="sound">音声</button>
+            <button class="choice" data-value="vibrate">バイブ</button>
+            <button class="choice" data-value="none">なし</button>
+          </div>
+          <div class="hint" id="label-notify-hint">5秒前に通知します</div>
+        </div>
+        <div class="settings-section">
+          <div class="settings-title" id="label-voice">音声</div>
+          <div class="choice-row" id="voice-choices">
+            <button class="choice" data-value="male">男性</button>
+            <button class="choice" data-value="female">女性</button>
+          </div>
+        </div>
+        <div class="controls">
+          <button class="btn primary" id="save-settings">保存</button>
+          <button class="btn ghost" id="close-settings">閉じる</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="./intro.js"></script>
+  </body>
+</html>
