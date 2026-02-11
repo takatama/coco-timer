@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>COCO Timer</title>
+    <link rel="stylesheet" href="/coco-timer.css?v=2" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="app">
+      <header class="app-bar">
+        <div class="app-title">COCO Timer</div>
+        <button class="icon-btn" id="open-settings" aria-label="Settings">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+            />
+            <path
+              d="M19.4 15a1.7 1.7 0 0 0 .33 1.87l.05.05a2 2 0 1 1-2.83 2.83l-.05-.05a1.7 1.7 0 0 0-1.87-.33 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.08a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.33l-.05.05a2 2 0 1 1-2.83-2.83l.05-.05A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.08a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.33-1.87l-.05-.05a2 2 0 1 1 2.83-2.83l.05.05A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.08a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.33l.05-.05a2 2 0 1 1 2.83 2.83l-.05.05A1.7 1.7 0 0 0 19.4 9c.07.2.1.41.1.62s-.03.42-.1.62a1.7 1.7 0 0 0 .33 1.87"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+      </header>
+
+      <main class="content">
+        <section class="card" id="summary-card">
+          <div id="recipe-summary">新しいハイブリッドメソッド</div>
+          <div class="hint" id="recipe-params">豆量 20g / 味わい バランス / 抽出量 300g</div>
+          <button class="text-link" id="edit-params">設定を変更</button>
+        </section>
+
+        <section class="card primary-card" id="current-step-card">
+          <div class="step-meta" id="step-meta">STEP 1 / 6</div>
+          <div class="step-verb" id="step-verb">WAIT</div>
+          <div class="step-sub" id="step-sub">Wait (no pour)</div>
+          <div class="step-time" id="remaining-time">0:00</div>
+          <div class="progress">
+            <div class="progress-fill" id="remaining-progress"></div>
+          </div>
+        </section>
+
+        <section class="card animation-card" id="animation-card" hidden>
+          <div class="card-title" id="label-next-step">次のステップは...</div>
+          <div class="animation-row">
+            <div class="lottie" id="lottie-container"></div>
+            <div class="animation-text" id="animation-text">-</div>
+          </div>
+          <div class="animation-note" id="animation-note"></div>
+        </section>
+
+        <section class="controls" id="controls-card">
+          <button class="btn primary" id="play-btn">再生</button>
+          <button class="btn secondary" id="reset-btn">リセット</button>
+        </section>
+
+        <div class="screen-status" id="screen-status" hidden>画面はオンのままです</div>
+
+        <section class="card timeline-card" id="timeline-card">
+          <div class="card-title" id="label-timeline">タイムライン</div>
+          <div class="stepper" id="timeline"></div>
+        </section>
+      </main>
+
+      <footer class="footer">COCO Timer</footer>
+    </div>
+
+    <div class="settings-modal" id="settings-modal">
+      <div class="settings-card">
+        <h3 id="label-settings">設定</h3>
+        <div class="settings-section">
+          <div class="settings-title" id="label-language">言語</div>
+          <div class="choice-row" id="lang-choices">
+            <button class="choice" data-value="ja">日本語</button>
+            <button class="choice" data-value="en">English</button>
+          </div>
+        </div>
+        <div class="settings-section">
+          <div class="settings-title" id="label-notify">通知</div>
+          <div class="choice-row" id="notify-choices">
+            <button class="choice" data-value="sound">音声</button>
+            <button class="choice" data-value="vibrate">バイブ</button>
+            <button class="choice" data-value="none">なし</button>
+          </div>
+          <div class="hint" id="label-notify-hint">5秒前に通知します</div>
+        </div>
+        <div class="settings-section">
+          <div class="settings-title" id="label-voice">音声</div>
+          <div class="choice-row" id="voice-choices">
+            <button class="choice" data-value="male">男性</button>
+            <button class="choice" data-value="female">女性</button>
+          </div>
+        </div>
+        <div class="settings-section">
+          <div class="settings-title" id="label-debug">デバッグ</div>
+          <div class="choice-row" id="debug-choices">
+            <button class="choice" data-value="off">オフ</button>
+            <button class="choice" data-value="x5">x5倍速</button>
+          </div>
+          <div class="hint" id="label-debug-hint">タイマーを高速再生します</div>
+        </div>
+        <div class="controls">
+          <button class="btn primary" id="save-settings">保存</button>
+          <button class="btn secondary" id="close-settings">閉じる</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+    <script src="/recipe-data.js"></script>
+    <script src="/coco-timer.js?v=2"></script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Recipe",
+        "name": "New Hybrid Method (Hario Switch)",
+        "description": "Tetsu Kasaya’s evolved hybrid recipe for the Hario Switch combining immersion, pour-over, and cool immersion.",
+        "recipeCategory": "Coffee",
+        "recipeCuisine": "Coffee",
+        "recipeYield": "300g",
+        "image": "/assets/images/goran-ivos-1JsjRW6Sbwg-unsplash.jpg",
+        "recipeIngredient": [
+          "Coffee beans 20g",
+          "Water 300g"
+        ],
+        "recipeInstructions": [
+          { "@type": "HowToStep", "text": "Close and pour to 60g (bloom)." },
+          { "@type": "HowToStep", "text": "Open and pour to 120g." },
+          { "@type": "HowToStep", "text": "Pour to 210g and cool to 70℃." },
+          { "@type": "HowToStep", "text": "Close and pour to 300g." },
+          { "@type": "HowToStep", "text": "Open and wait until it drains." },
+          { "@type": "HowToStep", "text": "Finish." }
+        ],
+        "video": {
+          "@type": "VideoObject",
+          "name": "New Hybrid Method",
+          "embedUrl": "https://www.youtube.com/embed/4FeUp_zNiiY"
+        }
+      }
+    </script>
+  </body>
+</html>

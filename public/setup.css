@@ -1,0 +1,248 @@
+:root {
+  color-scheme: light;
+  --md-primary: #6d4c41;
+  --md-primary-contrast: #ffffff;
+  --md-surface: #fffef8;
+  --md-surface-2: #f7f2ea;
+  --md-outline: #e2d8c8;
+  --md-text: #2b221c;
+  --md-text-muted: #6f6258;
+  --shadow-1: 0 2px 6px rgba(36, 25, 16, 0.12);
+  --radius-lg: 18px;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: linear-gradient(180deg, #f8f4ec 0%, #fffdf8 60%, #f3efe7 100%);
+  color: var(--md-text);
+}
+
+.app {
+  max-width: 520px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--md-surface);
+  box-shadow: var(--shadow-1);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.app-title {
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.icon-btn {
+  border: none;
+  background: transparent;
+  font-size: 22px;
+  cursor: pointer;
+  color: var(--md-text);
+}
+
+.icon-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.content {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.card {
+  background: var(--md-surface);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  box-shadow: var(--shadow-1);
+  border: 1px solid var(--md-outline);
+}
+
+.card-title {
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: var(--md-text-muted);
+  font-size: 0.9rem;
+  letter-spacing: 0.3px;
+}
+
+.stepper-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+}
+
+.btn-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid var(--md-outline);
+  background: var(--md-surface-2);
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+.beans-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.choice-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.choice {
+  border: 1px solid var(--md-outline);
+  padding: 8px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  background: #fff;
+}
+
+.choice.active {
+  background: var(--md-primary);
+  color: var(--md-primary-contrast);
+  border-color: var(--md-primary);
+}
+
+.hint {
+  font-size: 0.85rem;
+  color: var(--md-text-muted);
+  margin-bottom: 8px;
+}
+
+.step-list {
+  display: grid;
+  gap: 8px;
+}
+
+.step-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+  background: var(--md-surface-2);
+  padding: 8px 10px;
+  border-radius: 10px;
+}
+
+.btn-primary {
+  border: none;
+  padding: 14px 16px;
+  border-radius: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 1rem;
+  background: var(--md-primary);
+  color: var(--md-primary-contrast);
+}
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--md-outline);
+  color: var(--md-text);
+}
+
+.settings-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(18, 12, 8, 0.35);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 60;
+  padding: 20px;
+}
+
+.settings-modal.active {
+  display: flex;
+}
+
+.settings-card {
+  background: var(--md-surface);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  width: min(420px, 92vw);
+  box-shadow: var(--shadow-1);
+}
+
+.settings-section {
+  margin-bottom: 16px;
+}
+
+.settings-title {
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+}
+
+details.card summary {
+  list-style: none;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--md-text);
+}
+
+details.card summary::-webkit-details-marker {
+  display: none;
+}
+
+.details-body {
+  margin-top: 12px;
+  display: grid;
+  gap: 12px;
+}
+
+.details-image {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.details-text {
+  color: var(--md-text-muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.details-video {
+  position: relative;
+  padding-bottom: 56.25%;
+  height: 0;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.details-video iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
