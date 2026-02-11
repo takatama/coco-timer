@@ -148,6 +148,7 @@
     remainingProgress: document.getElementById('remaining-progress'),
     recipeSummary: document.getElementById('recipe-summary'),
     recipeParams: document.getElementById('recipe-params'),
+    editParams: document.getElementById('edit-params'),
     timeline: document.getElementById('timeline'),
     animationCard: document.getElementById('animation-card'),
     labelNextStep: document.getElementById('label-next-step'),
@@ -781,6 +782,14 @@
       }
     });
     elements.resetBtn.addEventListener('click', resetTimer);
+
+    elements.editParams.addEventListener('click', () => {
+      const params = new URLSearchParams({
+        beans: String(state.beansAmount),
+        flavor: state.flavor,
+      });
+      window.location.href = `./setup.html?${params.toString()}`;
+    });
 
     elements.openSettings.addEventListener('click', () => {
       elements.settingsModal.classList.add('active');

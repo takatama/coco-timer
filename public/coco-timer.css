@@ -390,6 +390,17 @@ body {
   color: var(--md-text-muted);
 }
 
+.text-link {
+  margin-top: 8px;
+  background: none;
+  border: none;
+  color: var(--md-primary);
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+}
+
 .footer {
   margin-top: auto;
   padding: 16px;
