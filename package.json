@@ -1,0 +1,16 @@
+{
+	"name": "coco-timer",
+	"version": "1.0.0",
+	"private": true,
+	"scripts": {
+		"dev": "vite --host",
+		"build": "vite build",
+		"preview": "vite preview",
+		"deploy": "wrangler pages deploy dist"
+	},
+	"dependencies": {},
+	"devDependencies": {
+		"vite": "^5.4.12",
+		"wrangler": "^3.109.2"
+	}
+}

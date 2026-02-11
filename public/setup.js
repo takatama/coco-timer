@@ -1,4 +1,8 @@
 (() => {
+  const getBasePath = () =>
+    window.location.pathname.replace(/\/[^/]*$/, '/');
+  const getDefaultLang = () =>
+    navigator.language.startsWith("ja") ? "ja" : "en";
   const state = {
     beans: 20,
     flavor: "neutral",
@@ -74,7 +78,7 @@
         if (parsed.lang) return parsed.lang;
       } catch {}
     }
-    return navigator.language.startsWith("ja") ? "ja" : "en";
+    return getDefaultLang();
   };
 
   const stepLabels = window.RECIPE_STEP_LABELS || {
@@ -181,7 +185,7 @@
   const init = () => {
     state.lang = getLang();
     if (!localStorage.getItem("brewsteps_intro_seen")) {
-      window.location.href = "./intro.html";
+      window.location.href = `${getBasePath()}intro.html`;
       return;
     }
     const params = new URLSearchParams(window.location.search);
@@ -244,7 +248,7 @@
         beans: String(state.beans),
         flavor: state.flavor,
       });
-      window.location.href = `./coco-timer.html?${params.toString()}`;
+      window.location.href = `${getBasePath()}coco-timer.html?${params.toString()}`;
     });
 
     elements.openSettings.addEventListener("click", () => {

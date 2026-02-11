@@ -112,5 +112,5 @@
 - File location: public/audio/{lang}-{voice}-{type}.wav
 
 ## 13. Assets
-- Lottie: src/assets/lottie/*.json
+- Lottie: public/assets/lottie/*.json
 - Images: public/assets/images/*

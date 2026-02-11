@@ -1,4 +1,8 @@
 (() => {
+  const getBasePath = () =>
+    window.location.pathname.replace(/\/[^/]*$/, '/');
+  const getDefaultLang = () =>
+    navigator.language.startsWith("ja") ? "ja" : "en";
   const description = {
     ja:
       "粕谷哲氏の新しいハイブリッドメソッドは、Hario Switchで抽出方法の良いとこ取りを実現。他の抽出法と異なり、最初に粉全体をしっかり浸すことで自然な甘みを引き出し、その後ドリップで華やかな風味を、最後に低温浸漬でまろやかさをプラス。結果、濃厚なボディと抜群の甘み、クリアな味わいが楽しめる一杯に。ぜひこのレシピを試してみてください。",
@@ -51,7 +55,7 @@
     return {};
   };
 
-  const defaultLang = navigator.language.startsWith("ja") ? "ja" : "en";
+  const defaultLang = getDefaultLang();
 
   const setLang = (lang) => {
     const t = labels[lang];
@@ -154,12 +158,12 @@
 
     elements.start.addEventListener("click", () => {
       markSeen();
-      window.location.href = "./setup.html";
+      window.location.href = `${getBasePath()}setup.html`;
     });
 
     elements.skip.addEventListener("click", () => {
       markSeen();
-      window.location.href = "./setup.html";
+      window.location.href = `${getBasePath()}setup.html`;
     });
   };
 
