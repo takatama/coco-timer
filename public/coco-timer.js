@@ -1,4 +1,23 @@
 (() => {
+  const stepLabels = window.RECIPE_STEP_LABELS || {
+    ja: [
+      '閉じて蒸らし',
+      '開けて1湯目',
+      '2湯目',
+      '閉じて低温の3湯目',
+      '開ける',
+      '完成',
+    ],
+    en: [
+      'Close & Bloom',
+      'Open: 1st pour',
+      '2nd pour',
+      'Close: cool 3rd pour',
+      'Open',
+      'Finish',
+    ],
+  };
+
   const recipe = {
     id: 'new-hybrid-method',
     name: { ja: '新しいハイブリッドメソッド', en: 'New Hybrid Method' },
@@ -8,37 +27,37 @@
       {
         timeSec: 0,
         actionType: 'switch_close_pour',
-        name: { ja: '閉じて蒸らし', en: 'Initial Bloom' },
+        name: { ja: stepLabels.ja[0], en: stepLabels.en[0] },
         waterAmountType: 'flavor1',
       },
       {
         timeSec: 40,
         actionType: 'switch_open_pour',
-        name: { ja: '開けて1湯目', en: 'Flavor Extraction' },
+        name: { ja: stepLabels.ja[1], en: stepLabels.en[1] },
         waterAmountType: 'flavor2',
       },
       {
         timeSec: 90,
         actionType: 'pour_cool',
-        name: { ja: '2湯目', en: 'Percolation Extraction' },
+        name: { ja: stepLabels.ja[2], en: stepLabels.en[2] },
         waterAmountType: 'strength',
       },
       {
         timeSec: 130,
         actionType: 'switch_close_pour',
-        name: { ja: '閉じて低温の3湯目', en: 'Cool Immersion' },
+        name: { ja: stepLabels.ja[3], en: stepLabels.en[3] },
         waterAmountType: 'strength',
       },
       {
         timeSec: 165,
         actionType: 'switch_open',
-        name: { ja: 'スイッチを開ける', en: 'Open the Switch' },
+        name: { ja: stepLabels.ja[4], en: stepLabels.en[4] },
         waterAmountType: null,
       },
       {
         timeSec: 210,
         actionType: 'none',
-        name: { ja: '完成', en: 'Finish' },
+        name: { ja: stepLabels.ja[5], en: stepLabels.en[5] },
         waterAmountType: null,
       },
     ],

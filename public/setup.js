@@ -77,6 +77,25 @@
     return navigator.language.startsWith("ja") ? "ja" : "en";
   };
 
+  const stepLabels = window.RECIPE_STEP_LABELS || {
+    ja: [
+      "閉じて蒸らし",
+      "開けて1湯目",
+      "2湯目",
+      "閉じて低温の3湯目",
+      "開ける",
+      "完成",
+    ],
+    en: [
+      "Close & Bloom",
+      "Open: 1st pour",
+      "2nd pour",
+      "Close: cool 3rd pour",
+      "Open",
+      "Finish",
+    ],
+  };
+
   const calcFlavor1 = (total, flavor) =>
     total * 0.4 * (flavor === "sweet" ? 0.42 : flavor === "sour" ? 0.58 : 0.5);
 
@@ -95,11 +114,13 @@
     ].map((v) => Math.floor(Math.round(v)));
 
     let cumulative = 0;
-    const labels = ["閉じて蒸らし", "開けて1湯目", "2湯目", "閉じて低温の3湯目"];
+    const labelsByLang = stepLabels[state.lang] || stepLabels.ja;
     const steps = increments.map((inc, idx) => {
       cumulative += inc;
-      return { label: labels[idx], cumulative };
+      return { label: labelsByLang[idx], cumulative };
     });
+    steps.push({ label: labelsByLang[4], cumulative });
+    steps.push({ label: labelsByLang[5], cumulative });
     return { total, steps };
   };
 
