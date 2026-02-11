@@ -1,16 +1,23 @@
 const SUPPORTED_LANGS = ["ja", "en"];
 const PAGE_CANDIDATES = new Set(["intro", "setup", "coco-timer"]);
+const HTML_PAGE_RE = /^\/(intro|setup|coco-timer)\.html$/;
 
 const stripTrailingSlash = (value) => (value.endsWith("/") && value !== "/" ? value.slice(0, -1) : value);
 
 export async function onRequest(context) {
   const { request, env } = context;
   const url = new URL(request.url);
+
+  // Important: allow direct static HTML fetches through untouched.
+  // Edge rewrites to /setup.html, /intro.html, /coco-timer.html rely on this.
+  if (HTML_PAGE_RE.test(url.pathname) || url.pathname === "/index.html") {
+    return env.ASSETS.fetch(request);
+  }
+
   const normalized = stripTrailingSlash(url.pathname);
   const segments = normalized.split("/").filter(Boolean);
 
-  // Canonical entry URL (Edge decides):
-  // / -> /en/setup
+  // Canonical entry URL (Edge decides): / -> /en/setup
   if (normalized === "/") {
     return Response.redirect(`${url.origin}/en/setup${url.search}${url.hash}`, 302);
   }

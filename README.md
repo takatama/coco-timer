@@ -86,3 +86,4 @@ public/
 - redirects non-localized app routes (`/setup`, `/intro`, `/coco-timer`) to `/en/...`
 - redirects language root (`/ja`, `/en`) to `/<lang>/setup`
 - rewrites localized app routes (`/<lang>/intro|setup|coco-timer`) to static HTML assets
+- passes direct static HTML requests (`/intro.html`, `/setup.html`, `/coco-timer.html`) through untouched to avoid rewrite loops
