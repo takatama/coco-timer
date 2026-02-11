@@ -62,3 +62,25 @@ public/
 ## Notes
 - The timer keeps the screen awake during playback and releases the wake lock after completion.
 - JSON-LD for the recipe is embedded in `coco-timer.html` for SEO.
+
+## i18n Routing (ja/en)
+- URL is the source of truth:
+  - `/ja/...` always renders Japanese
+  - `/en/...` always renders English
+- `localStorage` (`coco-timer-settings.language`) is synchronized from URL on page load.
+- `/` is an entry point only and redirects to language path.
+
+### Route examples
+- `/ja/intro`, `/ja/setup`, `/ja/coco-timer`
+- `/en/intro`, `/en/setup`, `/en/coco-timer`
+
+### Frontend utilities
+`public/i18n-routing.js` provides:
+- `detectLanguage()`
+- `switchLanguage(lang)`
+- `applySeoMetaTags()`
+
+### Cloudflare Pages Function
+`functions/[[path]].js`:
+- redirects `/` to `/ja/` or `/en/` using `Accept-Language`
+- rewrites `/ja/*` and `/en/*` routes to static HTML assets

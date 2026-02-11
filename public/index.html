@@ -6,15 +6,10 @@
     <title>COCO Timer</title>
   </head>
   <body>
-    <script>
-      let seen = null;
-      try {
-        seen = localStorage.getItem("brewsteps_intro_seen");
-      } catch {
-        seen = null;
-      }
+    <script type="module">
+      import { detectLanguage } from "/i18n-routing.js";
 
-      window.location.replace(seen ? "./setup.html" : "./intro.html");
+      detectLanguage();
     </script>
   </body>
 </html>

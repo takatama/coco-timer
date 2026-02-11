@@ -1,13 +1,9 @@
 import "./recipe-data.js";
 import { mountSharedLayout } from "./shared-layout.js";
+import { applySeoMetaTags, detectLanguage, switchLanguage } from "./i18n-routing.js";
 
 (() => {
   mountSharedLayout();
-  const getBasePath = () =>
-    window.location.pathname.replace(/\/[^/]*$/, '/');
-  const getDefaultLang = () =>
-    navigator.language.startsWith("ja") ? "ja" : "en";
-
   const safeStorageGet = (key) => {
     try {
       return localStorage.getItem(key);
@@ -91,18 +87,6 @@ import { mountSharedLayout } from "./shared-layout.js";
       start: "Start Timer",
       details: "Recipe details",
     },
-  };
-
-  const getLang = () => {
-    const stored = safeStorageGet("coco-timer-settings");
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        if (parsed.language) return parsed.language;
-        if (parsed.lang) return parsed.lang;
-      } catch {}
-    }
-    return getDefaultLang();
   };
 
   const stepLabels = window.RECIPE_STEP_LABELS || {
@@ -216,7 +200,10 @@ import { mountSharedLayout } from "./shared-layout.js";
   };
 
   const init = () => {
-    state.lang = getLang();
+    const langFromUrl = detectLanguage();
+    if (!langFromUrl) return;
+    applySeoMetaTags();
+    state.lang = langFromUrl;
     const params = new URLSearchParams(window.location.search);
     const introSeenByParam = params.get("intro_seen") === "1";
     const introSeenByStorage = safeStorageGet("brewsteps_intro_seen");
@@ -226,7 +213,7 @@ import { mountSharedLayout } from "./shared-layout.js";
     }
 
     if (!introSeenByStorage && !introSeenByParam) {
-      window.location.href = `${getBasePath()}intro.html`;
+      window.location.href = `./intro`;
       return;
     }
 
@@ -267,6 +254,9 @@ import { mountSharedLayout } from "./shared-layout.js";
     };
 
     let settings = getSettings();
+    settings.language = state.lang;
+    settings.lang = state.lang;
+    safeStorageSet("coco-timer-settings", JSON.stringify(settings));
     applySettings(settings);
 
     elements.beansMinus.addEventListener("click", () => {
@@ -293,7 +283,7 @@ import { mountSharedLayout } from "./shared-layout.js";
         beans: String(state.beans),
         flavor: state.flavor,
       });
-      window.location.href = `${getBasePath()}coco-timer.html?${params.toString()}`;
+      window.location.href = `./coco-timer?${params.toString()}`;
     });
 
     elements.openSettings.addEventListener("click", () => {
@@ -312,10 +302,9 @@ import { mountSharedLayout } from "./shared-layout.js";
       const value = target.dataset.value;
       if (!value) return;
       settings.language = value;
-      state.lang = value;
+      settings.lang = value;
       safeStorageSet("coco-timer-settings", JSON.stringify(settings));
-      render();
-      applySettings(settings);
+      switchLanguage(value);
     });
 
     elements.notifyChoices.addEventListener("click", (event) => {

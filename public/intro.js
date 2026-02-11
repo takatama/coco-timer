@@ -1,12 +1,8 @@
 import { mountSharedLayout } from "./shared-layout.js";
+import { applySeoMetaTags, detectLanguage, switchLanguage } from "./i18n-routing.js";
 
 (() => {
   mountSharedLayout();
-  const getBasePath = () =>
-    window.location.pathname.replace(/\/[^/]*$/, '/');
-  const getDefaultLang = () =>
-    navigator.language.startsWith("ja") ? "ja" : "en";
-
   const safeStorageGet = (key) => {
     try {
       return localStorage.getItem(key);
@@ -78,7 +74,6 @@ import { mountSharedLayout } from "./shared-layout.js";
     return {};
   };
 
-  const defaultLang = getDefaultLang();
 
   const setLang = (lang) => {
     const t = labels[lang];
@@ -110,7 +105,7 @@ import { mountSharedLayout } from "./shared-layout.js";
   };
 
   const applySettings = (settings) => {
-    const lang = settings.language || settings.lang || defaultLang;
+    const lang = settings.language || settings.lang || "ja";
     setLang(lang);
     setActive(elements.langChoices, lang);
     setActive(elements.notifyChoices, settings.notifyMode || "sound");
@@ -141,7 +136,14 @@ import { mountSharedLayout } from "./shared-layout.js";
   };
 
   const init = () => {
+    const langFromUrl = detectLanguage();
+    if (!langFromUrl) return;
+    applySeoMetaTags();
+
     const settings = getSettings();
+    settings.language = langFromUrl;
+    settings.lang = langFromUrl;
+    saveSettings(settings);
     applySettings(settings);
 
     elements.langChoices.addEventListener("click", (event) => {
@@ -151,8 +153,9 @@ import { mountSharedLayout } from "./shared-layout.js";
       if (!value) return;
       const current = getSettings();
       current.language = value;
+      current.lang = value;
       saveSettings(current);
-      applySettings(current);
+      switchLanguage(value);
     });
 
     elements.notifyChoices.addEventListener("click", (event) => {
@@ -201,13 +204,13 @@ import { mountSharedLayout } from "./shared-layout.js";
     elements.start.addEventListener("click", () => {
       const saved = markSeen();
       const fallback = saved ? "" : "?intro_seen=1";
-      window.location.href = `${getBasePath()}setup.html${fallback}`;
+      window.location.href = `./setup${fallback}`;
     });
 
     elements.skip.addEventListener("click", () => {
       const saved = markSeen();
       const fallback = saved ? "" : "?intro_seen=1";
-      window.location.href = `${getBasePath()}setup.html${fallback}`;
+      window.location.href = `./setup${fallback}`;
     });
   };
 

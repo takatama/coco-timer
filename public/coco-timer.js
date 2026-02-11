@@ -1,5 +1,6 @@
 import "./recipe-data.js";
 import { mountSharedLayout } from "./shared-layout.js";
+import { applySeoMetaTags, detectLanguage, switchLanguage } from "./i18n-routing.js";
 
 const audioAssetMap = {
   "ja-male-next-step": new URL("./assets/audio/ja-male-next-step.wav", import.meta.url).href,
@@ -21,14 +22,6 @@ const lottieAssetMap = {
 
 (() => {
   mountSharedLayout();
-  const getBasePath = () =>
-    window.location.pathname.replace(/\/[^/]*$/, '/');
-  const getDefaultLang = () => {
-    const htmlLang = document.documentElement.lang;
-    if (htmlLang === 'ja' || htmlLang === 'en') return htmlLang;
-    return navigator.language.startsWith('ja') ? 'ja' : 'en';
-  };
-
   const stepLabels = window.RECIPE_STEP_LABELS || {
     ja: [
       '閉じて蒸らし',
@@ -812,7 +805,11 @@ const lottieAssetMap = {
   };
 
   const init = () => {
-    state.lang = getDefaultLang();
+    const langFromUrl = detectLanguage();
+    if (!langFromUrl) return;
+    applySeoMetaTags();
+    state.lang = langFromUrl;
+
     const params = new URLSearchParams(window.location.search);
     const beansParam = Number(params.get('beans'));
     const flavorParam = params.get('flavor');
@@ -821,6 +818,8 @@ const lottieAssetMap = {
       state.flavor = flavorParam;
 
     loadSettings();
+    state.lang = langFromUrl;
+    saveSettings();
     applySettingsUI();
     applyLanguage();
     computedSteps = buildSteps();
@@ -843,7 +842,7 @@ const lottieAssetMap = {
         beans: String(state.beansAmount),
         flavor: state.flavor,
       });
-      window.location.href = `${getBasePath()}setup.html?${params.toString()}`;
+      window.location.href = `./setup?${params.toString()}`;
     });
 
     elements.openSettings.addEventListener('click', () => {
@@ -859,12 +858,8 @@ const lottieAssetMap = {
 
     bindChoiceButtons(elements.langChoices, (value) => {
       state.lang = value;
-      applyLanguage();
-      updateSummary();
-      updateMainCard();
-      updateTimeline();
-      updateCompleteScreen();
-      applySettingsUI();
+      saveSettings();
+      switchLanguage(value);
     });
     bindChoiceButtons(elements.notifyChoices, (value) => {
       state.notifyMode = value;
