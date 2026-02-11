@@ -21,7 +21,8 @@ export async function onRequest(context) {
     return env.ASSETS.fetch(request);
   }
 
-  const filePath = page ? `/${page}.html` : "/index.html";
+  // Serve setup at language root directly to avoid extra redirect hops.
+  const filePath = page === "" ? "/setup.html" : `/${page}.html`;
   const assetUrl = new URL(filePath + url.search, url.origin);
   const rewrittenRequest = new Request(assetUrl.toString(), request);
   return env.ASSETS.fetch(rewrittenRequest);

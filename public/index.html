@@ -7,37 +7,16 @@
   </head>
   <body>
     <script type="module">
-      import { buildLocalizedPagePath, detectLanguage, extractLangFromPath } from "/i18n-routing.js";
+      import { buildLocalizedPagePath, detectLanguage } from "/i18n-routing.js";
 
-      const safeStorageGet = (key) => {
-        try {
-          return localStorage.getItem(key);
-        } catch {
-          return null;
-        }
-      };
-
-      const { pathname, search, hash } = window.location;
-
-      if (pathname === "/") {
+      // Single redirect responsibility:
+      // only "/" performs redirect, and it goes directly to localized setup.
+      if (window.location.pathname === "/") {
         const lang = detectLanguage();
-        window.location.replace(`/${lang}/${search}${hash}`);
+        window.location.replace(buildLocalizedPagePath(lang, "setup"));
       } else {
-        const langFromUrl = extractLangFromPath(pathname);
-        const isLanguageRoot = /^\/(ja|en)\/?$/.test(pathname);
-
-        if (langFromUrl && isLanguageRoot) {
-          detectLanguage();
-          const introSeen = safeStorageGet("brewsteps_intro_seen") === "1";
-          const destination = introSeen
-            ? buildLocalizedPagePath(langFromUrl, "setup")
-            : buildLocalizedPagePath(langFromUrl, "intro");
-          if (window.location.pathname !== destination) {
-            window.location.replace(destination);
-          }
-        } else {
-          detectLanguage();
-        }
+        // No redirects for non-root pages.
+        detectLanguage();
       }
     </script>
   </body>
