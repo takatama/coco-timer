@@ -51,6 +51,7 @@
     langChoices: document.getElementById("lang-choices"),
     notifyChoices: document.getElementById("notify-choices"),
     voiceChoices: document.getElementById("voice-choices"),
+    debugChoices: document.getElementById("debug-choices"),
     openSettings: document.getElementById("open-settings"),
     settingsModal: document.getElementById("settings-modal"),
     closeSettings: document.getElementById("close-settings"),
@@ -60,6 +61,8 @@
     labelNotify: document.getElementById("label-notify"),
     labelNotifyHint: document.getElementById("label-notify-hint"),
     labelVoice: document.getElementById("label-voice"),
+    labelDebug: document.getElementById("label-debug"),
+    labelDebugHint: document.getElementById("label-debug-hint"),
   };
 
   const getSettings = () => {
@@ -90,6 +93,9 @@
     elements.labelNotify.textContent = lang === "ja" ? "通知" : "Notification";
     elements.labelNotifyHint.textContent = lang === "ja" ? "5秒前に通知します" : "Notify 5 seconds before";
     elements.labelVoice.textContent = lang === "ja" ? "音声" : "Voice";
+    elements.labelDebug.textContent = lang === "ja" ? "デバッグ" : "Debug";
+    elements.labelDebugHint.textContent =
+      lang === "ja" ? "タイマーを高速再生します" : "Speed up timer playback";
     elements.saveSettings.textContent = lang === "ja" ? "保存" : "Save";
     elements.closeSettings.textContent = lang === "ja" ? "閉じる" : "Close";
   };
@@ -106,6 +112,7 @@
     setActive(elements.langChoices, lang);
     setActive(elements.notifyChoices, settings.notifyMode || "sound");
     setActive(elements.voiceChoices, settings.voice || "male");
+    setActive(elements.debugChoices, settings.debugSpeed === 5 ? "x5" : "off");
 
     elements.notifyChoices.querySelectorAll(".choice").forEach((btn) => {
       if (btn.dataset.value === "sound") btn.textContent = lang === "ja" ? "音声" : "Sound";
@@ -115,6 +122,10 @@
     elements.voiceChoices.querySelectorAll(".choice").forEach((btn) => {
       if (btn.dataset.value === "male") btn.textContent = lang === "ja" ? "男性" : "Male";
       if (btn.dataset.value === "female") btn.textContent = lang === "ja" ? "女性" : "Female";
+    });
+    elements.debugChoices.querySelectorAll(".choice").forEach((btn) => {
+      if (btn.dataset.value === "off") btn.textContent = lang === "ja" ? "オフ" : "Off";
+      if (btn.dataset.value === "x5") btn.textContent = lang === "ja" ? "x5倍速" : "x5 Speed";
     });
   };
 
@@ -159,6 +170,17 @@
       if (!value) return;
       const current = getSettings();
       current.voice = value;
+      saveSettings(current);
+      applySettings(current);
+    });
+
+    elements.debugChoices.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      const value = target.dataset.value;
+      if (!value) return;
+      const current = getSettings();
+      current.debugSpeed = value === "x5" ? 5 : 1;
       saveSettings(current);
       applySettings(current);
     });
