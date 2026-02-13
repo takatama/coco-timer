@@ -292,6 +292,7 @@ import { mountSharedLayout } from "./shared-layout.js";
       const params = new URLSearchParams({
         beans: String(state.beans),
         flavor: state.flavor,
+        autostart: "1",
       });
       window.location.href = `${getBasePath()}coco-timer.html?${params.toString()}`;
     });

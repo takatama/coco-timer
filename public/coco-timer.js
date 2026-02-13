@@ -188,6 +188,7 @@ const lottieAssetMap = {
     animationCountStep: null,
     wakeLock: null,
     keepScreenOn: false,
+    startDelayTimeoutId: null,
   };
 
   const elements = {
@@ -707,10 +708,15 @@ const lottieAssetMap = {
     };
 
     if (state.currentTime === 0 && state.animation) {
+      state.running = true;
+      elements.playBtn.textContent = texts[state.lang].pause;
+      requestWakeLock();
       showOverlayForStep(computedSteps[0], 0);
-      setTimeout(() => {
+      state.startDelayTimeoutId = setTimeout(() => {
+        state.startDelayTimeoutId = null;
+        if (!state.running) return;
         hideOverlay();
-        beginCountdown();
+        state.intervalId = setInterval(tick, 1000);
       }, 5000);
       return;
     }
@@ -721,6 +727,11 @@ const lottieAssetMap = {
   const pauseTimer = () => {
     state.running = false;
     elements.playBtn.textContent = texts[state.lang].play;
+    if (state.startDelayTimeoutId) {
+      clearTimeout(state.startDelayTimeoutId);
+      state.startDelayTimeoutId = null;
+      hideOverlay();
+    }
     if (state.intervalId) {
       clearInterval(state.intervalId);
       state.intervalId = null;
@@ -834,6 +845,7 @@ const lottieAssetMap = {
     const params = new URLSearchParams(window.location.search);
     const beansParam = Number(params.get('beans'));
     const flavorParam = params.get('flavor');
+    const shouldAutostart = params.get('autostart') === '1';
     if (beansParam && !Number.isNaN(beansParam)) state.beansAmount = beansParam;
     if (['sweet', 'neutral', 'sour'].includes(flavorParam))
       state.flavor = flavorParam;
@@ -846,6 +858,14 @@ const lottieAssetMap = {
     updateMainCard();
     updateTimeline();
     updateCompleteScreen();
+
+    if (shouldAutostart) {
+      startTimer();
+      params.delete('autostart');
+      const nextQuery = params.toString();
+      const nextUrl = `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ''}${window.location.hash}`;
+      window.history.replaceState({}, '', nextUrl);
+    }
 
     elements.playBtn.addEventListener('click', () => {
       if (state.running) {
