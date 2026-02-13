@@ -690,7 +690,6 @@ const lottieAssetMap = {
     if (state.currentTime === 0 && state.animation) {
       showOverlayForStep(computedSteps[0], 0);
       setTimeout(() => {
-  mountSharedLayout();
         hideOverlay();
         beginCountdown();
       }, 5000);
