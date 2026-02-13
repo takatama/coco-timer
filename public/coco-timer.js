@@ -834,6 +834,7 @@ const lottieAssetMap = {
     const params = new URLSearchParams(window.location.search);
     const beansParam = Number(params.get('beans'));
     const flavorParam = params.get('flavor');
+    const shouldAutostart = params.get('autostart') === '1';
     if (beansParam && !Number.isNaN(beansParam)) state.beansAmount = beansParam;
     if (['sweet', 'neutral', 'sour'].includes(flavorParam))
       state.flavor = flavorParam;
@@ -846,6 +847,14 @@ const lottieAssetMap = {
     updateMainCard();
     updateTimeline();
     updateCompleteScreen();
+
+    if (shouldAutostart) {
+      startTimer();
+      params.delete('autostart');
+      const nextQuery = params.toString();
+      const nextUrl = `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ''}${window.location.hash}`;
+      window.history.replaceState({}, '', nextUrl);
+    }
 
     elements.playBtn.addEventListener('click', () => {
       if (state.running) {
