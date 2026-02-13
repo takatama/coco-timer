@@ -76,6 +76,7 @@
 - Notifications: sound / vibrate / none
 - Voice: male / female
 - Debug: x5 speed
+- No warning/annotation for OS-level haptics settings.
 
 ## 8. UI Components
 - Cards: Summary / Work Instruction / Animation / Timeline
@@ -104,6 +105,7 @@
 - Offline capable (PWA-friendly).
 - Low-latency notifications.
 - Screen-on behavior during play.
+- Platform constraint: Web APIs do not reliably expose whether OS haptics are disabled; the app must not attempt to detect or conditionally annotate based on that OS setting.
 
 ## 12. Audio Assets
 - Two prompt types per language/voice:
