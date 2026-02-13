@@ -495,10 +495,19 @@ const lottieAssetMap = {
     elements.screenStatus.hidden = true;
   };
 
-  const triggerNotification = (isFinish) => {
-    if (state.notifyMode === 'vibrate' && navigator.vibrate) {
-      navigator.vibrate([150, 80, 150]);
+  const triggerVibration = (type) => {
+    if (state.notifyMode !== 'vibrate' || !navigator.vibrate) return;
+    if (type === 'pre-step') {
+      navigator.vibrate(180);
+      return;
     }
+    if (type === 'step-change') {
+      navigator.vibrate([140, 80, 140]);
+    }
+  };
+
+  const triggerNotification = (isFinish) => {
+    triggerVibration('pre-step');
     if (state.notifyMode === 'sound') {
       const audioEl = getAudio(isFinish ? 'finish' : 'next-step');
       if (!audioEl) return;
@@ -633,11 +642,19 @@ const lottieAssetMap = {
     if (!state.running) return;
     const speed = Math.max(1, state.debugSpeed);
     for (let i = 0; i < speed; i += 1) {
+      const prevTime = state.currentTime;
       state.currentTime += 1;
       const currentIndex = getCurrentStepIndex();
       const nextStep = computedSteps[currentIndex + 1];
       const remainingToNext = getRemainingToNext();
       const finalTime = computedSteps[computedSteps.length - 1].timeSec;
+
+      const crossedStep = computedSteps.find(
+        (step) => prevTime < step.timeSec && step.timeSec <= state.currentTime,
+      );
+      if (crossedStep) {
+        triggerVibration('step-change');
+      }
 
       if (
         nextStep &&
