@@ -120,6 +120,7 @@ const lottieAssetMap = {
       waitNoPour: '待つ（注がない）',
       pourUntil: 'まで注ぐ',
       closeUp: '閉じる',
+      openUp: '開ける',
       openDown: '開ける',
       up: '上',
       down: '下',
@@ -154,6 +155,7 @@ const lottieAssetMap = {
       waitNoPour: 'Wait (no pour)',
       pourUntil: 'Pour until',
       closeUp: 'CLOSE',
+      openUp: 'OPEN',
       openDown: 'OPEN',
       up: 'UP',
       down: 'Down',
@@ -348,7 +350,7 @@ const lottieAssetMap = {
       return withParenNote(t.openDown, t.down);
     }
     if (step.actionType === 'switch_open') {
-      return t.waitLabel;
+      return withParenNote(t.openUp, t.up);
     }
     if (step.actionType === 'none') {
       return t.finishLabel;
