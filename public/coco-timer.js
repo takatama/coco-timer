@@ -241,6 +241,8 @@ const lottieAssetMap = {
   };
 
   const lottieMap = lottieAssetMap;
+  const PRE_NOTIFY_SECONDS = 5;
+  const SOUND_PRE_NOTIFY_ADVANCE_SECONDS = 1;
 
   let lottieInstance = null;
   let lottieQueue = [];
@@ -649,6 +651,10 @@ const lottieAssetMap = {
       const nextStep = computedSteps[currentIndex + 1];
       const remainingToNext = getRemainingToNext();
       const finalTime = computedSteps[computedSteps.length - 1].timeSec;
+      const preNotifySeconds =
+        state.notifyMode === 'sound'
+          ? PRE_NOTIFY_SECONDS + SOUND_PRE_NOTIFY_ADVANCE_SECONDS
+          : PRE_NOTIFY_SECONDS;
 
       const crossedStep = computedSteps.find(
         (step) => prevTime < step.timeSec && step.timeSec <= state.currentTime,
@@ -659,7 +665,7 @@ const lottieAssetMap = {
 
       if (
         nextStep &&
-        remainingToNext === 5 &&
+        remainingToNext === preNotifySeconds &&
         state.lastAnnouncedStep !== currentIndex + 1
       ) {
         state.lastAnnouncedStep = currentIndex + 1;
@@ -672,7 +678,7 @@ const lottieAssetMap = {
 
       if (
         !nextStep &&
-        finalTime - state.currentTime === 5 &&
+        finalTime - state.currentTime === preNotifySeconds &&
         !state.lastFinishAnnounced
       ) {
         state.lastFinishAnnounced = true;
