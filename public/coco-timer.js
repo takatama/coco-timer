@@ -171,12 +171,14 @@ const lottieAssetMap = {
     beansAmount: 20,
     flavor: 'neutral',
     lang: 'ja',
-    notifyMode: 'sound',
+    notifyMode: 'both',
     animation: true,
     voice: 'male',
     debugSpeed: 1,
     lastAnnouncedStep: -1,
+    lastAnnouncedStepSound: -1,
     lastFinishAnnounced: false,
+    lastFinishAnnouncedSound: false,
     overlayStepIndex: null,
     animationCountActive: false,
     animationCountStart: 0,
@@ -213,6 +215,7 @@ const lottieAssetMap = {
     notifyChoices: document.getElementById('notify-choices'),
     voiceChoices: document.getElementById('voice-choices'),
     debugChoices: document.getElementById('debug-choices'),
+    animationChoices: document.getElementById('animation-choices'),
     labelTimeline: document.getElementById('label-timeline'),
     labelSettings: document.getElementById('label-settings'),
     labelLanguage: document.getElementById('label-language'),
@@ -220,6 +223,7 @@ const lottieAssetMap = {
     labelNotifyHint: document.getElementById('label-notify-hint'),
     labelVoice: document.getElementById('label-voice'),
     labelDebug: document.getElementById('label-debug'),
+    labelAnimation: document.getElementById('label-animation'),
     labelDebugHint: document.getElementById('label-debug-hint'),
     saveSettings: document.getElementById('save-settings'),
     closeSettingsBtn: document.getElementById('close-settings'),
@@ -248,7 +252,7 @@ const lottieAssetMap = {
   const normalizeNotifyMode = (mode) => {
     if (mode === 'both') return 'both';
     if (mode === 'sound' || mode === 'vibrate' || mode === 'none') return mode;
-    return 'sound';
+    return 'both';
   };
 
   const notifyModeToFlags = (mode) => {
@@ -524,14 +528,12 @@ const lottieAssetMap = {
     }
   };
 
-  const triggerNotification = (isFinish) => {
-    triggerVibration('pre-step');
-    if (isSoundEnabled()) {
-      const audioEl = getAudio(isFinish ? 'finish' : 'next-step');
-      if (!audioEl) return;
-      audioEl.currentTime = 0;
-      audioEl.play().catch(() => {});
-    }
+  const triggerAudioNotification = (isFinish) => {
+    if (!isSoundEnabled()) return;
+    const audioEl = getAudio(isFinish ? 'finish' : 'next-step');
+    if (!audioEl) return;
+    audioEl.currentTime = 0;
+    audioEl.play().catch(() => {});
   };
 
   const buildLottieQueue = (actionType) => {
@@ -666,10 +668,8 @@ const lottieAssetMap = {
       const nextStep = computedSteps[currentIndex + 1];
       const remainingToNext = getRemainingToNext();
       const finalTime = computedSteps[computedSteps.length - 1].timeSec;
-      const preNotifySeconds =
-        state.notifyMode === 'sound'
-          ? PRE_NOTIFY_SECONDS + SOUND_PRE_NOTIFY_ADVANCE_SECONDS
-          : PRE_NOTIFY_SECONDS;
+      const notifyFlags = notifyModeToFlags(state.notifyMode);
+      const soundPreNotifySeconds = PRE_NOTIFY_SECONDS + SOUND_PRE_NOTIFY_ADVANCE_SECONDS;
 
       const crossedStep = computedSteps.find(
         (step) => prevTime < step.timeSec && step.timeSec <= state.currentTime,
@@ -680,12 +680,23 @@ const lottieAssetMap = {
 
       if (
         nextStep &&
-        remainingToNext === preNotifySeconds &&
+        notifyFlags.sound &&
+        remainingToNext === soundPreNotifySeconds &&
+        state.lastAnnouncedStepSound !== currentIndex + 1
+      ) {
+        state.lastAnnouncedStepSound = currentIndex + 1;
+        const isFinishStep = nextStep.actionType === 'none';
+        triggerAudioNotification(isFinishStep);
+      }
+
+      if (
+        nextStep &&
+        remainingToNext === PRE_NOTIFY_SECONDS &&
         state.lastAnnouncedStep !== currentIndex + 1
       ) {
         state.lastAnnouncedStep = currentIndex + 1;
         const isFinishStep = nextStep.actionType === 'none';
-        triggerNotification(isFinishStep);
+        triggerVibration('pre-step');
         if (!isFinishStep) {
           showOverlayForStep(nextStep, currentIndex + 1);
         }
@@ -693,11 +704,21 @@ const lottieAssetMap = {
 
       if (
         !nextStep &&
-        finalTime - state.currentTime === preNotifySeconds &&
+        notifyFlags.sound &&
+        finalTime - state.currentTime === soundPreNotifySeconds &&
+        !state.lastFinishAnnouncedSound
+      ) {
+        state.lastFinishAnnouncedSound = true;
+        triggerAudioNotification(true);
+      }
+
+      if (
+        !nextStep &&
+        finalTime - state.currentTime === PRE_NOTIFY_SECONDS &&
         !state.lastFinishAnnounced
       ) {
         state.lastFinishAnnounced = true;
-        triggerNotification(true);
+        triggerVibration('pre-step');
       }
 
       if (state.overlayStepIndex !== null) {
@@ -763,7 +784,9 @@ const lottieAssetMap = {
     pauseTimer();
     state.currentTime = 0;
     state.lastAnnouncedStep = -1;
+    state.lastAnnouncedStepSound = -1;
     state.lastFinishAnnounced = false;
+    state.lastFinishAnnouncedSound = false;
     state.overlayStepIndex = null;
     hideOverlay();
     releaseWakeLock();
@@ -788,6 +811,7 @@ const lottieAssetMap = {
     }
     setActive(elements.voiceChoices, state.voice);
     setActive(elements.debugChoices, state.debugSpeed === 5 ? 'x5' : 'off');
+    setActive(elements.animationChoices, state.animation ? 'on' : 'off');
   };
 
   const applyLanguage = () => {
@@ -805,6 +829,8 @@ const lottieAssetMap = {
     elements.labelVoice.textContent = state.lang === 'ja' ? '音声' : 'Voice';
     elements.labelDebug.textContent = t.debugTitle;
     elements.labelDebugHint.textContent = t.debugHint;
+    elements.labelAnimation.textContent =
+      state.lang === 'ja' ? 'アニメーション表示' : 'Animation';
     elements.playBtn.textContent = state.running ? t.pause : t.play;
     elements.resetBtn.textContent = t.reset;
     elements.labelNextStep.textContent = t.nextStep;
@@ -832,6 +858,12 @@ const lottieAssetMap = {
       if (btn.dataset.value === 'off') btn.textContent = t.debugOff;
       if (btn.dataset.value === 'x5') btn.textContent = t.debugX5;
     });
+
+    const animationButtons = elements.animationChoices.querySelectorAll('.choice');
+    animationButtons.forEach((btn) => {
+      if (btn.dataset.value === 'on') btn.textContent = t.animOn;
+      if (btn.dataset.value === 'off') btn.textContent = t.animOff;
+    });
   };
 
   const saveSettings = () => {
@@ -842,6 +874,7 @@ const lottieAssetMap = {
         notifyMode: state.notifyMode,
         voice: state.voice,
         debugSpeed: state.debugSpeed,
+        animation: state.animation,
       }),
     );
   };
@@ -857,6 +890,7 @@ const lottieAssetMap = {
       if (parsed.voice) state.voice = parsed.voice;
       if (typeof parsed.debugSpeed === 'number')
         state.debugSpeed = parsed.debugSpeed;
+      if (typeof parsed.animation === 'boolean') state.animation = parsed.animation;
     } catch {}
   };
 
@@ -947,6 +981,12 @@ const lottieAssetMap = {
 
     bindChoiceButtons(elements.debugChoices, (value) => {
       state.debugSpeed = value === 'x5' ? 5 : 1;
+      applySettingsUI();
+    });
+
+    bindChoiceButtons(elements.animationChoices, (value) => {
+      state.animation = value !== 'off';
+      if (!state.animation) hideOverlay();
       applySettingsUI();
     });
 

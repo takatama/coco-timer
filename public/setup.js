@@ -59,6 +59,8 @@ import { mountSharedLayout } from "./shared-layout.js";
     debugChoices: document.getElementById("debug-choices"),
     labelDebug: document.getElementById("label-debug"),
     labelDebugHint: document.getElementById("label-debug-hint"),
+    animationChoices: document.getElementById("animation-choices"),
+    labelAnimation: document.getElementById("label-animation"),
   };
 
   const description = {
@@ -135,7 +137,7 @@ import { mountSharedLayout } from "./shared-layout.js";
   const normalizeNotifyMode = (mode) => {
     if (mode === "both") return "both";
     if (mode === "sound" || mode === "vibrate" || mode === "none") return mode;
-    return "sound";
+    return "both";
   };
 
   const notifyModeToFlags = (mode) => {
@@ -206,6 +208,7 @@ import { mountSharedLayout } from "./shared-layout.js";
     elements.labelDebug.textContent = state.lang === "ja" ? "デバッグ" : "Debug";
     elements.labelDebugHint.textContent =
       state.lang === "ja" ? "タイマーを高速再生します" : "Speed up timer playback";
+    elements.labelAnimation.textContent = state.lang === "ja" ? "アニメーション表示" : "Animation";
     elements.saveSettings.textContent = state.lang === "ja" ? "保存" : "Save";
     elements.closeSettings.textContent = state.lang === "ja" ? "閉じる" : "Close";
 
@@ -225,6 +228,12 @@ import { mountSharedLayout } from "./shared-layout.js";
     debugButtons.forEach((btn) => {
       if (btn.dataset.value === "off") btn.textContent = state.lang === "ja" ? "オフ" : "Off";
       if (btn.dataset.value === "x5") btn.textContent = state.lang === "ja" ? "x5倍速" : "x5 Speed";
+    });
+
+    const animationButtons = elements.animationChoices.querySelectorAll(".choice");
+    animationButtons.forEach((btn) => {
+      if (btn.dataset.value === "on") btn.textContent = state.lang === "ja" ? "表示" : "Show";
+      if (btn.dataset.value === "off") btn.textContent = state.lang === "ja" ? "非表示" : "Hide";
     });
 
     const buttons = elements.flavorChoices.querySelectorAll(".choice");
@@ -262,13 +271,13 @@ import { mountSharedLayout } from "./shared-layout.js";
 
     const getSettings = () => {
       const raw = safeStorageGet("coco-timer-settings");
-      if (!raw) return { notifyMode: "sound", voice: "male", language: state.lang, debugSpeed: 1 };
+      if (!raw) return { notifyMode: "both", voice: "male", language: state.lang, debugSpeed: 1, animation: true };
       try {
         const parsed = JSON.parse(raw);
         parsed.notifyMode = normalizeNotifyMode(parsed.notifyMode);
         return parsed;
       } catch {
-        return { notifyMode: "sound", voice: "male", language: state.lang, debugSpeed: 1 };
+        return { notifyMode: "both", voice: "male", language: state.lang, debugSpeed: 1, animation: true };
       }
     };
 
@@ -285,6 +294,10 @@ import { mountSharedLayout } from "./shared-layout.js";
       });
       Array.from(elements.debugChoices.querySelectorAll(".choice")).forEach((btn) => {
         const selected = settings.debugSpeed === 5 ? "x5" : "off";
+        btn.classList.toggle("active", btn.dataset.value === selected);
+      });
+      Array.from(elements.animationChoices.querySelectorAll(".choice")).forEach((btn) => {
+        const selected = settings.animation === false ? "off" : "on";
         btn.classList.toggle("active", btn.dataset.value === selected);
       });
     };
@@ -361,6 +374,16 @@ import { mountSharedLayout } from "./shared-layout.js";
       const value = target.dataset.value;
       if (!value) return;
       settings.voice = value;
+      safeStorageSet("coco-timer-settings", JSON.stringify(settings));
+      applySettings(settings);
+    });
+
+    elements.animationChoices.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      const value = target.dataset.value;
+      if (!value) return;
+      settings.animation = value !== "off";
       safeStorageSet("coco-timer-settings", JSON.stringify(settings));
       applySettings(settings);
     });

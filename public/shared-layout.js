@@ -37,6 +37,13 @@ const buildSettingsModalMarkup = () => `
         </div>
       </div>
       <div class="settings-section">
+        <div class="settings-title" id="label-animation">アニメーション表示</div>
+        <div class="choice-row" id="animation-choices">
+          <button class="choice" data-value="on">表示</button>
+          <button class="choice" data-value="off">非表示</button>
+        </div>
+      </div>
+      <div class="settings-section">
         <div class="settings-title" id="label-debug">デバッグ</div>
         <div class="choice-row" id="debug-choices">
           <button class="choice" data-value="off">オフ</button>

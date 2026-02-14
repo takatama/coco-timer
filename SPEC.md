@@ -39,7 +39,7 @@
 - Intro (first-time only)
 - Setup (Beans + Flavor + Recipe details)
 - Timer (Main brewing screen)
-- Settings (language/notification/voice/debug)
+- Settings (language/notification/voice/animation/debug)
 
 ## 7. Core Screens
 ### 7.0 Intro Screen (First-time only)
@@ -73,9 +73,10 @@
 
 ### 7.3 Settings
 - Language (JA/EN)
-- Notifications: sound / vibrate / none
+- Notifications: multi-select sound / vibrate (default: both ON)
 - Voice: male / female
-- Debug: x5 speed
+- Animation: show / hide (default: show)
+- Debug: x5 speed (listed last)
 - No warning/annotation for OS-level haptics settings.
 
 ## 8. UI Components
@@ -85,10 +86,13 @@
 
 ## 9. Interaction & Feedback
 - 5 seconds before next step:
-  - Visual: animation card appears
+  - Visual: animation card appears (when Animation is ON)
   - Haptics: vibration (if enabled)
   - Audio: countdown voice (if enabled)
   - Animation card stays visible until step starts (0 seconds)
+- Notification defaults:
+  - Sound: ON
+  - Vibration: ON
 - Timer running:
   - Screen wake lock enabled
   - Status text shows “Screen will stay on”
