@@ -176,7 +176,9 @@ const lottieAssetMap = {
     voice: 'male',
     debugSpeed: 1,
     lastAnnouncedStep: -1,
+    lastAnnouncedStepSound: -1,
     lastFinishAnnounced: false,
+    lastFinishAnnouncedSound: false,
     overlayStepIndex: null,
     animationCountActive: false,
     animationCountStart: 0,
@@ -526,14 +528,12 @@ const lottieAssetMap = {
     }
   };
 
-  const triggerNotification = (isFinish) => {
-    triggerVibration('pre-step');
-    if (isSoundEnabled()) {
-      const audioEl = getAudio(isFinish ? 'finish' : 'next-step');
-      if (!audioEl) return;
-      audioEl.currentTime = 0;
-      audioEl.play().catch(() => {});
-    }
+  const triggerAudioNotification = (isFinish) => {
+    if (!isSoundEnabled()) return;
+    const audioEl = getAudio(isFinish ? 'finish' : 'next-step');
+    if (!audioEl) return;
+    audioEl.currentTime = 0;
+    audioEl.play().catch(() => {});
   };
 
   const buildLottieQueue = (actionType) => {
@@ -668,10 +668,8 @@ const lottieAssetMap = {
       const nextStep = computedSteps[currentIndex + 1];
       const remainingToNext = getRemainingToNext();
       const finalTime = computedSteps[computedSteps.length - 1].timeSec;
-      const preNotifySeconds =
-        notifyModeToFlags(state.notifyMode).sound
-          ? PRE_NOTIFY_SECONDS + SOUND_PRE_NOTIFY_ADVANCE_SECONDS
-          : PRE_NOTIFY_SECONDS;
+      const notifyFlags = notifyModeToFlags(state.notifyMode);
+      const soundPreNotifySeconds = PRE_NOTIFY_SECONDS + SOUND_PRE_NOTIFY_ADVANCE_SECONDS;
 
       const crossedStep = computedSteps.find(
         (step) => prevTime < step.timeSec && step.timeSec <= state.currentTime,
@@ -682,12 +680,23 @@ const lottieAssetMap = {
 
       if (
         nextStep &&
-        remainingToNext === preNotifySeconds &&
+        notifyFlags.sound &&
+        remainingToNext === soundPreNotifySeconds &&
+        state.lastAnnouncedStepSound !== currentIndex + 1
+      ) {
+        state.lastAnnouncedStepSound = currentIndex + 1;
+        const isFinishStep = nextStep.actionType === 'none';
+        triggerAudioNotification(isFinishStep);
+      }
+
+      if (
+        nextStep &&
+        remainingToNext === PRE_NOTIFY_SECONDS &&
         state.lastAnnouncedStep !== currentIndex + 1
       ) {
         state.lastAnnouncedStep = currentIndex + 1;
         const isFinishStep = nextStep.actionType === 'none';
-        triggerNotification(isFinishStep);
+        triggerVibration('pre-step');
         if (!isFinishStep) {
           showOverlayForStep(nextStep, currentIndex + 1);
         }
@@ -695,11 +704,21 @@ const lottieAssetMap = {
 
       if (
         !nextStep &&
-        finalTime - state.currentTime === preNotifySeconds &&
+        notifyFlags.sound &&
+        finalTime - state.currentTime === soundPreNotifySeconds &&
+        !state.lastFinishAnnouncedSound
+      ) {
+        state.lastFinishAnnouncedSound = true;
+        triggerAudioNotification(true);
+      }
+
+      if (
+        !nextStep &&
+        finalTime - state.currentTime === PRE_NOTIFY_SECONDS &&
         !state.lastFinishAnnounced
       ) {
         state.lastFinishAnnounced = true;
-        triggerNotification(true);
+        triggerVibration('pre-step');
       }
 
       if (state.overlayStepIndex !== null) {
@@ -765,7 +784,9 @@ const lottieAssetMap = {
     pauseTimer();
     state.currentTime = 0;
     state.lastAnnouncedStep = -1;
+    state.lastAnnouncedStepSound = -1;
     state.lastFinishAnnounced = false;
+    state.lastFinishAnnouncedSound = false;
     state.overlayStepIndex = null;
     hideOverlay();
     releaseWakeLock();
