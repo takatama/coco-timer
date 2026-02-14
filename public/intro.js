@@ -72,10 +72,34 @@ import { mountSharedLayout } from "./shared-layout.js";
     const stored = safeStorageGet("coco-timer-settings");
     if (stored) {
       try {
-        return JSON.parse(stored);
+        const parsed = JSON.parse(stored);
+        parsed.notifyMode = normalizeNotifyMode(parsed.notifyMode);
+        return parsed;
       } catch {}
     }
     return {};
+  };
+
+
+  const normalizeNotifyMode = (mode) => {
+    if (mode === "both") return "both";
+    if (mode === "sound" || mode === "vibrate" || mode === "none") return mode;
+    return "sound";
+  };
+
+  const notifyModeToFlags = (mode) => {
+    const normalized = normalizeNotifyMode(mode);
+    return {
+      sound: normalized === "sound" || normalized === "both",
+      vibrate: normalized === "vibrate" || normalized === "both",
+    };
+  };
+
+  const flagsToNotifyMode = ({ sound, vibrate }) => {
+    if (sound && vibrate) return "both";
+    if (sound) return "sound";
+    if (vibrate) return "vibrate";
+    return "none";
   };
 
   const defaultLang = getDefaultLang();
@@ -94,7 +118,8 @@ import { mountSharedLayout } from "./shared-layout.js";
     elements.labelSettings.textContent = lang === "ja" ? "設定" : "Settings";
     elements.labelLanguage.textContent = lang === "ja" ? "言語" : "Language";
     elements.labelNotify.textContent = lang === "ja" ? "通知" : "Notification";
-    elements.labelNotifyHint.textContent = lang === "ja" ? "5秒前に通知します" : "Notify 5 seconds before";
+    elements.labelNotifyHint.textContent =
+      lang === "ja" ? "5秒前に通知します（複数選択可）" : "Notify 5 seconds before (multiple selection)";
     elements.labelVoice.textContent = lang === "ja" ? "音声" : "Voice";
     elements.labelDebug.textContent = lang === "ja" ? "デバッグ" : "Debug";
     elements.labelDebugHint.textContent =
@@ -113,14 +138,16 @@ import { mountSharedLayout } from "./shared-layout.js";
     const lang = settings.language || settings.lang || defaultLang;
     setLang(lang);
     setActive(elements.langChoices, lang);
-    setActive(elements.notifyChoices, settings.notifyMode || "sound");
+    const notifyFlags = notifyModeToFlags(settings.notifyMode);
+    Array.from(elements.notifyChoices.querySelectorAll(".choice")).forEach((btn) => {
+      btn.classList.toggle("active", Boolean(notifyFlags[btn.dataset.value]));
+    });
     setActive(elements.voiceChoices, settings.voice || "male");
     setActive(elements.debugChoices, settings.debugSpeed === 5 ? "x5" : "off");
 
     elements.notifyChoices.querySelectorAll(".choice").forEach((btn) => {
       if (btn.dataset.value === "sound") btn.textContent = lang === "ja" ? "音声" : "Sound";
       if (btn.dataset.value === "vibrate") btn.textContent = lang === "ja" ? "バイブ" : "Vibrate";
-      if (btn.dataset.value === "none") btn.textContent = lang === "ja" ? "なし" : "None";
     });
     elements.voiceChoices.querySelectorAll(".choice").forEach((btn) => {
       if (btn.dataset.value === "male") btn.textContent = lang === "ja" ? "男性" : "Male";
@@ -161,7 +188,10 @@ import { mountSharedLayout } from "./shared-layout.js";
       const value = target.dataset.value;
       if (!value) return;
       const current = getSettings();
-      current.notifyMode = value;
+      const notifyFlags = notifyModeToFlags(current.notifyMode);
+      if (value !== "sound" && value !== "vibrate") return;
+      notifyFlags[value] = !notifyFlags[value];
+      current.notifyMode = flagsToNotifyMode(notifyFlags);
       saveSettings(current);
       applySettings(current);
     });

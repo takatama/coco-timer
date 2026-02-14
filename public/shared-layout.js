@@ -26,9 +26,8 @@ const buildSettingsModalMarkup = () => `
         <div class="choice-row" id="notify-choices">
           <button class="choice" data-value="sound">音声</button>
           <button class="choice" data-value="vibrate">バイブ</button>
-          <button class="choice" data-value="none">なし</button>
         </div>
-        <div class="hint" id="label-notify-hint">5秒前に通知します</div>
+        <div class="hint" id="label-notify-hint">5秒前に通知します（複数選択可）</div>
       </div>
       <div class="settings-section">
         <div class="settings-title" id="label-voice">音声</div>
