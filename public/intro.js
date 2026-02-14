@@ -66,6 +66,8 @@ import { mountSharedLayout } from "./shared-layout.js";
     labelVoice: document.getElementById("label-voice"),
     labelDebug: document.getElementById("label-debug"),
     labelDebugHint: document.getElementById("label-debug-hint"),
+    animationChoices: document.getElementById("animation-choices"),
+    labelAnimation: document.getElementById("label-animation"),
   };
 
   const getSettings = () => {
@@ -84,7 +86,7 @@ import { mountSharedLayout } from "./shared-layout.js";
   const normalizeNotifyMode = (mode) => {
     if (mode === "both") return "both";
     if (mode === "sound" || mode === "vibrate" || mode === "none") return mode;
-    return "sound";
+    return "both";
   };
 
   const notifyModeToFlags = (mode) => {
@@ -124,6 +126,7 @@ import { mountSharedLayout } from "./shared-layout.js";
     elements.labelDebug.textContent = lang === "ja" ? "デバッグ" : "Debug";
     elements.labelDebugHint.textContent =
       lang === "ja" ? "タイマーを高速再生します" : "Speed up timer playback";
+    elements.labelAnimation.textContent = lang === "ja" ? "アニメーション表示" : "Animation";
     elements.saveSettings.textContent = lang === "ja" ? "保存" : "Save";
     elements.closeSettings.textContent = lang === "ja" ? "閉じる" : "Close";
   };
@@ -144,6 +147,7 @@ import { mountSharedLayout } from "./shared-layout.js";
     });
     setActive(elements.voiceChoices, settings.voice || "male");
     setActive(elements.debugChoices, settings.debugSpeed === 5 ? "x5" : "off");
+    setActive(elements.animationChoices, settings.animation === false ? "off" : "on");
 
     elements.notifyChoices.querySelectorAll(".choice").forEach((btn) => {
       if (btn.dataset.value === "sound") btn.textContent = lang === "ja" ? "音声" : "Sound";
@@ -156,6 +160,10 @@ import { mountSharedLayout } from "./shared-layout.js";
     elements.debugChoices.querySelectorAll(".choice").forEach((btn) => {
       if (btn.dataset.value === "off") btn.textContent = lang === "ja" ? "オフ" : "Off";
       if (btn.dataset.value === "x5") btn.textContent = lang === "ja" ? "x5倍速" : "x5 Speed";
+    });
+    elements.animationChoices.querySelectorAll(".choice").forEach((btn) => {
+      if (btn.dataset.value === "on") btn.textContent = lang === "ja" ? "表示" : "Show";
+      if (btn.dataset.value === "off") btn.textContent = lang === "ja" ? "非表示" : "Hide";
     });
   };
 
@@ -203,6 +211,17 @@ import { mountSharedLayout } from "./shared-layout.js";
       if (!value) return;
       const current = getSettings();
       current.voice = value;
+      saveSettings(current);
+      applySettings(current);
+    });
+
+    elements.animationChoices.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      const value = target.dataset.value;
+      if (!value) return;
+      const current = getSettings();
+      current.animation = value !== "off";
       saveSettings(current);
       applySettings(current);
     });
