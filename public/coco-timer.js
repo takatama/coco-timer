@@ -458,7 +458,7 @@ const lottieAssetMap = {
     elements.stepMeta.textContent = `STEP ${currentIndex + 1} / ${computedSteps.length}`;
     elements.stepVerb.innerHTML = actionText(currentStep);
     elements.stepSub.innerHTML = subActionText(currentStep);
-    elements.remainingTime.textContent = formatTime(remainingToNext);
+    elements.remainingTime.textContent = formatTime(Math.max(0, Math.ceil(remainingToNext)));
     elements.remainingProgress.style.width = `${(progress * 100).toFixed(2)}%`;
     const isImminent = remainingToNext > 0 && remainingToNext <= 5;
     const card = document.getElementById('current-step-card');
