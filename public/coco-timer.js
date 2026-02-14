@@ -110,7 +110,6 @@ const lottieAssetMap = {
       close: '閉じる',
       notifySound: '音声',
       notifyVibrate: 'バイブ',
-      notifyNone: 'なし',
       animOn: '表示',
       animOff: '非表示',
       debugTitle: 'デバッグ',
@@ -145,7 +144,6 @@ const lottieAssetMap = {
       close: 'Close',
       notifySound: 'Sound',
       notifyVibrate: 'Vibrate',
-      notifyNone: 'None',
       animOn: 'Show',
       animOff: 'Hide',
       debugTitle: 'Debug',
@@ -246,6 +244,23 @@ const lottieAssetMap = {
 
   let lottieInstance = null;
   let lottieQueue = [];
+
+  const normalizeNotifyMode = (mode) => {
+    if (mode === 'both') return 'both';
+    if (mode === 'sound' || mode === 'vibrate' || mode === 'none') return mode;
+    return 'sound';
+  };
+
+  const notifyModeToFlags = (mode) => {
+    const normalized = normalizeNotifyMode(mode);
+    return {
+      sound: normalized === 'sound' || normalized === 'both',
+      vibrate: normalized === 'vibrate' || normalized === 'both',
+    };
+  };
+
+  const isSoundEnabled = () => notifyModeToFlags(state.notifyMode).sound;
+  const isVibrateEnabled = () => notifyModeToFlags(state.notifyMode).vibrate;
 
   const formatTime = (sec) => {
     const m = Math.floor(sec / 60);
@@ -499,7 +514,7 @@ const lottieAssetMap = {
   };
 
   const triggerVibration = (type) => {
-    if (state.notifyMode !== 'vibrate' || !navigator.vibrate) return;
+    if (!isVibrateEnabled() || !navigator.vibrate) return;
     if (type === 'pre-step') {
       navigator.vibrate(180);
       return;
@@ -511,7 +526,7 @@ const lottieAssetMap = {
 
   const triggerNotification = (isFinish) => {
     triggerVibration('pre-step');
-    if (state.notifyMode === 'sound') {
+    if (isSoundEnabled()) {
       const audioEl = getAudio(isFinish ? 'finish' : 'next-step');
       if (!audioEl) return;
       audioEl.currentTime = 0;
@@ -765,7 +780,12 @@ const lottieAssetMap = {
       });
     };
     setActive(elements.langChoices, state.lang);
-    setActive(elements.notifyChoices, state.notifyMode);
+    const notifyFlags = notifyModeToFlags(state.notifyMode);
+    if (elements.notifyChoices) {
+      Array.from(elements.notifyChoices.querySelectorAll('.choice')).forEach((btn) => {
+        btn.classList.toggle('active', Boolean(notifyFlags[btn.dataset.value]));
+      });
+    }
     setActive(elements.voiceChoices, state.voice);
     setActive(elements.debugChoices, state.debugSpeed === 5 ? 'x5' : 'off');
   };
@@ -780,7 +800,8 @@ const lottieAssetMap = {
       state.lang === 'ja' ? '言語' : 'Language';
     elements.labelNotify.textContent =
       state.lang === 'ja' ? '通知' : 'Notification';
-    elements.labelNotifyHint.textContent = t.notifyHint;
+    elements.labelNotifyHint.textContent =
+      state.lang === 'ja' ? '5秒前に通知します（複数選択可）' : 'Notify 5 seconds before (multiple selection)';
     elements.labelVoice.textContent = state.lang === 'ja' ? '音声' : 'Voice';
     elements.labelDebug.textContent = t.debugTitle;
     elements.labelDebugHint.textContent = t.debugHint;
@@ -796,7 +817,6 @@ const lottieAssetMap = {
     notifyButtons.forEach((btn) => {
       if (btn.dataset.value === 'sound') btn.textContent = t.notifySound;
       if (btn.dataset.value === 'vibrate') btn.textContent = t.notifyVibrate;
-      if (btn.dataset.value === 'none') btn.textContent = t.notifyNone;
     });
 
     const voiceButtons = elements.voiceChoices.querySelectorAll('.choice');
@@ -833,7 +853,7 @@ const lottieAssetMap = {
       const parsed = JSON.parse(raw);
       if (parsed.language) state.lang = parsed.language;
       if (parsed.lang) state.lang = parsed.lang;
-      if (parsed.notifyMode) state.notifyMode = parsed.notifyMode;
+      if (parsed.notifyMode) state.notifyMode = normalizeNotifyMode(parsed.notifyMode);
       if (parsed.voice) state.voice = parsed.voice;
       if (typeof parsed.debugSpeed === 'number')
         state.debugSpeed = parsed.debugSpeed;
@@ -911,7 +931,13 @@ const lottieAssetMap = {
       applySettingsUI();
     });
     bindChoiceButtons(elements.notifyChoices, (value) => {
-      state.notifyMode = value;
+      if (value !== 'sound' && value !== 'vibrate') return;
+      const notifyFlags = notifyModeToFlags(state.notifyMode);
+      notifyFlags[value] = !notifyFlags[value];
+      if (notifyFlags.sound && notifyFlags.vibrate) state.notifyMode = 'both';
+      else if (notifyFlags.sound) state.notifyMode = 'sound';
+      else if (notifyFlags.vibrate) state.notifyMode = 'vibrate';
+      else state.notifyMode = 'none';
       applySettingsUI();
     });
     bindChoiceButtons(elements.voiceChoices, (value) => {

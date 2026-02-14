@@ -132,6 +132,27 @@ import { mountSharedLayout } from "./shared-layout.js";
 
   const calcStrength = (total) => (total * 0.6) / 2;
 
+  const normalizeNotifyMode = (mode) => {
+    if (mode === "both") return "both";
+    if (mode === "sound" || mode === "vibrate" || mode === "none") return mode;
+    return "sound";
+  };
+
+  const notifyModeToFlags = (mode) => {
+    const normalized = normalizeNotifyMode(mode);
+    return {
+      sound: normalized === "sound" || normalized === "both",
+      vibrate: normalized === "vibrate" || normalized === "both",
+    };
+  };
+
+  const flagsToNotifyMode = ({ sound, vibrate }) => {
+    if (sound && vibrate) return "both";
+    if (sound) return "sound";
+    if (vibrate) return "vibrate";
+    return "none";
+  };
+
   const computeSteps = () => {
     const total = Math.round(state.beans * state.waterRatio);
     const increments = [
@@ -180,7 +201,7 @@ import { mountSharedLayout } from "./shared-layout.js";
     elements.labelLanguage.textContent = state.lang === "ja" ? "言語" : "Language";
     elements.labelNotify.textContent = state.lang === "ja" ? "通知" : "Notification";
     elements.labelNotifyHint.textContent =
-      state.lang === "ja" ? "5秒前に通知します" : "Notify 5 seconds before";
+      state.lang === "ja" ? "5秒前に通知します（複数選択可）" : "Notify 5 seconds before (multiple selection)";
     elements.labelVoice.textContent = state.lang === "ja" ? "音声" : "Voice";
     elements.labelDebug.textContent = state.lang === "ja" ? "デバッグ" : "Debug";
     elements.labelDebugHint.textContent =
@@ -192,7 +213,6 @@ import { mountSharedLayout } from "./shared-layout.js";
     notifyButtons.forEach((btn) => {
       if (btn.dataset.value === "sound") btn.textContent = state.lang === "ja" ? "音声" : "Sound";
       if (btn.dataset.value === "vibrate") btn.textContent = state.lang === "ja" ? "バイブ" : "Vibrate";
-      if (btn.dataset.value === "none") btn.textContent = state.lang === "ja" ? "なし" : "None";
     });
 
     const voiceButtons = elements.voiceChoices.querySelectorAll(".choice");
@@ -244,7 +264,9 @@ import { mountSharedLayout } from "./shared-layout.js";
       const raw = safeStorageGet("coco-timer-settings");
       if (!raw) return { notifyMode: "sound", voice: "male", language: state.lang, debugSpeed: 1 };
       try {
-        return JSON.parse(raw);
+        const parsed = JSON.parse(raw);
+        parsed.notifyMode = normalizeNotifyMode(parsed.notifyMode);
+        return parsed;
       } catch {
         return { notifyMode: "sound", voice: "male", language: state.lang, debugSpeed: 1 };
       }
@@ -254,8 +276,9 @@ import { mountSharedLayout } from "./shared-layout.js";
       Array.from(elements.langChoices.querySelectorAll(".choice")).forEach((btn) => {
         btn.classList.toggle("active", btn.dataset.value === state.lang);
       });
+      const notifyFlags = notifyModeToFlags(settings.notifyMode);
       Array.from(elements.notifyChoices.querySelectorAll(".choice")).forEach((btn) => {
-        btn.classList.toggle("active", btn.dataset.value === settings.notifyMode);
+        btn.classList.toggle("active", Boolean(notifyFlags[btn.dataset.value]));
       });
       Array.from(elements.voiceChoices.querySelectorAll(".choice")).forEach((btn) => {
         btn.classList.toggle("active", btn.dataset.value === settings.voice);
@@ -324,7 +347,10 @@ import { mountSharedLayout } from "./shared-layout.js";
       if (!(target instanceof HTMLElement)) return;
       const value = target.dataset.value;
       if (!value) return;
-      settings.notifyMode = value;
+      const notifyFlags = notifyModeToFlags(settings.notifyMode);
+      if (value !== "sound" && value !== "vibrate") return;
+      notifyFlags[value] = !notifyFlags[value];
+      settings.notifyMode = flagsToNotifyMode(notifyFlags);
       safeStorageSet("coco-timer-settings", JSON.stringify(settings));
       applySettings(settings);
     });
