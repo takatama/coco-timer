@@ -189,6 +189,7 @@ const lottieAssetMap = {
     wakeLock: null,
     keepScreenOn: false,
     startDelayTimeoutId: null,
+    lastTickTimestamp: null,
   };
 
   const elements = {
@@ -245,6 +246,7 @@ const lottieAssetMap = {
   const lottieMap = lottieAssetMap;
   const PRE_NOTIFY_SECONDS = 5;
   const SOUND_PRE_NOTIFY_ADVANCE_SECONDS = 1;
+  const TICK_INTERVAL_MS = 100;
 
   let lottieInstance = null;
   let lottieQueue = [];
@@ -457,7 +459,7 @@ const lottieAssetMap = {
     elements.stepVerb.innerHTML = actionText(currentStep);
     elements.stepSub.innerHTML = subActionText(currentStep);
     elements.remainingTime.textContent = formatTime(remainingToNext);
-    elements.remainingProgress.style.width = `${Math.round(progress * 100)}%`;
+    elements.remainingProgress.style.width = `${(progress * 100).toFixed(2)}%`;
     const isImminent = remainingToNext > 0 && remainingToNext <= 5;
     const card = document.getElementById('current-step-card');
     card.classList.toggle('imminent', isImminent);
@@ -660,28 +662,36 @@ const lottieAssetMap = {
 
   const tick = () => {
     if (!state.running) return;
+    const now = performance.now();
+    const prevTime = state.currentTime;
+    if (state.lastTickTimestamp === null) {
+      state.lastTickTimestamp = now;
+    }
+    const elapsedSec = Math.max(0, (now - state.lastTickTimestamp) / 1000);
+    state.lastTickTimestamp = now;
     const speed = Math.max(1, state.debugSpeed);
-    for (let i = 0; i < speed; i += 1) {
-      const prevTime = state.currentTime;
-      state.currentTime += 1;
-      const currentIndex = getCurrentStepIndex();
-      const nextStep = computedSteps[currentIndex + 1];
-      const remainingToNext = getRemainingToNext();
-      const finalTime = computedSteps[computedSteps.length - 1].timeSec;
-      const notifyFlags = notifyModeToFlags(state.notifyMode);
-      const soundPreNotifySeconds = PRE_NOTIFY_SECONDS + SOUND_PRE_NOTIFY_ADVANCE_SECONDS;
+    const finalTime = computedSteps[computedSteps.length - 1].timeSec;
+    state.currentTime = Math.min(finalTime, state.currentTime + elapsedSec * speed);
 
-      const crossedStep = computedSteps.find(
-        (step) => prevTime < step.timeSec && step.timeSec <= state.currentTime,
-      );
-      if (crossedStep) {
-        triggerVibration('step-change');
-      }
+    const currentIndex = getCurrentStepIndex();
+    const nextStep = computedSteps[currentIndex + 1];
+    const notifyFlags = notifyModeToFlags(state.notifyMode);
+    const soundPreNotifySeconds = PRE_NOTIFY_SECONDS + SOUND_PRE_NOTIFY_ADVANCE_SECONDS;
 
+    const crossedStep = computedSteps.find(
+      (step) => prevTime < step.timeSec && step.timeSec <= state.currentTime,
+    );
+    if (crossedStep) {
+      triggerVibration('step-change');
+    }
+
+    if (nextStep) {
+      const prevRemainingToNext = nextStep.timeSec - prevTime;
+      const remainingToNext = nextStep.timeSec - state.currentTime;
       if (
-        nextStep &&
         notifyFlags.sound &&
-        remainingToNext === soundPreNotifySeconds &&
+        prevRemainingToNext > soundPreNotifySeconds &&
+        remainingToNext <= soundPreNotifySeconds &&
         state.lastAnnouncedStepSound !== currentIndex + 1
       ) {
         state.lastAnnouncedStepSound = currentIndex + 1;
@@ -690,8 +700,8 @@ const lottieAssetMap = {
       }
 
       if (
-        nextStep &&
-        remainingToNext === PRE_NOTIFY_SECONDS &&
+        prevRemainingToNext > PRE_NOTIFY_SECONDS &&
+        remainingToNext <= PRE_NOTIFY_SECONDS &&
         state.lastAnnouncedStep !== currentIndex + 1
       ) {
         state.lastAnnouncedStep = currentIndex + 1;
@@ -701,11 +711,13 @@ const lottieAssetMap = {
           showOverlayForStep(nextStep, currentIndex + 1);
         }
       }
-
+    } else {
+      const prevRemainingToFinish = finalTime - prevTime;
+      const remainingToFinish = finalTime - state.currentTime;
       if (
-        !nextStep &&
         notifyFlags.sound &&
-        finalTime - state.currentTime === soundPreNotifySeconds &&
+        prevRemainingToFinish > soundPreNotifySeconds &&
+        remainingToFinish <= soundPreNotifySeconds &&
         !state.lastFinishAnnouncedSound
       ) {
         state.lastFinishAnnouncedSound = true;
@@ -713,28 +725,29 @@ const lottieAssetMap = {
       }
 
       if (
-        !nextStep &&
-        finalTime - state.currentTime === PRE_NOTIFY_SECONDS &&
+        prevRemainingToFinish > PRE_NOTIFY_SECONDS &&
+        remainingToFinish <= PRE_NOTIFY_SECONDS &&
         !state.lastFinishAnnounced
       ) {
         state.lastFinishAnnounced = true;
         triggerVibration('pre-step');
       }
+    }
 
-      if (state.overlayStepIndex !== null) {
-        const overlayStep = computedSteps[state.overlayStepIndex];
-        if (overlayStep && state.currentTime >= overlayStep.timeSec) {
-          hideOverlay();
-        }
-      }
-
-      if (state.currentTime >= finalTime) {
-        state.running = false;
-        clearInterval(state.intervalId);
-        state.intervalId = null;
-        break;
+    if (state.overlayStepIndex !== null) {
+      const overlayStep = computedSteps[state.overlayStepIndex];
+      if (overlayStep && state.currentTime >= overlayStep.timeSec) {
+        hideOverlay();
       }
     }
+
+    if (state.currentTime >= finalTime) {
+      state.running = false;
+      clearInterval(state.intervalId);
+      state.intervalId = null;
+      state.lastTickTimestamp = null;
+    }
+
     updateMainCard();
     updateTimeline();
     updateCompleteScreen();
@@ -744,9 +757,10 @@ const lottieAssetMap = {
     if (state.running) return;
     const beginCountdown = () => {
       state.running = true;
+      state.lastTickTimestamp = performance.now();
       elements.playBtn.textContent = texts[state.lang].pause;
       requestWakeLock();
-      state.intervalId = setInterval(tick, 1000);
+      state.intervalId = setInterval(tick, TICK_INTERVAL_MS);
     };
 
     if (state.currentTime === 0 && state.animation) {
@@ -758,7 +772,8 @@ const lottieAssetMap = {
         state.startDelayTimeoutId = null;
         if (!state.running) return;
         hideOverlay();
-        state.intervalId = setInterval(tick, 1000);
+        state.lastTickTimestamp = performance.now();
+        state.intervalId = setInterval(tick, TICK_INTERVAL_MS);
       }, 5000);
       return;
     }
@@ -778,6 +793,7 @@ const lottieAssetMap = {
       clearInterval(state.intervalId);
       state.intervalId = null;
     }
+    state.lastTickTimestamp = null;
   };
 
   const resetTimer = () => {
