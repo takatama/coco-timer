@@ -43,7 +43,7 @@
         <button class="btn-primary" id="start-btn">タイマーを開始</button>
 
         <details class="card" id="recipe-details">
-          <summary id="label-details">レシピの説明</summary>
+          <summary class="details-summary"><span id="label-details">レシピの説明</span><span class="details-summary-link" id="recipe-details-link">詳細</span></summary>
           <div class="details-body">
             <img
               class="details-image"
@@ -71,11 +71,22 @@
           </div>
         </details>
 
+        <section class="card equipment-card" aria-labelledby="label-equipment">
+          <div class="equipment-header">
+            <h2 class="card-title equipment-title" id="label-equipment">必要な器具</h2>
+          </div>
+          <ul class="equipment-list" id="equipment-list"></ul>
+        </section>
+
         <section class="card">
           <div class="card-title" id="label-steps">ステップごとの湯量</div>
           <div class="hint" id="total-water">合計: 300g</div>
           <div class="step-list" id="step-list"></div>
         </section>
+
+        <p class="affiliate-note" id="affiliate-note">
+          Amazonのアソシエイトとして、COCO Timerは適格販売により収入を得ています。
+        </p>
       </main>
     </div>
 
