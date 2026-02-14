@@ -41,6 +41,7 @@ import { mountSharedLayout } from "./shared-layout.js";
     startBtn: document.getElementById("start-btn"),
     detailsText: document.getElementById("details-text"),
     detailsLabel: document.getElementById("label-details"),
+    recipeDetails: document.getElementById("recipe-details"),
     labelEquipment: document.getElementById("label-equipment"),
     equipmentList: document.getElementById("equipment-list"),
     recipeDetailsLink: document.getElementById("recipe-details-link"),
@@ -102,6 +103,7 @@ import { mountSharedLayout } from "./shared-layout.js";
       details: "レシピの説明",
       equipment: "必要な器具",
       detailsAction: "見る",
+      closeAction: "閉じる",
       affiliate: "Amazonのアソシエイトとして、COCO Timerは適格販売により収入を得ています。",
     },
     en: {
@@ -116,6 +118,7 @@ import { mountSharedLayout } from "./shared-layout.js";
       details: "Recipe details",
       equipment: "Required gear",
       detailsAction: "View",
+      closeAction: "Close",
       affiliate: "As an Amazon Associate, COCO Timer earns from qualifying purchases.",
     },
   };
@@ -225,7 +228,9 @@ import { mountSharedLayout } from "./shared-layout.js";
     elements.equipmentList.innerHTML = equipmentItems;
     elements.detailsLabel.textContent = t.details;
     elements.labelEquipment.textContent = t.equipment;
-    elements.recipeDetailsLink.textContent = t.detailsAction;
+    const detailsIsOpen = elements.recipeDetails instanceof HTMLDetailsElement && elements.recipeDetails.open;
+    elements.recipeDetailsLink.textContent = detailsIsOpen ? t.closeAction : t.detailsAction;
+    elements.recipeDetailsLink.setAttribute("aria-label", detailsIsOpen ? t.closeAction : t.detailsAction);
     elements.affiliateNote.textContent = t.affiliate;
     elements.labelBeans.textContent = t.beans;
     elements.labelFlavor.textContent = t.flavor;
@@ -365,6 +370,15 @@ import { mountSharedLayout } from "./shared-layout.js";
       });
       window.location.href = `${getBasePath()}coco-timer.html?${params.toString()}`;
     });
+
+    if (elements.recipeDetails instanceof HTMLDetailsElement) {
+      elements.recipeDetails.addEventListener("toggle", () => {
+        const t = labels[state.lang];
+        const detailsIsOpen = elements.recipeDetails.open;
+        elements.recipeDetailsLink.textContent = detailsIsOpen ? t.closeAction : t.detailsAction;
+        elements.recipeDetailsLink.setAttribute("aria-label", detailsIsOpen ? t.closeAction : t.detailsAction);
+      });
+    }
 
     elements.openSettings.addEventListener("click", () => {
       elements.settingsModal.classList.add("active");
