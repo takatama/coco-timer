@@ -41,6 +41,11 @@ import { mountSharedLayout } from "./shared-layout.js";
     startBtn: document.getElementById("start-btn"),
     detailsText: document.getElementById("details-text"),
     detailsLabel: document.getElementById("label-details"),
+    recipeDetails: document.getElementById("recipe-details"),
+    labelEquipment: document.getElementById("label-equipment"),
+    equipmentList: document.getElementById("equipment-list"),
+    recipeDetailsLink: document.getElementById("recipe-details-link"),
+    affiliateNote: document.getElementById("affiliate-note"),
     labelBeans: document.getElementById("label-beans"),
     labelFlavor: document.getElementById("label-flavor"),
     labelSteps: document.getElementById("label-steps"),
@@ -69,6 +74,21 @@ import { mountSharedLayout } from "./shared-layout.js";
     en:
       "Tetsu Kasaya’s evolved hybrid recipe for the Hario Switch brilliantly combines the best of both worlds. It begins with a full-immersion bloom to draw out deep sweetness, shifts to a pour-over to highlight aromatic notes, and finishes with a cool immersion that smooths the cup. The result is a coffee with a robust body, exquisite sweetness, and crystal-clear flavor.",
   };
+  const equipment = {
+    ja: [
+      { name: "Hario Switch", href: "https://www.amazon.co.jp/s?k=Hario+Switch&tag=tktm-22" },
+      { name: "V60 02 フィルター", href: "https://www.amazon.co.jp/s?k=V60+02+フィルター&tag=tktm-22" },
+      { name: "スケール", href: "https://www.amazon.co.jp/s?k=コーヒー+スケール&tag=tktm-22" },
+      { name: "ケトル", href: "https://www.amazon.co.jp/s?k=コーヒー+ケトル&tag=tktm-22" },
+    ],
+    en: [
+      { name: "Hario Switch", href: "https://www.amazon.com/s?k=Hario+Switch&tag=tktm-20" },
+      { name: "V60 02 Filters", href: "https://www.amazon.com/s?k=V60+02+filters&tag=tktm-20" },
+      { name: "Coffee Scale", href: "https://www.amazon.com/s?k=coffee+scale&tag=tktm-20" },
+      { name: "Pour-over Kettle", href: "https://www.amazon.com/s?k=pour+over+kettle&tag=tktm-20" },
+    ],
+  };
+
 
   const labels = {
     ja: {
@@ -81,6 +101,10 @@ import { mountSharedLayout } from "./shared-layout.js";
       steps: "ステップごとの湯量",
       start: "タイマーを開始",
       details: "レシピの説明",
+      equipment: "必要な器具",
+      detailsAction: "見る",
+      closeAction: "閉じる",
+      affiliate: "Amazonのアソシエイトとして、COCO Timerは適格販売により収入を得ています。",
     },
     en: {
       beans: "Beans",
@@ -92,6 +116,10 @@ import { mountSharedLayout } from "./shared-layout.js";
       steps: "Water per step",
       start: "Start Timer",
       details: "Recipe details",
+      equipment: "Required gear",
+      detailsAction: "View",
+      closeAction: "Close",
+      affiliate: "As an Amazon Associate, COCO Timer earns from qualifying purchases.",
     },
   };
 
@@ -193,7 +221,17 @@ import { mountSharedLayout } from "./shared-layout.js";
       .join("");
 
     elements.detailsText.textContent = description[state.lang];
+    const equipmentItems = (equipment[state.lang] || equipment.ja)
+      .slice(0, 4)
+      .map((item) => `<li><a href="${item.href}" target="_blank" rel="noopener noreferrer sponsored">${item.name}</a></li>`)
+      .join("");
+    elements.equipmentList.innerHTML = equipmentItems;
     elements.detailsLabel.textContent = t.details;
+    elements.labelEquipment.textContent = t.equipment;
+    const detailsIsOpen = elements.recipeDetails instanceof HTMLDetailsElement && elements.recipeDetails.open;
+    elements.recipeDetailsLink.textContent = detailsIsOpen ? t.closeAction : t.detailsAction;
+    elements.recipeDetailsLink.setAttribute("aria-label", detailsIsOpen ? t.closeAction : t.detailsAction);
+    elements.affiliateNote.textContent = t.affiliate;
     elements.labelBeans.textContent = t.beans;
     elements.labelFlavor.textContent = t.flavor;
     elements.labelSteps.textContent = t.steps;
@@ -333,6 +371,15 @@ import { mountSharedLayout } from "./shared-layout.js";
       window.location.href = `${getBasePath()}coco-timer.html?${params.toString()}`;
     });
 
+    if (elements.recipeDetails instanceof HTMLDetailsElement) {
+      elements.recipeDetails.addEventListener("toggle", () => {
+        const t = labels[state.lang];
+        const detailsIsOpen = elements.recipeDetails.open;
+        elements.recipeDetailsLink.textContent = detailsIsOpen ? t.closeAction : t.detailsAction;
+        elements.recipeDetailsLink.setAttribute("aria-label", detailsIsOpen ? t.closeAction : t.detailsAction);
+      });
+    }
+
     elements.openSettings.addEventListener("click", () => {
       elements.settingsModal.classList.add("active");
     });
@@ -401,3 +448,4 @@ import { mountSharedLayout } from "./shared-layout.js";
 
   init();
 })();
+

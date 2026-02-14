@@ -117,7 +117,7 @@ body {
   padding: 8px 12px;
   border-radius: 999px;
   cursor: pointer;
-  background: #fff;
+  background: var(--md-surface-2);
 }
 
 .choice.active {
@@ -134,16 +134,33 @@ body {
 
 .step-list {
   display: grid;
-  gap: 8px;
+  border: 1px solid var(--md-outline);
+  border-radius: 12px;
+  background: var(--md-surface-2);
+  overflow: hidden;
 }
 
 .step-item {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  column-gap: 8px;
   font-size: 0.95rem;
-  background: var(--md-surface-2);
-  padding: 8px 10px;
-  border-radius: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--md-outline);
+}
+
+.step-item:last-child {
+  border-bottom: none;
+}
+
+.step-item span:first-child {
+  color: var(--md-text-muted);
+}
+
+.step-item span:last-child {
+  font-weight: 600;
+  color: var(--md-text);
 }
 
 .btn-primary {
@@ -211,6 +228,23 @@ details.card summary::-webkit-details-marker {
   display: none;
 }
 
+
+details.card .details-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.details-summary-link {
+  color: var(--md-text-muted);
+  border: 1px solid var(--md-outline);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
 .details-body {
   margin-top: 12px;
   display: grid;
@@ -245,4 +279,52 @@ details.card summary::-webkit-details-marker {
   width: 100%;
   height: 100%;
   border: 0;
+}
+
+.equipment-card {
+  padding-block: 12px;
+}
+
+.equipment-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.equipment-title {
+  margin: 0;
+}
+
+
+.equipment-list {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.equipment-list li {
+  background: var(--md-surface-2);
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 0.85rem;
+}
+
+.equipment-list a {
+  color: var(--md-text);
+  text-decoration: none;
+}
+
+.equipment-list a:hover {
+  text-decoration: underline;
+}
+
+.affiliate-note {
+  margin: -4px 2px 8px;
+  font-size: 0.72rem;
+  color: var(--md-text-muted);
+  line-height: 1.4;
 }
