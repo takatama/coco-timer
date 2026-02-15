@@ -127,6 +127,8 @@ const lottieAssetMap = {
       coolTo: '70℃まで下げる',
       finishLabel: '完成',
       waitLabel: '待つ',
+      coffeeTopicLabel: '今日のコーヒーネタ',
+      sponsoredLabel: 'おすすめ（広告）',
     },
     en: {
       currentStep: 'Current Step',
@@ -161,6 +163,8 @@ const lottieAssetMap = {
       coolTo: 'Cool to 70℃',
       finishLabel: 'FINISH',
       waitLabel: 'WAIT',
+      coffeeTopicLabel: "Today's coffee topic",
+      sponsoredLabel: 'Recommended (Sponsored)',
     },
   };
 
@@ -190,6 +194,7 @@ const lottieAssetMap = {
     keepScreenOn: false,
     startDelayTimeoutId: null,
     lastTickTimestamp: null,
+    currentRecommendation: null,
   };
 
   const elements = {
@@ -233,6 +238,10 @@ const lottieAssetMap = {
     timelineCard: document.getElementById('timeline-card'),
     controlsCard: document.getElementById('controls-card'),
     screenStatus: document.getElementById('screen-status'),
+    finishRecommendation: document.getElementById('finish-recommendation'),
+    finishRecommendationLabel: document.getElementById('finish-recommendation-label'),
+    finishRecommendationLink: document.getElementById('finish-recommendation-link'),
+    finishRecommendationNote: document.getElementById('finish-recommendation-note'),
   };
 
   const getAudio = (type) => {
@@ -486,6 +495,83 @@ const lottieAssetMap = {
         : `Beans ${state.beansAmount}g / Flavor ${flavorLabel} / Water ${getTotalWater()}g`;
   };
 
+  const finishRecommendations = {
+    affiliate: {
+      ja: [
+        {
+          title: 'ハリオ V60用 ペーパーフィルター（消耗品の補充）',
+          url: 'https://www.hario.com/product/coffee/filter/',
+          note: '抽出が安定しやすい定番フィルターです。',
+        },
+        {
+          title: '女影珈琲 グアテマラ・オリエンテナチュラル',
+          url: 'https://onakagecafe.base.shop/items/65075672',
+          note: '華やかな香りと甘さが出やすい、ハイブリッド抽出向きの豆。',
+        },
+      ],
+      en: [
+        {
+          title: 'Restock: HARIO V60 Paper Filters',
+          url: 'https://www.hario.com/product/coffee/filter/',
+          note: 'A practical consumable to keep your brew routine smooth.',
+        },
+      ],
+    },
+    content: {
+      ja: [
+        {
+          title: 'GIGAZINE コーヒーネタ：最新の記事をチェック',
+          url: 'https://gigazine.net/news/C16/',
+          note: '普段は読み物系を表示し、たまにおすすめ商品を差し込みます。',
+        },
+        {
+          title: 'GIGAZINEのコーヒー関連記事（ランダムで読む）',
+          url: 'https://gigazine.net/search?search=%E3%82%B3%E3%83%BC%E3%83%92%E3%83%BC',
+          note: 'ちょっとした話題づくり用のコンテンツ枠です。',
+        },
+      ],
+      en: [
+        {
+          title: 'Coffee reads from GIGAZINE',
+          url: 'https://gigazine.net/news/C16/',
+          note: 'Most sessions show content; recommendations appear occasionally.',
+        },
+      ],
+    },
+  };
+
+  const pickRandom = (items) => {
+    if (!Array.isArray(items) || items.length === 0) return null;
+    return items[Math.floor(Math.random() * items.length)] || null;
+  };
+
+  const pickFinishRecommendation = () => {
+    const lang = state.lang === 'ja' ? 'ja' : 'en';
+    const showAffiliate = Math.random() < 0.25;
+    const bucket = showAffiliate ? 'affiliate' : 'content';
+    const picked = pickRandom(finishRecommendations[bucket][lang]);
+    if (!picked) return null;
+    return { ...picked, sponsored: bucket === 'affiliate' };
+  };
+
+  const renderFinishRecommendation = () => {
+    const box = elements.finishRecommendation;
+    if (!box) return;
+    const rec = state.currentRecommendation;
+    if (!rec) {
+      box.hidden = true;
+      return;
+    }
+    const t = texts[state.lang];
+    elements.finishRecommendationLabel.textContent = rec.sponsored
+      ? t.sponsoredLabel
+      : t.coffeeTopicLabel;
+    elements.finishRecommendationLink.textContent = rec.title;
+    elements.finishRecommendationLink.href = rec.url;
+    elements.finishRecommendationNote.textContent = rec.note || '';
+    box.hidden = false;
+  };
+
   const updateCompleteScreen = () => {
     const finalTime = computedSteps[computedSteps.length - 1].timeSec;
     const isComplete = state.currentTime >= finalTime;
@@ -493,7 +579,14 @@ const lottieAssetMap = {
       hideOverlay();
       elements.playBtn.textContent = texts[state.lang].play;
       releaseWakeLock();
+      if (!state.currentRecommendation) {
+        state.currentRecommendation = pickFinishRecommendation();
+      }
+      renderFinishRecommendation();
+      return;
     }
+    state.currentRecommendation = null;
+    renderFinishRecommendation();
   };
 
   const requestWakeLock = async () => {
@@ -805,6 +898,7 @@ const lottieAssetMap = {
     state.lastFinishAnnouncedSound = false;
     state.overlayStepIndex = null;
     hideOverlay();
+    state.currentRecommendation = null;
     releaseWakeLock();
     updateMainCard();
     updateTimeline();
@@ -854,6 +948,7 @@ const lottieAssetMap = {
     elements.closeSettingsBtn.textContent = t.close;
     elements.screenStatus.textContent =
       state.lang === 'ja' ? '画面はオンのままです' : 'Screen will stay on';
+    renderFinishRecommendation();
 
     const notifyButtons = elements.notifyChoices.querySelectorAll('.choice');
     notifyButtons.forEach((btn) => {

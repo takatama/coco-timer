@@ -148,6 +148,38 @@ body {
   font-weight: 700;
 }
 
+
+.finish-recommendation {
+  margin: 6px 0 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid #e8dbc8;
+  background: #fff9ef;
+}
+
+.finish-recommendation-label {
+  font-size: 0.72rem;
+  color: var(--md-text-muted);
+  letter-spacing: 0.4px;
+  margin-bottom: 4px;
+}
+
+.finish-recommendation-link {
+  color: var(--md-primary);
+  font-weight: 700;
+  line-height: 1.4;
+  text-decoration: none;
+}
+
+.finish-recommendation-link:hover {
+  text-decoration: underline;
+}
+
+.finish-recommendation-note {
+  font-size: 0.78rem;
+  color: var(--md-text-muted);
+  margin-top: 4px;
+}
 .step-time {
   font-size: 2rem;
   font-weight: 700;
