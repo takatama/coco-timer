@@ -245,7 +245,6 @@ const lottieAssetMap = {
 
   const lottieMap = lottieAssetMap;
   const PRE_NOTIFY_SECONDS = 5;
-  const SOUND_PRE_NOTIFY_ADVANCE_SECONDS = 1;
   const TICK_INTERVAL_MS = 100;
 
   let lottieInstance = null;
@@ -676,8 +675,6 @@ const lottieAssetMap = {
     const currentIndex = getCurrentStepIndex();
     const nextStep = computedSteps[currentIndex + 1];
     const notifyFlags = notifyModeToFlags(state.notifyMode);
-    const soundPreNotifySeconds = PRE_NOTIFY_SECONDS + SOUND_PRE_NOTIFY_ADVANCE_SECONDS;
-
     const crossedStep = computedSteps.find(
       (step) => prevTime < step.timeSec && step.timeSec <= state.currentTime,
     );
@@ -690,8 +687,8 @@ const lottieAssetMap = {
       const remainingToNext = nextStep.timeSec - state.currentTime;
       if (
         notifyFlags.sound &&
-        prevRemainingToNext > soundPreNotifySeconds &&
-        remainingToNext <= soundPreNotifySeconds &&
+        prevRemainingToNext > PRE_NOTIFY_SECONDS &&
+        remainingToNext <= PRE_NOTIFY_SECONDS &&
         state.lastAnnouncedStepSound !== currentIndex + 1
       ) {
         state.lastAnnouncedStepSound = currentIndex + 1;
@@ -716,8 +713,8 @@ const lottieAssetMap = {
       const remainingToFinish = finalTime - state.currentTime;
       if (
         notifyFlags.sound &&
-        prevRemainingToFinish > soundPreNotifySeconds &&
-        remainingToFinish <= soundPreNotifySeconds &&
+        prevRemainingToFinish > PRE_NOTIFY_SECONDS &&
+        remainingToFinish <= PRE_NOTIFY_SECONDS &&
         !state.lastFinishAnnouncedSound
       ) {
         state.lastFinishAnnouncedSound = true;
