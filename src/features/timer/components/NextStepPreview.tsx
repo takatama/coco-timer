@@ -1,0 +1,120 @@
+import { useTranslation } from "react-i18next";
+import type { ComputedStep } from "../../recipe/types";
+import { LottiePlayer, buildLottieQueue } from "../../../shared/components/LottiePlayer";
+import { useEffect, useRef, useState } from "react";
+
+interface Props {
+  step: ComputedStep;
+  prevCumulative: number;
+  visible: boolean;
+}
+
+function AnimationInstructionText({
+  step,
+  displayAmount,
+}: {
+  step: ComputedStep;
+  displayAmount: number;
+}) {
+  const { t, i18n } = useTranslation();
+  const isJa = i18n.language === "ja";
+
+  if (step.actionType === "switch_close_pour") {
+    return isJa ? (
+      <>閉じて <span className="pour-amount">{displayAmount}g</span> まで注ぐ</>
+    ) : (
+      <>Close, pour to <span className="pour-amount">{displayAmount}g</span></>
+    );
+  }
+  if (step.actionType === "switch_open_pour") {
+    return isJa ? (
+      <>開けて <span className="pour-amount">{displayAmount}g</span> まで注ぐ</>
+    ) : (
+      <>Open, pour to <span className="pour-amount">{displayAmount}g</span></>
+    );
+  }
+  if (step.actionType === "pour_cool") {
+    return isJa ? (
+      <>
+        <span className="pour-amount">{displayAmount}g</span> まで注ぎ、
+        <span className="pour-amount">70℃</span> まで下げる
+      </>
+    ) : (
+      <>
+        Pour to <span className="pour-amount">{displayAmount}g</span>, cool to{" "}
+        <span className="pour-amount">70℃</span>
+      </>
+    );
+  }
+  if (step.actionType === "switch_open") {
+    return <>{t("timer.waitNoPour")}</>;
+  }
+  if (step.actionType === "none") {
+    return <>{t("timer.enjoyCoffee")}</>;
+  }
+  return <>{t("timer.waitNoPour")}</>;
+}
+
+export function NextStepPreview({ step, prevCumulative, visible }: Props) {
+  const { t } = useTranslation();
+  const [displayAmount, setDisplayAmount] = useState(prevCumulative);
+  const rafRef = useRef<number | null>(null);
+  const startRef = useRef<number>(0);
+
+  const isPour =
+    step.actionType === "switch_close_pour" ||
+    step.actionType === "switch_open_pour" ||
+    step.actionType === "pour_cool";
+
+  useEffect(() => {
+    if (!visible || !isPour) {
+      setDisplayAmount(prevCumulative);
+      return;
+    }
+
+    const from = prevCumulative;
+    const to = step.cumulative;
+    if (from === to) return;
+
+    startRef.current = performance.now();
+    const duration = 1000;
+
+    const animate = (ts: number) => {
+      const elapsed = ts - startRef.current;
+      const progress = Math.min(1, elapsed / duration);
+      setDisplayAmount(Math.round(from + (to - from) * progress));
+      if (progress < 1) {
+        rafRef.current = requestAnimationFrame(animate);
+      }
+    };
+
+    // Delay the counting animation to sync with lottie "pour" animation
+    const timeout = setTimeout(() => {
+      rafRef.current = requestAnimationFrame(animate);
+    }, 800);
+
+    return () => {
+      clearTimeout(timeout);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [visible, isPour, prevCumulative, step.cumulative]);
+
+  if (!visible) return null;
+
+  const lottieKeys = buildLottieQueue(step.actionType);
+
+  return (
+    <section className="card animation-card">
+      <div className="card-title">{t("timer.nextStep")}</div>
+      <div className="animation-row">
+        <LottiePlayer animationKeys={lottieKeys} />
+        <div className="animation-text">
+          <AnimationInstructionText
+            step={step}
+            displayAmount={isPour ? displayAmount : step.cumulative}
+          />
+        </div>
+      </div>
+    </section>
+  );
+}

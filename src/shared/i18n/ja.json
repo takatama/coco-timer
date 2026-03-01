@@ -1,0 +1,86 @@
+{
+  "app": {
+    "title": "COCO Timer",
+    "footer": "COCO Timer"
+  },
+  "settings": {
+    "title": "設定",
+    "language": "言語",
+    "notification": "通知",
+    "notificationHint": "5秒前に通知します（複数選択可）",
+    "voice": "音声",
+    "voiceMale": "男性",
+    "voiceFemale": "女性",
+    "animation": "アニメーション表示",
+    "animShow": "表示",
+    "animHide": "非表示",
+    "debug": "デバッグ",
+    "debugHint": "タイマーを高速再生します",
+    "debugOff": "オフ",
+    "debugX5": "x5倍速",
+    "notifySound": "音声",
+    "notifyVibrate": "バイブ",
+    "save": "保存",
+    "close": "閉じる"
+  },
+  "intro": {
+    "title": "新しいハイブリッドメソッド",
+    "description": "粕谷哲氏の新しいハイブリッドメソッドは、Hario Switchで抽出方法の良いとこ取りを実現。他の抽出法と異なり、最初に粉全体をしっかり浸すことで自然な甘みを引き出し、その後ドリップで華やかな風味を、最後に低温浸漬でまろやかさをプラス。結果、濃厚なボディと抜群の甘み、クリアな味わいが楽しめる一杯に。ぜひこのレシピを試してみてください。",
+    "youtube": "動画で確認",
+    "start": "始める",
+    "skip": "スキップ"
+  },
+  "setup": {
+    "beans": "豆の量",
+    "flavor": "味わい",
+    "sweet": "甘味",
+    "neutral": "バランス",
+    "sour": "酸味",
+    "total": "合計",
+    "steps": "ステップごとの湯量",
+    "start": "タイマーを開始",
+    "details": "レシピの説明",
+    "detailsAction": "見る",
+    "closeAction": "閉じる",
+    "equipment": "必要な器具",
+    "affiliate": "Amazonのアソシエイトとして、COCO Timerは適格販売により収入を得ています。"
+  },
+  "timer": {
+    "currentStep": "今のステップ",
+    "nextStep": "次のステップは...",
+    "remaining": "残り時間",
+    "play": "再生",
+    "pause": "一時停止",
+    "reset": "リセット",
+    "recipe": "新しいハイブリッドメソッド",
+    "editParams": "設定を変更",
+    "timeline": "タイムライン",
+    "waitNoPour": "待つ（注がない）",
+    "pourTo": "まで注ぐ",
+    "close": "閉じる",
+    "open": "開ける",
+    "up": "上",
+    "down": "下",
+    "enjoyCoffee": "美味しいコーヒーをどうぞ☕️",
+    "coolTo": "70℃まで下げる",
+    "finish": "完成",
+    "wait": "待つ",
+    "screenOn": "画面はオンのままです",
+    "beansLabel": "豆量",
+    "flavorLabel": "味わい",
+    "waterLabel": "抽出量"
+  },
+  "stepLabels": [
+    "閉じて蒸らし",
+    "開けて1湯目",
+    "2湯目",
+    "閉じて低温の3湯目",
+    "開ける",
+    "完成"
+  ],
+  "flavorLabels": {
+    "sweet": "甘味",
+    "neutral": "バランス",
+    "sour": "酸味"
+  }
+}
