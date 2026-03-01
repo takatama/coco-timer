@@ -21,7 +21,18 @@ export function CoffeeNews() {
     fetch(`https://daily-brew.takatama.workers.dev/news?lang=${language}`)
       .then((r) => r.json())
       .then((data) => {
-        setNews(data.item);
+        const item = data.item;
+        const decode = (s: string) => {
+          const el = document.createElement("textarea");
+          el.innerHTML = s;
+          return el.value;
+        };
+        setNews({
+          ...item,
+          short_title: decode(item.short_title),
+          summary: decode(item.summary),
+          source: decode(item.source),
+        });
         setLoading(false);
       })
       .catch(() => {
