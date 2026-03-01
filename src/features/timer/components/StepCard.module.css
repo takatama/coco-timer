@@ -35,3 +35,9 @@
   color: var(--md-text);
   margin-bottom: 10px;
 }
+
+.extras {
+  border-top: 1px solid var(--md-outline);
+  margin-top: 4px;
+  padding-top: 12px;
+}

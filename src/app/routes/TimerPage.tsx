@@ -56,7 +56,9 @@ export function TimerPage() {
           remainingSeconds={remainingToNext}
           progress={progress}
           isImminent={isImminent}
-        />
+        >
+          {currentStep.actionType === "none" && <CoffeeNews />}
+        </StepCard>
       )}
 
       {overlayStep && animation && steps[overlayStep.index] && (
@@ -91,8 +93,6 @@ export function TimerPage() {
         currentStepIndex={timer.currentStepIndex}
         currentTime={timer.currentTime}
       />
-
-      {currentStep?.actionType === "none" && <CoffeeNews />}
     </main>
   );
 }

@@ -168,7 +168,7 @@ export function SetupPage() {
         </div>
       </section>
 
-      {debugEnabled && <CoffeeNews />}
+      {debugEnabled && <section className="card"><CoffeeNews /></section>}
 
       <p className={styles.affiliateNote}>{t("setup.affiliate")}</p>
     </main>

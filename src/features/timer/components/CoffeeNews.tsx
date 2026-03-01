@@ -31,17 +31,17 @@ export function CoffeeNews() {
 
   if (loading) {
     return (
-      <section className="card">
+      <>
         <div className="card-title">{t("news.title")}</div>
         <div className="hint">{t("news.loading")}</div>
-      </section>
+      </>
     );
   }
 
   if (!news) return null;
 
   return (
-    <section className="card">
+    <>
       <div className="card-title">{t("news.title")}</div>
       <div className={styles.newsTitle}>{news.short_title}</div>
       <div className={styles.newsSummary}>{news.summary}</div>
@@ -56,6 +56,6 @@ export function CoffeeNews() {
           {t("news.readMore")}
         </a>
       </div>
-    </section>
+    </>
   );
 }
