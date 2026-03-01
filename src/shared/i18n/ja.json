@@ -21,7 +21,8 @@
     "notifySound": "音声",
     "notifyVibrate": "バイブ",
     "save": "保存",
-    "close": "閉じる"
+    "close": "閉じる",
+    "debugOn": "オン"
   },
   "intro": {
     "title": "新しいハイブリッドメソッド",

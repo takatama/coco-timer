@@ -32,6 +32,7 @@ describe("useSettingsStore", () => {
       language: "en",
       notifyMode: "both",
       voice: "male",
+      debugEnabled: false,
       debugSpeed: 1,
       animation: true,
     });
@@ -41,6 +42,7 @@ describe("useSettingsStore", () => {
     const state = useSettingsStore.getState();
     expect(state.notifyMode).toBe("both");
     expect(state.voice).toBe("male");
+    expect(state.debugEnabled).toBe(false);
     expect(state.debugSpeed).toBe(1);
     expect(state.animation).toBe(true);
   });
@@ -94,6 +96,20 @@ describe("useSettingsStore", () => {
   it("setDebugSpeed updates debugSpeed", () => {
     useSettingsStore.getState().setDebugSpeed(5);
     expect(useSettingsStore.getState().debugSpeed).toBe(5);
+    expect(useSettingsStore.getState().debugEnabled).toBe(true);
+
+    useSettingsStore.getState().setDebugSpeed(1);
+    expect(useSettingsStore.getState().debugEnabled).toBe(false);
+  });
+
+  it("setDebugEnabled toggles debug mode and syncs speed", () => {
+    useSettingsStore.getState().setDebugEnabled(true);
+    expect(useSettingsStore.getState().debugEnabled).toBe(true);
+    expect(useSettingsStore.getState().debugSpeed).toBe(5);
+
+    useSettingsStore.getState().setDebugEnabled(false);
+    expect(useSettingsStore.getState().debugEnabled).toBe(false);
+    expect(useSettingsStore.getState().debugSpeed).toBe(1);
   });
 
   it("setAnimation updates animation", () => {
