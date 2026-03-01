@@ -1,0 +1,29 @@
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Header } from "../shared/components/Header";
+import { IntroPage } from "./routes/IntroPage";
+import { SetupPage } from "./routes/SetupPage";
+import { TimerPage } from "./routes/TimerPage";
+import { useSessionStore } from "../features/timer/store";
+
+function RootRedirect() {
+  const introSeen = useSessionStore((s) => s.introSeen);
+  return <Navigate to={introSeen ? "/setup" : "/intro"} replace />;
+}
+
+export function App() {
+  return (
+    <BrowserRouter>
+      <div className="app">
+        <Header />
+        <Routes>
+          <Route path="/" element={<RootRedirect />} />
+          <Route path="/intro" element={<IntroPage />} />
+          <Route path="/setup" element={<SetupPage />} />
+          <Route path="/timer" element={<TimerPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+        <footer className="footer">COCO Timer</footer>
+      </div>
+    </BrowserRouter>
+  );
+}
