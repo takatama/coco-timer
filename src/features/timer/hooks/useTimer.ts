@@ -105,7 +105,11 @@ export function useTimer(
         s.lastAnnouncedStep !== curIdx + 1
       ) {
         s.lastAnnouncedStep = curIdx + 1;
-        callbacksRef.current.onPreNotify?.(curIdx + 1, nextStep.actionType === "none");
+        const isFinish = nextStep.actionType === "none";
+        if (!isFinish) {
+          s.overlayStepIndex = curIdx + 1;
+        }
+        callbacksRef.current.onPreNotify?.(curIdx + 1, isFinish);
       }
     } else {
       const prevRemaining = final - prevTime;
