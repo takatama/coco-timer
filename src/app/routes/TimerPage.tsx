@@ -85,13 +85,17 @@ export function TimerPage() {
   const flavorLabel = t(`flavorLabels.${flavor}`);
 
   const handlePlayPause = () => {
+    // Cancel pending startup countdown first, if any
+    if (startDelayRef.current) {
+      clearTimeout(startDelayRef.current);
+      startDelayRef.current = null;
+      setOverlayStep(null);
+      wakeLock.release();
+      return;
+    }
+
     if (timer.status === "running") {
       timer.pause();
-      if (startDelayRef.current) {
-        clearTimeout(startDelayRef.current);
-        startDelayRef.current = null;
-        setOverlayStep(null);
-      }
       wakeLock.release();
     } else {
       if (timer.currentTime === 0 && animation) {
