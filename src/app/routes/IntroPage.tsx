@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useSessionStore } from "../../features/timer/store";
+import styles from "./IntroPage.module.css";
 const heroImage = "/assets/images/goran-ivos-1JsjRW6Sbwg-unsplash.jpg";
 
 export function IntroPage() {
@@ -15,19 +16,19 @@ export function IntroPage() {
 
   return (
     <main className="content">
-      <section className="card hero-card">
+      <section className={`card ${styles.heroCard}`}>
         <img
-          className="hero-image"
+          className={styles.heroImage}
           src={heroImage}
           alt="New Hybrid Method"
         />
-        <div className="hero-title">{t("intro.title")}</div>
-        <div className="hero-desc">{t("intro.description")}</div>
+        <div className={styles.heroTitle}>{t("intro.title")}</div>
+        <div className={styles.heroDesc}>{t("intro.description")}</div>
       </section>
 
       <section className="card">
         <div className="card-title">{t("intro.youtube")}</div>
-        <div className="video-wrap">
+        <div className={styles.videoWrap}>
           <iframe
             src="https://www.youtube.com/embed/4FeUp_zNiiY"
             title="YouTube video player"
@@ -38,11 +39,11 @@ export function IntroPage() {
         </div>
       </section>
 
-      <div className="actions">
-        <button className="btn primary" onClick={handleStart}>
+      <div className={styles.actions}>
+        <button className={`${styles.btn} ${styles.primary}`} onClick={handleStart}>
           {t("intro.start")}
         </button>
-        <button className="btn ghost" onClick={handleStart}>
+        <button className={`${styles.btn} ${styles.ghost}`} onClick={handleStart}>
           {t("intro.skip")}
         </button>
       </div>

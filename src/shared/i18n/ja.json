@@ -66,6 +66,9 @@
     "finish": "完成",
     "wait": "待つ",
     "screenOn": "画面はオンのままです",
+    "closePourTo": "閉じて <amount>{{amount}}g</amount> まで注ぐ",
+    "openPourTo": "開けて <amount>{{amount}}g</amount> まで注ぐ",
+    "pourCoolTo": "<amount>{{amount}}g</amount> まで注ぎ、<amount>70℃</amount> まで下げる",
     "beansLabel": "豆量",
     "flavorLabel": "味わい",
     "waterLabel": "抽出量"

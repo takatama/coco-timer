@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useSettingsStore } from "./store";
 import type { Language, Voice } from "./types";
+import styles from "./SettingsModal.module.css";
 
 interface Props {
   open: boolean;
@@ -41,12 +42,12 @@ export function SettingsModal({ open, onClose }: Props) {
   if (!open) return null;
 
   return (
-    <div className="settings-modal active" onClick={onClose}>
-      <div className="settings-card" onClick={(e) => e.stopPropagation()}>
+    <div className={styles.modal} onClick={onClose}>
+      <div className={styles.card} onClick={(e) => e.stopPropagation()}>
         <h3>{t("settings.title")}</h3>
 
-        <div className="settings-section">
-          <div className="settings-title">{t("settings.language")}</div>
+        <div className={styles.section}>
+          <div className={styles.title}>{t("settings.language")}</div>
           <div className="choice-row">
             <ChoiceButton
               active={settings.language === "ja"}
@@ -63,8 +64,8 @@ export function SettingsModal({ open, onClose }: Props) {
           </div>
         </div>
 
-        <div className="settings-section">
-          <div className="settings-title">{t("settings.notification")}</div>
+        <div className={styles.section}>
+          <div className={styles.title}>{t("settings.notification")}</div>
           <div className="choice-row">
             <ChoiceButton
               active={soundEnabled}
@@ -82,8 +83,8 @@ export function SettingsModal({ open, onClose }: Props) {
           <div className="hint">{t("settings.notificationHint")}</div>
         </div>
 
-        <div className="settings-section">
-          <div className="settings-title">{t("settings.voice")}</div>
+        <div className={styles.section}>
+          <div className={styles.title}>{t("settings.voice")}</div>
           <div className="choice-row">
             {(["male", "female"] as Voice[]).map((v) => (
               <ChoiceButton
@@ -97,8 +98,8 @@ export function SettingsModal({ open, onClose }: Props) {
           </div>
         </div>
 
-        <div className="settings-section">
-          <div className="settings-title">{t("settings.animation")}</div>
+        <div className={styles.section}>
+          <div className={styles.title}>{t("settings.animation")}</div>
           <div className="choice-row">
             <ChoiceButton
               active={settings.animation}
@@ -115,8 +116,8 @@ export function SettingsModal({ open, onClose }: Props) {
           </div>
         </div>
 
-        <div className="settings-section">
-          <div className="settings-title">{t("settings.debug")}</div>
+        <div className={styles.section}>
+          <div className={styles.title}>{t("settings.debug")}</div>
           <div className="choice-row">
             <ChoiceButton
               active={settings.debugSpeed === 1}
@@ -134,11 +135,11 @@ export function SettingsModal({ open, onClose }: Props) {
           <div className="hint">{t("settings.debugHint")}</div>
         </div>
 
-        <div className="settings-actions">
-          <button id="save-settings" onClick={onClose}>
+        <div className={styles.actions}>
+          <button className={styles.saveBtn} onClick={onClose}>
             {t("settings.save")}
           </button>
-          <button id="close-settings" onClick={onClose}>
+          <button className={styles.closeBtn} onClick={onClose}>
             {t("settings.close")}
           </button>
         </div>

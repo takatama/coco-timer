@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import type { ComputedStep } from "../../recipe/types";
 import { Countdown } from "./Countdown";
+import styles from "./StepCard.module.css";
 
 interface Props {
   step: ComputedStep;
@@ -17,7 +18,7 @@ function VerbText({ step }: { step: ComputedStep }) {
   const withNote = (label: string, note: string) => (
     <>
       {label}
-      <span className="verb-note">({note})</span>
+      <span className={styles.verbNote}>({note})</span>
     </>
   );
 
@@ -73,14 +74,14 @@ export function StepCard({
   isImminent,
 }: Props) {
   return (
-    <section className={`card primary-card${isImminent ? " imminent" : ""}`}>
-      <div className="step-meta">
+    <section className={`card ${styles.primaryCard}${isImminent ? ` ${styles.imminent}` : ""}`}>
+      <div className={styles.stepMeta}>
         STEP {stepIndex + 1} / {totalSteps}
       </div>
-      <div className="step-verb">
+      <div className={styles.stepVerb}>
         <VerbText step={step} />
       </div>
-      <div className="step-sub">
+      <div className={styles.stepSub}>
         <InstructionText step={step} />
       </div>
       <Countdown

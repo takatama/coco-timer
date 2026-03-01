@@ -1,0 +1,49 @@
+.textLink {
+  margin-top: 8px;
+  background: none;
+  border: none;
+  color: var(--md-primary);
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.btn {
+  border: none;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 1rem;
+  flex: 1;
+}
+
+.primary {
+  background: var(--md-primary);
+  color: var(--md-primary-contrast);
+}
+
+.secondary {
+  background: #e9dfd2;
+  color: var(--md-text);
+}
+
+.screenStatus {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--md-text-muted);
+  margin-top: -6px;
+}
+
+@media (max-width: 480px) {
+  .controls {
+    grid-template-columns: 1fr;
+  }
+}

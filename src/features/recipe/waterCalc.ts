@@ -27,10 +27,25 @@ export function computeSteps(
   let cumulative = 0;
 
   return recipe.steps.map((step) => {
-    let increment = 0;
-    if (step.waterAmountType === "flavor1") increment = calcFlavor1(total, flavor);
-    if (step.waterAmountType === "flavor2") increment = calcFlavor2(total, flavor);
-    if (step.waterAmountType === "strength") increment = calcStrength(total);
+    let increment: number;
+    switch (step.waterAmountType) {
+      case "flavor1":
+        increment = calcFlavor1(total, flavor);
+        break;
+      case "flavor2":
+        increment = calcFlavor2(total, flavor);
+        break;
+      case "strength":
+        increment = calcStrength(total);
+        break;
+      case "none":
+        increment = 0;
+        break;
+      default: {
+        const _exhaustive: never = step.waterAmountType;
+        throw new Error(`Unknown waterAmountType: ${_exhaustive}`);
+      }
+    }
     cumulative += increment;
     return { ...step, cumulative, increment };
   });

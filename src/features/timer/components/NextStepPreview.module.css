@@ -1,0 +1,14 @@
+.animationCard {
+  padding: 12px 16px;
+}
+
+.animationRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.animationText {
+  font-size: 1rem;
+  color: var(--md-text);
+}
