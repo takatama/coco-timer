@@ -86,43 +86,15 @@
   opacity: 0.5;
 }
 
-/* First step: left-anchored so time and label share the same left edge */
-.firstStep {
-  transform: none;
-}
-
-.firstStep::before {
-  left: 0;
-}
-
-.firstStep .timelineTime {
-  left: 0;
-  transform: none;
-}
-
+/* First step: label left-edge starts at the tick position (center of step) */
 .firstStep .timelineLabel {
-  left: 0;
+  left: 50%;
   transform: none;
 }
 
-/* Last step: right-anchored so time and label share the same right edge */
-.lastStep {
-  transform: translateX(-100%);
-}
-
-.lastStep::before {
-  left: auto;
-  right: 0;
-}
-
-.lastStep .timelineTime {
-  left: auto;
-  right: 0;
-  transform: none;
-}
-
+/* Last step: label right-edge ends at the tick position (center of step) */
 .lastStep .timelineLabel {
   left: auto;
-  right: 0;
+  right: 50%;
   transform: none;
 }
