@@ -37,20 +37,14 @@ export function TimerPage() {
   const onPreNotify = useCallback(
     (nextStepIndex: number, isFinish: boolean) => {
       vibrate("pre-step");
+      playSound(isFinish);
       if (!isFinish && nextStepIndex >= 0 && animation) {
         const prevCumulative =
           nextStepIndex > 0 ? steps[nextStepIndex - 1].cumulative : 0;
         setOverlayStep({ index: nextStepIndex, prevCumulative });
       }
     },
-    [vibrate, animation, steps],
-  );
-
-  const onSoundPreNotify = useCallback(
-    (isFinish: boolean) => {
-      playSound(isFinish);
-    },
-    [playSound],
+    [vibrate, playSound, animation, steps],
   );
 
   const onStepCrossed = useCallback(() => {
@@ -63,7 +57,6 @@ export function TimerPage() {
 
   const timer = useTimer(steps, debugSpeed, {
     onPreNotify,
-    onSoundPreNotify,
     onStepCrossed,
     onOverlayExpired,
   });

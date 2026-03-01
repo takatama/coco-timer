@@ -6,11 +6,9 @@ export type TimerStatus = "idle" | "running" | "paused" | "finished";
 
 const TICK_INTERVAL_MS = 100;
 const PRE_NOTIFY_SECONDS = 5;
-const SOUND_PRE_NOTIFY_ADVANCE_SECONDS = 1;
 
 interface TimerCallbacks {
   onPreNotify?: (nextStepIndex: number, isFinish: boolean) => void;
-  onSoundPreNotify?: (isFinish: boolean) => void;
   onStepCrossed?: () => void;
   onOverlayExpired?: (stepIndex: number) => void;
 }
@@ -28,9 +26,7 @@ export function useTimer(
   const stateRef = useRef({
     elapsedMs: 0,
     lastAnnouncedStep: -1,
-    lastAnnouncedStepSound: -1,
     lastFinishAnnounced: false,
-    lastFinishAnnouncedSound: false,
     overlayStepIndex: null as number | null,
   });
 
@@ -76,7 +72,6 @@ export function useTimer(
 
     const curIdx = getCurrentStepIndex(computedSteps, curTime);
     const nextStep = computedSteps[curIdx + 1];
-    const soundPreNotifySec = PRE_NOTIFY_SECONDS + SOUND_PRE_NOTIFY_ADVANCE_SECONDS;
 
     // Detect step boundary crossing
     const crossedStep = computedSteps.find(
@@ -89,15 +84,6 @@ export function useTimer(
     if (nextStep) {
       const prevRemaining = nextStep.timeSec - prevTime;
       const remaining = nextStep.timeSec - curTime;
-
-      if (
-        prevRemaining > soundPreNotifySec &&
-        remaining <= soundPreNotifySec &&
-        s.lastAnnouncedStepSound !== curIdx + 1
-      ) {
-        s.lastAnnouncedStepSound = curIdx + 1;
-        callbacksRef.current.onSoundPreNotify?.(nextStep.actionType === "none");
-      }
 
       if (
         prevRemaining > PRE_NOTIFY_SECONDS &&
@@ -114,15 +100,6 @@ export function useTimer(
     } else {
       const prevRemaining = final - prevTime;
       const remaining = final - curTime;
-
-      if (
-        prevRemaining > soundPreNotifySec &&
-        remaining <= soundPreNotifySec &&
-        !s.lastFinishAnnouncedSound
-      ) {
-        s.lastFinishAnnouncedSound = true;
-        callbacksRef.current.onSoundPreNotify?.(true);
-      }
 
       if (
         prevRemaining > PRE_NOTIFY_SECONDS &&
@@ -171,9 +148,7 @@ export function useTimer(
     stateRef.current = {
       elapsedMs: 0,
       lastAnnouncedStep: -1,
-      lastAnnouncedStepSound: -1,
       lastFinishAnnounced: false,
-      lastFinishAnnouncedSound: false,
       overlayStepIndex: null,
     };
     setElapsedMs(0);
