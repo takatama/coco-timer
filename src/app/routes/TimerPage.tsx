@@ -3,8 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { useTimerOrchestrator } from "../../features/timer/hooks/useTimerOrchestrator";
 import { useSettingsStore } from "../../features/settings/store";
 import { StepCard } from "../../features/timer/components/StepCard";
+import { FinishCard } from "../../features/timer/components/FinishCard";
 import { NextStepPreview } from "../../features/timer/components/NextStepPreview";
 import { Timeline } from "../../features/timer/components/Timeline";
+import { useCoffeeNews } from "../../features/timer/hooks/useCoffeeNews";
 import styles from "./TimerPage.module.css";
 
 export function TimerPage() {
@@ -29,7 +31,8 @@ export function TimerPage() {
   } = useTimerOrchestrator();
 
   const flavorLabel = t(`flavorLabels.${flavor}`);
-  const { debugEnabled, debugSpeed, setDebugSpeed } = useSettingsStore();
+  const { debugEnabled, debugSpeed, setDebugSpeed, language } = useSettingsStore();
+  const { news, loading: newsLoading } = useCoffeeNews(language);
 
   return (
     <main className="content">
@@ -47,7 +50,7 @@ export function TimerPage() {
         </button>
       </section>
 
-      {currentStep && (
+      {currentStep && currentStep.actionType !== "none" && (
         <StepCard
           step={currentStep}
           stepIndex={timer.currentStepIndex}
@@ -55,6 +58,15 @@ export function TimerPage() {
           remainingSeconds={remainingToNext}
           progress={progress}
           isImminent={isImminent}
+        />
+      )}
+
+      {currentStep?.actionType === "none" && (
+        <FinishCard
+          stepIndex={timer.currentStepIndex}
+          totalSteps={steps.length}
+          news={news}
+          newsLoading={newsLoading}
         />
       )}
 
