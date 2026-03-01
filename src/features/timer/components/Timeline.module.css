@@ -85,3 +85,16 @@
 .inactive {
   opacity: 0.5;
 }
+
+/* First step: label left-edge starts at the tick position (center of step) */
+.firstStep .timelineLabel {
+  left: 50%;
+  transform: none;
+}
+
+/* Last step: label right-edge ends at the tick position (center of step) */
+.lastStep .timelineLabel {
+  left: auto;
+  right: 50%;
+  transform: none;
+}
