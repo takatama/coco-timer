@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useSessionStore } from "../../features/timer/store";
 import { newHybridMethod, computeSteps, getTotalWater } from "../../features/recipe";
 import type { FlavorProfile } from "../../features/recipe";
 const heroImage = "/assets/images/goran-ivos-1JsjRW6Sbwg-unsplash.jpg";
+
+const validFlavors: FlavorProfile[] = ["sweet", "neutral", "sour"];
 
 const equipmentData = {
   ja: [
@@ -24,8 +26,23 @@ const equipmentData = {
 export function SetupPage() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { beans, flavor, setBeans, setFlavor } = useSessionStore();
   const [detailsOpen, setDetailsOpen] = useState(false);
+
+  // Apply URL parameters on mount (e.g. ?beans=25&flavor=sweet)
+  useEffect(() => {
+    const beansParam = searchParams.get("beans");
+    if (beansParam) {
+      const n = parseInt(beansParam, 10);
+      if (!isNaN(n) && n > 0) setBeans(n);
+    }
+    const flavorParam = searchParams.get("flavor");
+    if (flavorParam && validFlavors.includes(flavorParam as FlavorProfile)) {
+      setFlavor(flavorParam as FlavorProfile);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const lang = i18n.language as "ja" | "en";
   const steps = computeSteps(newHybridMethod, beans, flavor);
@@ -137,7 +154,7 @@ export function SetupPage() {
         </div>
         <div className="step-list">
           {steps.map((step, idx) => (
-            <div key={idx} className="step-item">
+            <div key={`${step.timeSec}-${step.actionType}`} className="step-item">
               <span>
                 Step {idx + 1}: {stepLabels[idx] ?? ""}
               </span>

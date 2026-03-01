@@ -3,8 +3,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 export function useWakeLock() {
   const wakeLockRef = useRef<WakeLockSentinel | null>(null);
   const [isActive, setIsActive] = useState(false);
+  const isActiveRef = useRef(false);
 
   const request = useCallback(async () => {
+    isActiveRef.current = true;
     setIsActive(true);
     if (!("wakeLock" in navigator)) return;
     try {
@@ -20,6 +22,7 @@ export function useWakeLock() {
   }, []);
 
   const release = useCallback(() => {
+    isActiveRef.current = false;
     if (wakeLockRef.current) {
       wakeLockRef.current.release().catch(() => {});
       wakeLockRef.current = null;
@@ -28,17 +31,30 @@ export function useWakeLock() {
   }, []);
 
   useEffect(() => {
-    const handleVisibility = () => {
-      if (document.visibilityState === "visible" && isActive) {
-        request();
+    const handleVisibility = async () => {
+      if (document.visibilityState === "visible" && isActiveRef.current) {
+        if (!("wakeLock" in navigator)) return;
+        try {
+          if (!wakeLockRef.current) {
+            wakeLockRef.current = await navigator.wakeLock.request("screen");
+            wakeLockRef.current.addEventListener("release", () => {
+              wakeLockRef.current = null;
+            });
+          }
+        } catch {
+          // ignore
+        }
       }
     };
     document.addEventListener("visibilitychange", handleVisibility);
     return () => {
       document.removeEventListener("visibilitychange", handleVisibility);
-      release();
+      if (wakeLockRef.current) {
+        wakeLockRef.current.release().catch(() => {});
+        wakeLockRef.current = null;
+      }
     };
-  }, [isActive, request, release]);
+  }, []);
 
   return { isActive, request, release };
 }

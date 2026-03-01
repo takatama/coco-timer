@@ -60,7 +60,7 @@ export function Timeline({ steps, currentStepIndex, currentTime }: Props) {
           const ratio = totalTime ? step.timeSec / totalTime : 0;
           const leftPx = pad + lineWidth * ratio;
           return (
-            <div key={index} className={classes} style={{ left: `${leftPx}px` }}>
+            <div key={`${step.timeSec}-${step.actionType}`} className={classes} style={{ left: `${leftPx}px` }}>
               <div className="timeline-time">{formatTime(step.timeSec)}</div>
               <div className="timeline-label">
                 {stepLabels[index] ?? ""}
