@@ -130,9 +130,6 @@ export function SettingsModal({ open, onClose }: Props) {
         </div>
 
         <div className={styles.actions}>
-          <button className={styles.saveBtn} onClick={onClose}>
-            {t("settings.save")}
-          </button>
           <button className={styles.closeBtn} onClick={onClose}>
             {t("settings.close")}
           </button>
