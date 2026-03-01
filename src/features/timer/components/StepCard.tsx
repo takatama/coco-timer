@@ -1,4 +1,3 @@
-import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import type { ComputedStep } from "../../recipe/types";
 import { Countdown } from "./Countdown";
@@ -11,7 +10,6 @@ interface Props {
   remainingSeconds: number;
   progress: number;
   isImminent: boolean;
-  children?: ReactNode;
 }
 
 function VerbText({ step }: { step: ComputedStep }) {
@@ -74,9 +72,7 @@ export function StepCard({
   remainingSeconds,
   progress,
   isImminent,
-  children,
 }: Props) {
-  const isFinish = step.actionType === "none";
   return (
     <section className={`card ${styles.primaryCard}${isImminent ? ` ${styles.imminent}` : ""}`}>
       <div className={styles.stepMeta}>
@@ -88,15 +84,11 @@ export function StepCard({
       <div className={styles.stepSub}>
         <InstructionText step={step} />
       </div>
-      {isFinish ? (
-        children && <div className={styles.extras}>{children}</div>
-      ) : (
-        <Countdown
-          remainingSeconds={remainingSeconds}
-          progress={progress}
-          isImminent={isImminent}
-        />
-      )}
+      <Countdown
+        remainingSeconds={remainingSeconds}
+        progress={progress}
+        isImminent={isImminent}
+      />
     </section>
   );
 }

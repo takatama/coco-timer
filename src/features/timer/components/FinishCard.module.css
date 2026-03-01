@@ -1,13 +1,6 @@
-.primaryCard {
+.finishCard {
   border: 2px solid var(--md-primary);
   box-shadow: var(--shadow-2);
-}
-
-.imminent {
-  border-color: #f2b45b;
-  box-shadow:
-    0 0 0 3px rgba(242, 180, 91, 0.25),
-    var(--shadow-2);
 }
 
 .stepMeta {
@@ -23,15 +16,14 @@
   margin: 6px 0;
 }
 
-.verbNote {
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin-left: 6px;
-  color: var(--md-text-muted);
-}
-
 .stepSub {
   font-size: 1rem;
   color: var(--md-text);
   margin-bottom: 10px;
+}
+
+.extras {
+  border-top: 1px solid var(--md-outline);
+  margin-top: 4px;
+  padding-top: 12px;
 }
