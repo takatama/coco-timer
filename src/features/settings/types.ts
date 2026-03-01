@@ -6,6 +6,7 @@ export interface Settings {
   language: Language;
   notifyMode: NotifyMode;
   voice: Voice;
+  debugEnabled: boolean;
   debugSpeed: number;
   animation: boolean;
 }

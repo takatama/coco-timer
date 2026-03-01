@@ -15,6 +15,11 @@
   gap: 10px;
 }
 
+.primaryControlRow {
+  display: flex;
+  gap: 10px;
+}
+
 .btn {
   border: none;
   padding: 12px 16px;
@@ -35,11 +40,21 @@
   color: var(--md-text);
 }
 
-.screenStatus {
-  text-align: center;
-  font-size: 0.85rem;
-  color: var(--md-text-muted);
-  margin-top: -6px;
+.speedToggle {
+  border: 1px solid var(--md-outline);
+  background: transparent;
+  color: var(--md-text);
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  cursor: pointer;
+  padding: 10px 12px;
+  min-width: 76px;
+}
+
+.speedToggleActive {
+  border-color: var(--md-primary);
+  background: var(--md-primary);
+  color: var(--md-primary-contrast);
 }
 
 @media (max-width: 480px) {

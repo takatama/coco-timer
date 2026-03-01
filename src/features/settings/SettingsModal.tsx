@@ -120,25 +120,16 @@ export function SettingsModal({ open, onClose }: Props) {
           <div className={styles.title}>{t("settings.debug")}</div>
           <div className="choice-row">
             <ChoiceButton
-              active={settings.debugSpeed === 1}
-              onClick={() => settings.setDebugSpeed(1)}
+              active={settings.debugEnabled}
+              onClick={() => settings.setDebugEnabled(!settings.debugEnabled)}
             >
-              {t("settings.debugOff")}
-            </ChoiceButton>
-            <ChoiceButton
-              active={settings.debugSpeed === 5}
-              onClick={() => settings.setDebugSpeed(5)}
-            >
-              {t("settings.debugX5")}
+              {settings.debugEnabled ? t("settings.debugOn") : t("settings.debugOff")}
             </ChoiceButton>
           </div>
           <div className="hint">{t("settings.debugHint")}</div>
         </div>
 
         <div className={styles.actions}>
-          <button className={styles.saveBtn} onClick={onClose}>
-            {t("settings.save")}
-          </button>
           <button className={styles.closeBtn} onClick={onClose}>
             {t("settings.close")}
           </button>

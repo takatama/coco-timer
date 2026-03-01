@@ -21,7 +21,8 @@
     "notifySound": "Sound",
     "notifyVibrate": "Vibrate",
     "save": "Save",
-    "close": "Close"
+    "close": "Close",
+    "debugOn": "On"
   },
   "intro": {
     "title": "New Hybrid Method",

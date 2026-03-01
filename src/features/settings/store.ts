@@ -19,6 +19,7 @@ export interface SettingsStore extends Settings {
   setNotifyMode: (mode: NotifyMode) => void;
   toggleNotifyFlag: (flag: "sound" | "vibrate") => void;
   setVoice: (voice: Voice) => void;
+  setDebugEnabled: (enabled: boolean) => void;
   setDebugSpeed: (speed: number) => void;
   setAnimation: (enabled: boolean) => void;
   isSoundEnabled: () => boolean;
@@ -31,6 +32,7 @@ export const useSettingsStore = create<SettingsStore>()(
       language: getDefaultLanguage(),
       notifyMode: "both" as NotifyMode,
       voice: "male" as Voice,
+      debugEnabled: false,
       debugSpeed: 1,
       animation: true,
 
@@ -55,7 +57,15 @@ export const useSettingsStore = create<SettingsStore>()(
       },
 
       setVoice: (voice) => set({ voice }),
-      setDebugSpeed: (debugSpeed) => set({ debugSpeed }),
+      setDebugEnabled: (debugEnabled) =>
+        set({
+          debugEnabled,
+          debugSpeed: debugEnabled ? 5 : 1,
+        }),
+      setDebugSpeed: (debugSpeed) =>
+        set({
+          debugSpeed: debugSpeed === 5 ? 5 : 1,
+        }),
       setAnimation: (animation) => set({ animation }),
 
       isSoundEnabled: () => {
@@ -69,10 +79,21 @@ export const useSettingsStore = create<SettingsStore>()(
     }),
     {
       name: "coco-timer-settings",
+      version: 2,
+      migrate: (persistedState: unknown) => {
+        const state = (persistedState ?? {}) as Partial<Settings>;
+        const debugSpeed = state.debugSpeed === 5 ? 5 : 1;
+        return {
+          ...state,
+          debugSpeed,
+          debugEnabled: state.debugEnabled ?? debugSpeed > 1,
+        };
+      },
       partialize: (state) => ({
         language: state.language,
         notifyMode: normalizeNotifyMode(state.notifyMode),
         voice: state.voice,
+        debugEnabled: state.debugEnabled,
         debugSpeed: state.debugSpeed,
         animation: state.animation,
       }),

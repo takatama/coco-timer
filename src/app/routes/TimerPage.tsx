@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useTimerOrchestrator } from "../../features/timer/hooks/useTimerOrchestrator";
+import { useSettingsStore } from "../../features/settings/store";
 import { StepCard } from "../../features/timer/components/StepCard";
 import { NextStepPreview } from "../../features/timer/components/NextStepPreview";
 import { Timeline } from "../../features/timer/components/Timeline";
@@ -23,12 +24,12 @@ export function TimerPage() {
     isImminent,
     isRunningOrStarting,
     animation,
-    wakeLock,
     handlePlayPause,
     handleReset,
   } = useTimerOrchestrator();
 
   const flavorLabel = t(`flavorLabels.${flavor}`);
+  const { debugEnabled, debugSpeed, setDebugSpeed } = useSettingsStore();
 
   return (
     <main className="content">
@@ -66,17 +67,23 @@ export function TimerPage() {
       )}
 
       <section className={styles.controls}>
-        <button className={`${styles.btn} ${styles.primary}`} onClick={handlePlayPause}>
-          {isRunningOrStarting ? t("timer.pause") : t("timer.play")}
-        </button>
+        <div className={styles.primaryControlRow}>
+          <button className={`${styles.btn} ${styles.primary}`} onClick={handlePlayPause}>
+            {isRunningOrStarting ? t("timer.pause") : t("timer.play")}
+          </button>
+          {debugEnabled && (
+            <button
+              className={`${styles.speedToggle} ${debugSpeed === 5 ? styles.speedToggleActive : ""}`}
+              onClick={() => setDebugSpeed(debugSpeed === 5 ? 1 : 5)}
+            >
+              {t("settings.debugX5")}
+            </button>
+          )}
+        </div>
         <button className={`${styles.btn} ${styles.secondary}`} onClick={handleReset}>
           {t("timer.reset")}
         </button>
       </section>
-
-      {wakeLock.isActive && (
-        <div className={styles.screenStatus}>{t("timer.screenOn")}</div>
-      )}
 
       <Timeline
         steps={steps}
