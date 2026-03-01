@@ -1,0 +1,33 @@
+.newsTitle {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--md-text);
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.newsSummary {
+  font-size: 0.875rem;
+  color: var(--md-text-muted);
+  line-height: 1.65;
+  margin-bottom: 12px;
+}
+
+.newsFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.readMore {
+  font-size: 0.85rem;
+  color: var(--md-primary);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.readMore:hover {
+  text-decoration: underline;
+}

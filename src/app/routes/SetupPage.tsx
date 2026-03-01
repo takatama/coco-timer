@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useSessionStore } from "../../features/timer/store";
+import { useSettingsStore } from "../../features/settings/store";
 import { newHybridMethod, computeSteps, getTotalWater } from "../../features/recipe";
 import type { FlavorProfile } from "../../features/recipe";
+import { CoffeeNews } from "../../features/timer/components/CoffeeNews";
 import styles from "./SetupPage.module.css";
 const heroImage = "/assets/images/goran-ivos-1JsjRW6Sbwg-unsplash.jpg";
 
@@ -29,6 +31,7 @@ export function SetupPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { beans, flavor, setBeans, setFlavor } = useSessionStore();
+  const { debugEnabled } = useSettingsStore();
   const [detailsOpen, setDetailsOpen] = useState(false);
 
   // Apply URL parameters on mount (e.g. ?beans=25&flavor=sweet)
@@ -164,6 +167,8 @@ export function SetupPage() {
           ))}
         </div>
       </section>
+
+      {debugEnabled && <CoffeeNews />}
 
       <p className={styles.affiliateNote}>{t("setup.affiliate")}</p>
     </main>

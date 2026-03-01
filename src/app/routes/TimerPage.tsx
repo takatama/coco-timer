@@ -5,6 +5,7 @@ import { useSettingsStore } from "../../features/settings/store";
 import { StepCard } from "../../features/timer/components/StepCard";
 import { NextStepPreview } from "../../features/timer/components/NextStepPreview";
 import { Timeline } from "../../features/timer/components/Timeline";
+import { CoffeeNews } from "../../features/timer/components/CoffeeNews";
 import styles from "./TimerPage.module.css";
 
 export function TimerPage() {
@@ -90,6 +91,8 @@ export function TimerPage() {
         currentStepIndex={timer.currentStepIndex}
         currentTime={timer.currentTime}
       />
+
+      {currentStep?.actionType === "none" && <CoffeeNews />}
     </main>
   );
 }
