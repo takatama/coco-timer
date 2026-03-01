@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import type { ComputedStep } from "../../recipe/types";
 import { LottiePlayer, buildLottieQueue } from "../../../shared/components/LottiePlayer";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 interface Props {
   step: ComputedStep;
@@ -99,9 +99,12 @@ export function NextStepPreview({ step, prevCumulative, visible }: Props) {
     };
   }, [visible, isPour, prevCumulative, step.cumulative]);
 
-  if (!visible) return null;
+  const lottieKeys = useMemo(
+    () => buildLottieQueue(step.actionType),
+    [step.actionType],
+  );
 
-  const lottieKeys = buildLottieQueue(step.actionType);
+  if (!visible) return null;
 
   return (
     <section className="card animation-card">

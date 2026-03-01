@@ -1,5 +1,5 @@
-import Lottie from "lottie-react";
-import { useEffect, useState } from "react";
+import lottie, { type AnimationItem } from "lottie-web";
+import { useEffect, useRef, useCallback } from "react";
 
 interface Props {
   animationKeys: string[];
@@ -24,43 +24,63 @@ export function buildLottieQueue(actionType: string): string[] {
 }
 
 export function LottiePlayer({ animationKeys, onComplete }: Props) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [animationData, setAnimationData] = useState<object | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const instanceRef = useRef<AnimationItem | null>(null);
+  const queueRef = useRef<string[]>([]);
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
 
-  useEffect(() => {
-    setCurrentIndex(0);
-  }, [animationKeys]);
-
-  useEffect(() => {
-    const key = animationKeys[currentIndex];
-    if (!key) return;
-    const path = lottieAssetPaths[key];
-    if (!path) return;
-
-    fetch(path)
-      .then((res) => res.json())
-      .then((data: object) => setAnimationData(data))
-      .catch(() => {});
-  }, [currentIndex, animationKeys]);
-
-  const handleComplete = () => {
-    if (currentIndex < animationKeys.length - 1) {
-      setCurrentIndex((i) => i + 1);
-    } else {
-      onComplete?.();
+  const destroyInstance = useCallback(() => {
+    if (instanceRef.current) {
+      instanceRef.current.destroy();
+      instanceRef.current = null;
     }
-  };
+  }, []);
 
-  if (!animationData) return <div className="lottie" />;
+  const playNext = useCallback(() => {
+    const container = containerRef.current;
+    if (!container) return;
 
-  return (
-    <div className="lottie">
-      <Lottie
-        animationData={animationData}
-        loop={false}
-        onComplete={handleComplete}
-        style={{ width: 120, height: 120 }}
-      />
-    </div>
-  );
+    destroyInstance();
+
+    const nextKey = queueRef.current.shift();
+    if (!nextKey) {
+      onCompleteRef.current?.();
+      return;
+    }
+
+    const path = lottieAssetPaths[nextKey];
+    if (!path) {
+      onCompleteRef.current?.();
+      return;
+    }
+
+    instanceRef.current = lottie.loadAnimation({
+      container,
+      renderer: "svg",
+      loop: false,
+      autoplay: true,
+      path,
+    });
+
+    instanceRef.current.addEventListener("complete", () => {
+      if (queueRef.current.length > 0) {
+        playNext();
+      } else {
+        onCompleteRef.current?.();
+      }
+    });
+  }, [destroyInstance]);
+
+  useEffect(() => {
+    queueRef.current = [...animationKeys];
+    playNext();
+
+    return () => {
+      destroyInstance();
+      queueRef.current = [];
+    };
+  }, [animationKeys, playNext, destroyInstance]);
+
+  return <div className="lottie" ref={containerRef} />;
 }
