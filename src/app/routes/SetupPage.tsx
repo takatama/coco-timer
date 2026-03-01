@@ -12,15 +12,15 @@ const validFlavors: FlavorProfile[] = ["sweet", "neutral", "sour"];
 const equipmentData = {
   ja: [
     { name: "Hario Switch", href: "https://www.amazon.co.jp/s?k=Hario+Switch&tag=tktm-22" },
-    { name: "V60 02 フィルター", href: "https://www.amazon.co.jp/s?k=V60+02+フィルター&tag=tktm-22" },
+    { name: "V60 フィルター", href: "https://www.amazon.co.jp/s?k=V60+フィルター&tag=tktm-22" },
     { name: "スケール", href: "https://www.amazon.co.jp/s?k=コーヒー+スケール&tag=tktm-22" },
-    { name: "ケトル", href: "https://www.amazon.co.jp/s?k=コーヒー+ケトル&tag=tktm-22" },
+    { name: "ケトル", href: "https://www.amazon.co.jp/s?k=コーヒー+電気ケトル&tag=tktm-22" },
   ],
   en: [
     { name: "Hario Switch", href: "https://www.amazon.com/s?k=Hario+Switch&tag=tktm-20" },
-    { name: "V60 02 Filters", href: "https://www.amazon.com/s?k=V60+02+filters&tag=tktm-20" },
+    { name: "V60 Filters", href: "https://www.amazon.com/s?k=V60+filters&tag=tktm-20" },
     { name: "Coffee Scale", href: "https://www.amazon.com/s?k=coffee+scale&tag=tktm-20" },
-    { name: "Pour-over Kettle", href: "https://www.amazon.com/s?k=pour+over+kettle&tag=tktm-20" },
+    { name: "Pour-over kettle", href: "https://www.amazon.com/s?k=pour+over+electric+kettle&tag=tktm-20" },
   ],
 };
 
