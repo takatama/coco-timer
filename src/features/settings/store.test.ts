@@ -93,13 +93,16 @@ describe("useSettingsStore", () => {
     expect(useSettingsStore.getState().voice).toBe("female");
   });
 
-  it("setDebugSpeed updates debugSpeed", () => {
+  it("setDebugSpeed updates speed without disabling debug mode", () => {
+    useSettingsStore.getState().setDebugEnabled(true);
+
     useSettingsStore.getState().setDebugSpeed(5);
     expect(useSettingsStore.getState().debugSpeed).toBe(5);
     expect(useSettingsStore.getState().debugEnabled).toBe(true);
 
     useSettingsStore.getState().setDebugSpeed(1);
-    expect(useSettingsStore.getState().debugEnabled).toBe(false);
+    expect(useSettingsStore.getState().debugSpeed).toBe(1);
+    expect(useSettingsStore.getState().debugEnabled).toBe(true);
   });
 
   it("setDebugEnabled toggles debug mode and syncs speed", () => {

@@ -64,8 +64,7 @@ export const useSettingsStore = create<SettingsStore>()(
         }),
       setDebugSpeed: (debugSpeed) =>
         set({
-          debugSpeed,
-          debugEnabled: debugSpeed > 1,
+          debugSpeed: debugSpeed === 5 ? 5 : 1,
         }),
       setAnimation: (animation) => set({ animation }),
 
