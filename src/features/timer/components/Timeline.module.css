@@ -85,3 +85,44 @@
 .inactive {
   opacity: 0.5;
 }
+
+/* First step: left-anchored so time and label share the same left edge */
+.firstStep {
+  transform: none;
+}
+
+.firstStep::before {
+  left: 0;
+}
+
+.firstStep .timelineTime {
+  left: 0;
+  transform: none;
+}
+
+.firstStep .timelineLabel {
+  left: 0;
+  transform: none;
+}
+
+/* Last step: right-anchored so time and label share the same right edge */
+.lastStep {
+  transform: translateX(-100%);
+}
+
+.lastStep::before {
+  left: auto;
+  right: 0;
+}
+
+.lastStep .timelineTime {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+
+.lastStep .timelineLabel {
+  left: auto;
+  right: 0;
+  transform: none;
+}

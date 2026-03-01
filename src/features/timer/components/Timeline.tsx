@@ -18,10 +18,8 @@ export function Timeline({ steps, currentStepIndex, currentTime }: Props) {
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
-    const observer = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        setWidth(entry.contentRect.width);
-      }
+    const observer = new ResizeObserver(() => {
+      setWidth(el.clientWidth);
     });
     observer.observe(el);
     setWidth(el.clientWidth);
@@ -55,6 +53,8 @@ export function Timeline({ steps, currentStepIndex, currentTime }: Props) {
             index % 2 === 0 ? styles.odd : styles.even,
             isCurrent ? "" : styles.inactive,
             isCompleted ? styles.completed : "",
+            index === 0 ? styles.firstStep : "",
+            index === steps.length - 1 ? styles.lastStep : "",
           ]
             .filter(Boolean)
             .join(" ");
