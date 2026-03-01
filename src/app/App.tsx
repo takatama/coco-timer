@@ -4,6 +4,8 @@ import { IntroPage } from "./routes/IntroPage";
 import { SetupPage } from "./routes/SetupPage";
 import { TimerPage } from "./routes/TimerPage";
 import { useSessionStore } from "../features/timer/store";
+import { ErrorBoundary } from "../shared/components/ErrorBoundary";
+import styles from "./App.module.css";
 
 function RootRedirect() {
   const introSeen = useSessionStore((s) => s.introSeen);
@@ -13,16 +15,18 @@ function RootRedirect() {
 export function App() {
   return (
     <BrowserRouter>
-      <div className="app">
+      <div className={styles.app}>
         <Header />
-        <Routes>
-          <Route path="/" element={<RootRedirect />} />
-          <Route path="/intro" element={<IntroPage />} />
-          <Route path="/setup" element={<SetupPage />} />
-          <Route path="/timer" element={<TimerPage />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-        <footer className="footer">COCO Timer</footer>
+        <ErrorBoundary>
+          <Routes>
+            <Route path="/" element={<RootRedirect />} />
+            <Route path="/intro" element={<IntroPage />} />
+            <Route path="/setup" element={<SetupPage />} />
+            <Route path="/timer" element={<TimerPage />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </ErrorBoundary>
+        <footer className={styles.footer}>COCO Timer</footer>
       </div>
     </BrowserRouter>
   );

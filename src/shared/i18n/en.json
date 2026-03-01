@@ -66,6 +66,9 @@
     "finish": "FINISH",
     "wait": "WAIT",
     "screenOn": "Screen will stay on",
+    "closePourTo": "Close, pour to <amount>{{amount}}g</amount>",
+    "openPourTo": "Open, pour to <amount>{{amount}}g</amount>",
+    "pourCoolTo": "Pour to <amount>{{amount}}g</amount>, cool to <amount>70℃</amount>",
     "beansLabel": "Beans",
     "flavorLabel": "Flavor",
     "waterLabel": "Water"

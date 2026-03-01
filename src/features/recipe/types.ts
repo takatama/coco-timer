@@ -7,7 +7,7 @@ export type ActionType =
   | "switch_open"
   | "none";
 
-export type WaterAmountType = "flavor1" | "flavor2" | "strength" | null;
+export type WaterAmountType = "flavor1" | "flavor2" | "strength" | "none";
 
 export interface RecipeStep {
   timeSec: number;

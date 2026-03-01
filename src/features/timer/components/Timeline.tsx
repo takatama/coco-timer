@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { useRef, useEffect, useState } from "react";
 import type { ComputedStep } from "../../recipe/types";
 import { formatTime } from "../../recipe/waterCalc";
+import styles from "./Timeline.module.css";
 
 interface Props {
   steps: ComputedStep[];
@@ -36,12 +37,12 @@ export function Timeline({ steps, currentStepIndex, currentTime }: Props) {
   const nowLeft = pad + lineWidth * nowRatio;
 
   return (
-    <section className="card timeline-card">
+    <section className={`card ${styles.timelineCard}`}>
       <div className="card-title">{t("timer.timeline")}</div>
-      <div className="stepper" ref={containerRef}>
-        <div className="timeline-line" />
+      <div className={styles.stepper} ref={containerRef}>
+        <div className={styles.timelineLine} />
         <div
-          className="timeline-now"
+          className={styles.timelineNow}
           style={{ left: `${nowLeft}px` }}
         >
           ▶
@@ -50,10 +51,10 @@ export function Timeline({ steps, currentStepIndex, currentTime }: Props) {
           const isCurrent = index === currentStepIndex;
           const isCompleted = index < currentStepIndex;
           const classes = [
-            "step",
-            index % 2 === 0 ? "odd" : "even",
-            isCurrent ? "current" : "",
-            isCompleted ? "completed" : "",
+            styles.step,
+            index % 2 === 0 ? styles.odd : styles.even,
+            isCurrent ? "" : styles.inactive,
+            isCompleted ? styles.completed : "",
           ]
             .filter(Boolean)
             .join(" ");
@@ -61,8 +62,8 @@ export function Timeline({ steps, currentStepIndex, currentTime }: Props) {
           const leftPx = pad + lineWidth * ratio;
           return (
             <div key={`${step.timeSec}-${step.actionType}`} className={classes} style={{ left: `${leftPx}px` }}>
-              <div className="timeline-time">{formatTime(step.timeSec)}</div>
-              <div className="timeline-label">
+              <div className={styles.timelineTime}>{formatTime(step.timeSec)}</div>
+              <div className={styles.timelineLabel}>
                 {stepLabels[index] ?? ""}
               </div>
             </div>

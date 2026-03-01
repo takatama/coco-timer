@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { SettingsModal } from "../../features/settings/SettingsModal";
+import styles from "./Header.module.css";
 
 const SettingsIcon = () => (
   <svg
@@ -24,10 +25,10 @@ export function Header() {
 
   return (
     <>
-      <header className="app-bar">
-        <div className="app-title">COCO Timer</div>
+      <header className={styles.appBar}>
+        <div className={styles.appTitle}>COCO Timer</div>
         <button
-          className="icon-btn"
+          className={styles.iconBtn}
           onClick={() => setSettingsOpen(true)}
           aria-label="Settings"
         >

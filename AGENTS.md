@@ -12,7 +12,8 @@ See `SPEC.md` for full UI/UX specification.
 - **State:** Zustand (settings persisted to localStorage, session state in-memory)
 - **i18n:** react-i18next with JSON translation files (`src/shared/i18n/{ja,en}.json`)
 - **Animation:** lottie-web (direct `loadAnimation`/`destroy` control — do NOT use lottie-react)
-- **Build:** Vite 7, `static/` as publicDir
+- **Styling:** CSS Modules (`.module.css`) + global design tokens (`tokens.css`)
+- **Build:** Vite 7, `static/` as publicDir, vite-plugin-pwa for offline support
 - **Test:** Vitest + Testing Library
 - **Deploy:** Cloudflare Pages (static SPA with `_redirects` fallback)
 
@@ -21,35 +22,52 @@ See `SPEC.md` for full UI/UX specification.
 ```
 src/
 ├── app/
-│   ├── App.tsx              # BrowserRouter + Routes
+│   ├── App.tsx                    # BrowserRouter + Routes + ErrorBoundary
+│   ├── App.module.css
 │   └── routes/
-│       ├── IntroPage.tsx
-│       ├── SetupPage.tsx
-│       └── TimerPage.tsx
+│       ├── IntroPage.tsx / .module.css
+│       ├── SetupPage.tsx / .module.css
+│       └── TimerPage.tsx / .module.css
 ├── features/
-│   ├── recipe/              # Recipe types, data, water calculation (pure functions)
-│   ├── settings/            # Zustand store (localStorage persist), SettingsModal
+│   ├── recipe/                    # Recipe types, data, water calculation (pure functions)
+│   ├── settings/                  # Zustand store (localStorage persist), SettingsModal
+│   │   ├── SettingsModal.tsx / .module.css
+│   │   └── store.ts / types.ts
 │   └── timer/
-│       ├── store.ts         # Session store (beans, flavor, introSeen)
-│       ├── hooks/           # useTimer, useWakeLock, useNotification
-│       └── components/      # StepCard, Countdown, NextStepPreview, Timeline
+│       ├── store.ts               # Session store (beans, flavor, introSeen)
+│       ├── hooks/
+│       │   ├── useTimer.ts        # Tick loop, elapsed time, step detection
+│       │   ├── useTimerOrchestrator.ts  # Overlay, play/pause/reset, wake lock coordination
+│       │   ├── useWakeLock.ts
+│       │   └── useNotification.ts
+│       └── components/            # StepCard, Countdown, NextStepPreview, Timeline
+│           └── *.tsx / *.module.css
 └── shared/
-    ├── components/          # Header, LottiePlayer
-    ├── i18n/                # config.ts, ja.json, en.json
-    └── styles/global.css    # All CSS (single file, no CSS Modules)
-static/                      # Vite publicDir — served as-is at /
-├── _redirects               # SPA fallback: /*  /index.html  200
+    ├── components/                # Header, LottiePlayer, ErrorBoundary
+    ├── i18n/                      # config.ts, ja.json, en.json
+    └── styles/
+        └── tokens.css             # Design tokens + shared primitives (card, choice, hint)
+static/                            # Vite publicDir — served as-is at /
+├── _redirects                     # SPA fallback: /*  /index.html  200
 └── assets/
-    ├── audio/               # {lang}-{voice}-{type}.wav
+    ├── audio/                     # {lang}-{voice}-{type}.wav
     ├── images/
-    └── lottie/              # *.json
+    └── lottie/                    # *.json
 ```
 
 ## Key Conventions
 
+### Styling
+
+- **Design tokens** (CSS variables, reset, shared primitives like `.card`, `.choice`, `.hint`) are in `src/shared/styles/tokens.css` — imported once in `main.tsx`.
+- **Component styles** use CSS Modules (`.module.css` co-located with each component).
+- Use `import styles from "./Component.module.css"` and `className={styles.foo}`.
+- Shared primitives (`card`, `card-title`, `choice`, `choice-row`, `hint`, `content`, `pour-amount`) are global classes from `tokens.css`.
+
 ### Timer Architecture
 
 - `useTimer` hook owns the tick loop and elapsed time as the single source of truth.
+- `useTimerOrchestrator` composes `useTimer` + `useWakeLock` + `useNotification` and manages overlay state, startup countdown, and play/pause/reset handlers.
 - Current step index is derived from elapsed time (not stored separately).
 - All notifications (sound, vibrate, visual overlay) fire at exactly **5 seconds** before step transition via a single `onPreNotify` callback. There is no separate sound timing.
 - The overlay step index must be registered in both React state (`setOverlayStep`) AND the timer's internal state (`s.overlayStepIndex`) so that `onOverlayExpired` fires when the step boundary is crossed.
@@ -83,7 +101,13 @@ static/                      # Vite publicDir — served as-is at /
 
 - All user-facing strings are in `src/shared/i18n/{ja,en}.json`.
 - Use `useTranslation()` hook in components.
+- For strings with embedded markup (e.g., pour amounts), use `<Trans>` component with `components` prop.
 - When language changes, call both `settings.setLanguage(lang)` and `i18n.changeLanguage(lang)`.
+
+### Type Safety
+
+- `WaterAmountType` uses `"flavor1" | "flavor2" | "strength" | "none"` (not `null`).
+- `computeSteps` uses exhaustive `switch` with `never` check on `waterAmountType`.
 
 ## Commands
 
@@ -99,6 +123,7 @@ npm run deploy       # Deploy to Cloudflare Pages
 
 - `src/features/recipe/waterCalc.test.ts` — Water calculation logic (pure functions)
 - `src/features/settings/store.test.ts` — Settings store (Zustand)
+- `src/features/timer/hooks/useTimer.test.ts` — Timer hook (status transitions, step crossing, pre-notify)
 - Settings store tests require a localStorage mock (see test file for pattern)
 
 ## PR Language

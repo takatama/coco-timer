@@ -1,7 +1,8 @@
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import type { ComputedStep } from "../../recipe/types";
 import { LottiePlayer, buildLottieQueue } from "../../../shared/components/LottiePlayer";
 import { useEffect, useMemo, useRef, useState } from "react";
+import styles from "./NextStepPreview.module.css";
 
 interface Props {
   step: ComputedStep;
@@ -16,34 +17,33 @@ function AnimationInstructionText({
   step: ComputedStep;
   displayAmount: number;
 }) {
-  const { t, i18n } = useTranslation();
-  const isJa = i18n.language === "ja";
+  const { t } = useTranslation();
 
   if (step.actionType === "switch_close_pour") {
-    return isJa ? (
-      <>閉じて <span className="pour-amount">{displayAmount}g</span> まで注ぐ</>
-    ) : (
-      <>Close, pour to <span className="pour-amount">{displayAmount}g</span></>
+    return (
+      <Trans
+        i18nKey="timer.closePourTo"
+        values={{ amount: displayAmount }}
+        components={{ amount: <span className="pour-amount" /> }}
+      />
     );
   }
   if (step.actionType === "switch_open_pour") {
-    return isJa ? (
-      <>開けて <span className="pour-amount">{displayAmount}g</span> まで注ぐ</>
-    ) : (
-      <>Open, pour to <span className="pour-amount">{displayAmount}g</span></>
+    return (
+      <Trans
+        i18nKey="timer.openPourTo"
+        values={{ amount: displayAmount }}
+        components={{ amount: <span className="pour-amount" /> }}
+      />
     );
   }
   if (step.actionType === "pour_cool") {
-    return isJa ? (
-      <>
-        <span className="pour-amount">{displayAmount}g</span> まで注ぎ、
-        <span className="pour-amount">70℃</span> まで下げる
-      </>
-    ) : (
-      <>
-        Pour to <span className="pour-amount">{displayAmount}g</span>, cool to{" "}
-        <span className="pour-amount">70℃</span>
-      </>
+    return (
+      <Trans
+        i18nKey="timer.pourCoolTo"
+        values={{ amount: displayAmount }}
+        components={{ amount: <span className="pour-amount" /> }}
+      />
     );
   }
   if (step.actionType === "switch_open") {
@@ -107,11 +107,11 @@ export function NextStepPreview({ step, prevCumulative, visible }: Props) {
   if (!visible) return null;
 
   return (
-    <section className="card animation-card">
+    <section className={`card ${styles.animationCard}`}>
       <div className="card-title">{t("timer.nextStep")}</div>
-      <div className="animation-row">
+      <div className={styles.animationRow}>
         <LottiePlayer animationKeys={lottieKeys} />
-        <div className="animation-text">
+        <div className={styles.animationText}>
           <AnimationInstructionText
             step={step}
             displayAmount={isPour ? displayAmount : step.cumulative}

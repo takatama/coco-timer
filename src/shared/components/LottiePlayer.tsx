@@ -1,5 +1,6 @@
 import lottie, { type AnimationItem } from "lottie-web";
 import { useEffect, useRef, useCallback } from "react";
+import styles from "./LottiePlayer.module.css";
 
 interface Props {
   animationKeys: string[];
@@ -82,5 +83,5 @@ export function LottiePlayer({ animationKeys, onComplete }: Props) {
     };
   }, [animationKeys, playNext, destroyInstance]);
 
-  return <div className="lottie" ref={containerRef} />;
+  return <div className={styles.lottie} ref={containerRef} />;
 }

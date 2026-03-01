@@ -1,4 +1,5 @@
 import { formatTime } from "../../recipe/waterCalc";
+import styles from "./Countdown.module.css";
 
 interface Props {
   remainingSeconds: number;
@@ -9,12 +10,12 @@ interface Props {
 export function Countdown({ remainingSeconds, progress, isImminent }: Props) {
   return (
     <>
-      <div className="step-time">
+      <div className={styles.stepTime}>
         {formatTime(Math.max(0, Math.ceil(remainingSeconds)))}
       </div>
-      <div className="progress">
+      <div className={styles.progress}>
         <div
-          className={`progress-fill${isImminent ? " imminent" : ""}`}
+          className={`${styles.progressFill}${isImminent ? ` ${styles.imminent}` : ""}`}
           style={{ width: `${(progress * 100).toFixed(2)}%` }}
         />
       </div>

@@ -4,6 +4,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useSessionStore } from "../../features/timer/store";
 import { newHybridMethod, computeSteps, getTotalWater } from "../../features/recipe";
 import type { FlavorProfile } from "../../features/recipe";
+import styles from "./SetupPage.module.css";
 const heroImage = "/assets/images/goran-ivos-1JsjRW6Sbwg-unsplash.jpg";
 
 const validFlavors: FlavorProfile[] = ["sweet", "neutral", "sour"];
@@ -60,17 +61,17 @@ export function SetupPage() {
     <main className="content">
       <section className="card">
         <div className="card-title">{t("setup.beans")}</div>
-        <div className="stepper-row">
+        <div className={styles.stepperRow}>
           <button
-            className="btn-icon"
+            className={styles.btnIcon}
             onClick={() => setBeans(Math.max(1, beans - 1))}
             aria-label="decrease"
           >
             −
           </button>
-          <div className="beans-value">{beans}g</div>
+          <div className={styles.beansValue}>{beans}g</div>
           <button
-            className="btn-icon"
+            className={styles.btnIcon}
             onClick={() => setBeans(beans + 1)}
             aria-label="increase"
           >
@@ -94,7 +95,7 @@ export function SetupPage() {
         </div>
       </section>
 
-      <button className="btn-primary" onClick={handleStart}>
+      <button className={styles.btnPrimary} onClick={handleStart}>
         {t("setup.start")}
       </button>
 
@@ -103,20 +104,20 @@ export function SetupPage() {
         open={detailsOpen}
         onToggle={(e) => setDetailsOpen((e.target as HTMLDetailsElement).open)}
       >
-        <summary className="details-summary">
+        <summary className={styles.detailsSummary}>
           <span>{t("setup.details")}</span>
-          <span className="details-summary-link">
+          <span className={styles.detailsSummaryLink}>
             {detailsOpen ? t("setup.closeAction") : t("setup.detailsAction")}
           </span>
         </summary>
-        <div className="details-body">
+        <div className={styles.detailsBody}>
           <img
-            className="details-image"
+            className={styles.detailsImage}
             src={heroImage}
             alt="New Hybrid Method"
           />
-          <div className="details-text">{t("intro.description")}</div>
-          <div className="details-video">
+          <div className={styles.detailsText}>{t("intro.description")}</div>
+          <div className={styles.detailsVideo}>
             <iframe
               src="https://www.youtube.com/embed/4FeUp_zNiiY"
               title="YouTube video player"
@@ -128,11 +129,11 @@ export function SetupPage() {
         </div>
       </details>
 
-      <section className="card equipment-card" aria-labelledby="label-equipment">
-        <div className="equipment-header">
-          <h2 className="card-title equipment-title">{t("setup.equipment")}</h2>
+      <section className={`card ${styles.equipmentCard}`} aria-labelledby="label-equipment">
+        <div className={styles.equipmentHeader}>
+          <h2 className={`card-title ${styles.equipmentTitle}`}>{t("setup.equipment")}</h2>
         </div>
-        <ul className="equipment-list">
+        <ul className={styles.equipmentList}>
           {equipment.map((item) => (
             <li key={item.name}>
               <a
@@ -152,9 +153,9 @@ export function SetupPage() {
         <div className="hint">
           {t("setup.total")}: {totalWater}g
         </div>
-        <div className="step-list">
+        <div className={styles.stepList}>
           {steps.map((step, idx) => (
-            <div key={`${step.timeSec}-${step.actionType}`} className="step-item">
+            <div key={`${step.timeSec}-${step.actionType}`} className={styles.stepItem}>
               <span>
                 Step {idx + 1}: {stepLabels[idx] ?? ""}
               </span>
@@ -164,7 +165,7 @@ export function SetupPage() {
         </div>
       </section>
 
-      <p className="affiliate-note">{t("setup.affiliate")}</p>
+      <p className={styles.affiliateNote}>{t("setup.affiliate")}</p>
     </main>
   );
 }
