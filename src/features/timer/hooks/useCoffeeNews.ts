@@ -4,7 +4,6 @@ import type { Language } from "../../settings/types";
 export interface NewsItem {
   id: string;
   short_title: string;
-  summary: string;
   url: string;
   source: string;
 }
@@ -16,7 +15,7 @@ function decodeHtml(s: string): string {
 }
 
 export function useCoffeeNews(language: Language, enabled = true) {
-  const [news, setNews] = useState<NewsItem | null>(null);
+  const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -25,13 +24,13 @@ export function useCoffeeNews(language: Language, enabled = true) {
     fetch(`https://daily-brew.takatama.workers.dev/news?lang=${language}`)
       .then((r) => r.json())
       .then((data) => {
-        const item = data.item;
-        setNews({
-          ...item,
+        const items: NewsItem[] = (data.items ?? []).map((item: NewsItem) => ({
+          id: item.id,
           short_title: decodeHtml(item.short_title),
-          summary: decodeHtml(item.summary),
+          url: item.url,
           source: decodeHtml(item.source),
-        });
+        }));
+        setNews(items);
         setLoading(false);
       })
       .catch(() => {

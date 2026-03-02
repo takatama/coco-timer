@@ -6,7 +6,7 @@ import styles from "./FinishCard.module.css";
 interface Props {
   stepIndex: number;
   totalSteps: number;
-  news: NewsItem | null;
+  news: NewsItem[];
   newsLoading: boolean;
 }
 
