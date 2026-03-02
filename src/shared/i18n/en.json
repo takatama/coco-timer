@@ -84,8 +84,7 @@
   ],
   "news": {
     "title": "Today's Coffee News",
-    "loading": "Loading news...",
-    "readMore": "Read more →"
+    "loading": "Loading news..."
   },
   "flavorLabels": {
     "sweet": "Sweet",
