@@ -1,4 +1,4 @@
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import type { ComputedStep } from "../../recipe/types";
 import { Countdown } from "./Countdown";
 import styles from "./StepCard.module.css";
@@ -29,7 +29,7 @@ function VerbText({ step }: { step: ComputedStep }) {
     case "pour_cool":
       return withNote(t("timer.open"), t("timer.down"));
     case "switch_open":
-      return withNote(t("timer.open"), t("timer.up"));
+      return withNote(t("timer.open"), t("timer.down"));
     case "none":
       return <>{t("timer.finish")}</>;
     default:
@@ -48,21 +48,27 @@ function InstructionText({ step }: { step: ComputedStep }) {
   }
 
   const amount = step.cumulative;
-  if (step.actionType === "pour_cool") {
+  if (step.actionType === "switch_close_pour" || step.actionType === "switch_open_pour") {
     return (
-      <>
-        <span className="pour-amount">{amount}g</span> {t("timer.pourTo")}
-        {", "}
-        <span className="pour-amount">70℃</span> {t("timer.coolTo")}
-      </>
+      <Trans
+        i18nKey="timer.pourToAmount"
+        values={{ amount }}
+        components={{ num: <span className="pour-number" />, unit: <span className="pour-unit" /> }}
+      />
     );
   }
 
-  return (
-    <>
-      <span className="pour-amount">{amount}g</span> {t("timer.pourTo")}
-    </>
-  );
+  if (step.actionType === "pour_cool") {
+    return (
+      <Trans
+        i18nKey="timer.pourCoolTo"
+        values={{ amount }}
+        components={{ num: <span className="pour-number" />, unit: <span className="pour-unit" /> }}
+      />
+    );
+  }
+
+  return null;
 }
 
 export function StepCard({
