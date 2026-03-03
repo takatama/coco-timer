@@ -84,6 +84,7 @@ body {
 }
 
 .pour-unit {
+  margin-left: 0.14em;
   font-size: 1em;
   font-weight: 700;
 }
