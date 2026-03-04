@@ -24,7 +24,7 @@ function AnimationInstructionText({
       <Trans
         i18nKey="timer.closePourTo"
         values={{ amount: displayAmount }}
-        components={{ amount: <span className="pour-amount" /> }}
+        components={{ num: <span className="pour-number" />, unit: <span className="pour-unit" /> }}
       />
     );
   }
@@ -33,7 +33,7 @@ function AnimationInstructionText({
       <Trans
         i18nKey="timer.openPourTo"
         values={{ amount: displayAmount }}
-        components={{ amount: <span className="pour-amount" /> }}
+        components={{ num: <span className="pour-number" />, unit: <span className="pour-unit" /> }}
       />
     );
   }
@@ -42,7 +42,7 @@ function AnimationInstructionText({
       <Trans
         i18nKey="timer.pourCoolTo"
         values={{ amount: displayAmount }}
-        components={{ amount: <span className="pour-amount" /> }}
+        components={{ num: <span className="pour-number" />, unit: <span className="pour-unit" /> }}
       />
     );
   }

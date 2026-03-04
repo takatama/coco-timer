@@ -78,8 +78,14 @@ body {
   cursor: not-allowed;
 }
 
-.pour-amount {
+.pour-number {
   font-size: 2rem;
+  font-weight: 700;
+}
+
+.pour-unit {
+  margin-left: 0.14em;
+  font-size: 1em;
   font-weight: 700;
 }
 
