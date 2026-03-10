@@ -22,7 +22,15 @@
     "notifyVibrate": "バイブ",
     "save": "保存",
     "close": "閉じる",
-    "debugOn": "オン"
+    "debugOn": "オン",
+    "calibrationMode": "抽出調整提案",
+    "calibrationOn": "オン",
+    "calibrationOff": "オフ",
+    "calibrationHint": "一時停止時間を記録し、ステップ3の時間補正を提案します",
+    "step3Extra": "ステップ3延長（豆10gあたり）",
+    "step3ExtraNone": "延長なし",
+    "step3ExtraValue": "+{{seconds}}秒",
+    "step3ExtraHint": "深煎り・細挽きで落ち切らない場合に調整してください"
   },
   "intro": {
     "title": "新しいハイブリッドメソッド",
@@ -73,7 +81,11 @@
     "beansLabel": "豆量",
     "flavorLabel": "味わい",
     "waterLabel": "抽出量",
-    "pourToAmount": "<num>{{amount}}</num><unit>g</unit> まで注ぐ"
+    "pourToAmount": "<num>{{amount}}</num><unit>g</unit> まで注ぐ",
+    "calibrationTitle": "抽出時間補正の提案",
+    "calibrationMessage": "今回の一時停止は約{{paused}}秒でした。ステップ3を豆10gあたり +{{suggested}}秒にしますか？",
+    "calibrationApply": "設定に反映",
+    "calibrationSkip": "今回はスキップ"
   },
   "stepLabels": [
     "閉じて蒸らし",

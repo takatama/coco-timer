@@ -1,6 +1,12 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { Language, NotifyMode, Settings, Voice } from "./types";
+import type {
+  Language,
+  NotifyMode,
+  PauseCalibrationRecord,
+  Settings,
+  Voice,
+} from "./types";
 
 function getDefaultLanguage(): Language {
   if (typeof navigator === "undefined") return "en";
@@ -22,6 +28,10 @@ export interface SettingsStore extends Settings {
   setDebugEnabled: (enabled: boolean) => void;
   setDebugSpeed: (speed: number) => void;
   setAnimation: (enabled: boolean) => void;
+  setCalibrationMode: (enabled: boolean) => void;
+  setStep3ExtraSecPer10g: (seconds: number) => void;
+  addPauseCalibrationRecord: (record: PauseCalibrationRecord) => void;
+  clearPauseCalibrationHistory: () => void;
   isSoundEnabled: () => boolean;
   isVibrateEnabled: () => boolean;
 }
@@ -35,6 +45,9 @@ export const useSettingsStore = create<SettingsStore>()(
       debugEnabled: false,
       debugSpeed: 1,
       animation: true,
+      calibrationMode: true,
+      step3ExtraSecPer10g: 0,
+      pauseCalibrationHistory: [],
 
       setLanguage: (language) => set({ language }),
       setNotifyMode: (notifyMode) => set({ notifyMode }),
@@ -67,6 +80,14 @@ export const useSettingsStore = create<SettingsStore>()(
           debugSpeed: debugSpeed === 5 ? 5 : 1,
         }),
       setAnimation: (animation) => set({ animation }),
+      setCalibrationMode: (calibrationMode) => set({ calibrationMode }),
+      setStep3ExtraSecPer10g: (seconds) =>
+        set({ step3ExtraSecPer10g: Math.max(0, Math.min(30, Math.round(seconds))) }),
+      addPauseCalibrationRecord: (record) =>
+        set((state) => ({
+          pauseCalibrationHistory: [...state.pauseCalibrationHistory, record].slice(-30),
+        })),
+      clearPauseCalibrationHistory: () => set({ pauseCalibrationHistory: [] }),
 
       isSoundEnabled: () => {
         const mode = get().notifyMode;
@@ -79,7 +100,7 @@ export const useSettingsStore = create<SettingsStore>()(
     }),
     {
       name: "coco-timer-settings",
-      version: 2,
+      version: 3,
       migrate: (persistedState: unknown) => {
         const state = (persistedState ?? {}) as Partial<Settings>;
         const debugSpeed = state.debugSpeed === 5 ? 5 : 1;
@@ -87,6 +108,12 @@ export const useSettingsStore = create<SettingsStore>()(
           ...state,
           debugSpeed,
           debugEnabled: state.debugEnabled ?? debugSpeed > 1,
+          calibrationMode: state.calibrationMode ?? true,
+          step3ExtraSecPer10g: Math.max(
+            0,
+            Math.min(30, Math.round(state.step3ExtraSecPer10g ?? 0)),
+          ),
+          pauseCalibrationHistory: state.pauseCalibrationHistory ?? [],
         };
       },
       partialize: (state) => ({
@@ -96,6 +123,9 @@ export const useSettingsStore = create<SettingsStore>()(
         debugEnabled: state.debugEnabled,
         debugSpeed: state.debugSpeed,
         animation: state.animation,
+        calibrationMode: state.calibrationMode,
+        step3ExtraSecPer10g: state.step3ExtraSecPer10g,
+        pauseCalibrationHistory: state.pauseCalibrationHistory,
       }),
     },
   ),

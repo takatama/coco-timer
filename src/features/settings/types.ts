@@ -9,4 +9,14 @@ export interface Settings {
   debugEnabled: boolean;
   debugSpeed: number;
   animation: boolean;
+  calibrationMode: boolean;
+  step3ExtraSecPer10g: number;
+  pauseCalibrationHistory: PauseCalibrationRecord[];
+}
+
+export interface PauseCalibrationRecord {
+  stepIndex: number;
+  beans: number;
+  pausedSec: number;
+  timestamp: number;
 }

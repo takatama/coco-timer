@@ -1,5 +1,14 @@
 import type { ComputedStep, FlavorProfile, Recipe } from "./types";
 
+interface StepTimeAdjustment {
+  step3ExtraSecPer10g: number;
+}
+
+function computeStep3ExtraSeconds(beans: number, step3ExtraSecPer10g: number): number {
+  if (step3ExtraSecPer10g <= 0) return 0;
+  return Math.round((beans / 10) * step3ExtraSecPer10g);
+}
+
 export function getTotalWater(beans: number, waterRatio: number): number {
   return Math.round(beans * waterRatio);
 }
@@ -22,11 +31,16 @@ export function computeSteps(
   recipe: Recipe,
   beans: number,
   flavor: FlavorProfile,
+  adjustment?: StepTimeAdjustment,
 ): ComputedStep[] {
   const total = getTotalWater(beans, recipe.waterRatio);
+  const step3ExtraSeconds = computeStep3ExtraSeconds(
+    beans,
+    adjustment?.step3ExtraSecPer10g ?? 0,
+  );
   let cumulative = 0;
 
-  return recipe.steps.map((step) => {
+  return recipe.steps.map((step, index) => {
     let increment: number;
     switch (step.waterAmountType) {
       case "flavor1":
@@ -47,7 +61,8 @@ export function computeSteps(
       }
     }
     cumulative += increment;
-    return { ...step, cumulative, increment };
+    const adjustedTimeSec = index >= 2 ? step.timeSec + step3ExtraSeconds : step.timeSec;
+    return { ...step, timeSec: adjustedTimeSec, cumulative, increment };
   });
 }
 

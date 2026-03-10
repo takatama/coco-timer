@@ -26,6 +26,9 @@ export function TimerPage() {
     isImminent,
     isRunningOrStarting,
     animation,
+    calibrationPrompt,
+    applyCalibrationSuggestion,
+    dismissCalibrationSuggestion,
     handlePlayPause,
     handleReset,
   } = useTimerOrchestrator();
@@ -102,6 +105,26 @@ export function TimerPage() {
         currentStepIndex={timer.currentStepIndex}
         currentTime={timer.currentTime}
       />
+
+      {calibrationPrompt && (
+        <section className="card">
+          <div>{t("timer.calibrationTitle")}</div>
+          <div className="hint">
+            {t("timer.calibrationMessage", {
+              paused: calibrationPrompt.latestPauseSec,
+              suggested: calibrationPrompt.recommendedPer10g,
+            })}
+          </div>
+          <div className="choice-row">
+            <button className="choice active" onClick={applyCalibrationSuggestion}>
+              {t("timer.calibrationApply")}
+            </button>
+            <button className="choice" onClick={dismissCalibrationSuggestion}>
+              {t("timer.calibrationSkip")}
+            </button>
+          </div>
+        </section>
+      )}
     </main>
   );
 }
