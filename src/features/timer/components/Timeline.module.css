@@ -4,9 +4,9 @@
   overflow: visible;
 }
 
-.stepper {
+.timelineStepper {
   position: relative;
-  height: 110px;
+  height: 86px;
   overflow: visible;
   padding: 18px 18px 8px 18px;
 }
