@@ -36,7 +36,7 @@ export function Timeline({ steps, currentStepIndex, currentTime, hideCard = fals
   const nowLeft = pad + lineWidth * nowRatio;
 
   const timelineContent = (
-    <div className={styles.stepper} ref={containerRef}>
+    <div className={styles.timelineStepper} ref={containerRef}>
         <div className={styles.timelineLine} />
         <div
           className={styles.timelineNow}
