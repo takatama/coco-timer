@@ -7,7 +7,7 @@
     "title": "設定",
     "language": "言語",
     "notification": "通知",
-    "notificationHint": "5秒前に通知します（複数選択可）",
+    "notificationHint": "通知はステップ切り替えの5秒前に行います",
     "voice": "音声",
     "voiceMale": "男性",
     "voiceFemale": "女性",
@@ -22,7 +22,9 @@
     "notifyVibrate": "バイブ",
     "save": "保存",
     "close": "閉じる",
-    "debugOn": "オン"
+    "debugOn": "オン",
+    "display": "表示",
+    "developer": "開発者向け"
   },
   "intro": {
     "title": "新しいハイブリッドメソッド",
