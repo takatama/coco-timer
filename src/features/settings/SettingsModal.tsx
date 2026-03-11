@@ -8,22 +8,67 @@ interface Props {
   onClose: () => void;
 }
 
-function ChoiceButton({
-  active,
-  onClick,
-  children,
+interface SegmentOption<T extends string> {
+  value: T;
+  label: string;
+}
+
+function SegmentedControl<T extends string>({
+  ariaLabel,
+  value,
+  options,
+  onChange,
+  disabled = false,
 }: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
+  ariaLabel: string;
+  value: T;
+  options: SegmentOption<T>[];
+  onChange: (nextValue: T) => void;
+  disabled?: boolean;
 }) {
   return (
-    <button
-      className={`choice${active ? " active" : ""}`}
-      onClick={onClick}
-    >
-      {children}
-    </button>
+    <div className={styles.segmented} role="radiogroup" aria-label={ariaLabel} aria-disabled={disabled}>
+      {options.map((option) => (
+        <button
+          key={option.value}
+          type="button"
+          role="radio"
+          aria-checked={value === option.value}
+          className={styles.segmentButton}
+          data-active={value === option.value}
+          disabled={disabled}
+          onClick={() => onChange(option.value)}
+        >
+          {option.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function SwitchRow({
+  id,
+  label,
+  checked,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  checked: boolean;
+  onChange: (nextValue: boolean) => void;
+}) {
+  return (
+    <label className={styles.row} htmlFor={id}>
+      <span className={styles.rowLabel}>{label}</span>
+      <input
+        id={id}
+        className={styles.switch}
+        type="checkbox"
+        role="switch"
+        checked={checked}
+        onChange={(event) => onChange(event.target.checked)}
+      />
+    </label>
   );
 }
 
@@ -43,94 +88,95 @@ export function SettingsModal({ open, onClose }: Props) {
 
   return (
     <div className={styles.modal} onClick={onClose}>
-      <div className={styles.card} onClick={(e) => e.stopPropagation()}>
-        <h3>{t("settings.title")}</h3>
+      <div
+        className={styles.card}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="settings-modal-title"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <h3 id="settings-modal-title" className={styles.modalTitle}>
+          {t("settings.title")}
+        </h3>
 
-        <div className={styles.section}>
-          <div className={styles.title}>{t("settings.language")}</div>
-          <div className="choice-row">
-            <ChoiceButton
-              active={settings.language === "ja"}
-              onClick={() => handleLanguageChange("ja")}
-            >
-              日本語
-            </ChoiceButton>
-            <ChoiceButton
-              active={settings.language === "en"}
-              onClick={() => handleLanguageChange("en")}
-            >
-              English
-            </ChoiceButton>
-          </div>
-        </div>
+        <section className={styles.section} aria-labelledby="settings-language-heading">
+          <h4 id="settings-language-heading" className={styles.sectionTitle}>
+            {t("settings.language")}
+          </h4>
+          <SegmentedControl
+            ariaLabel={t("settings.language")}
+            value={settings.language}
+            onChange={handleLanguageChange}
+            options={[
+              { value: "ja", label: "日本語" },
+              { value: "en", label: "English" },
+            ]}
+          />
+        </section>
 
-        <div className={styles.section}>
-          <div className={styles.title}>{t("settings.notification")}</div>
-          <div className="choice-row">
-            <ChoiceButton
-              active={soundEnabled}
-              onClick={() => settings.toggleNotifyFlag("sound")}
-            >
-              {t("settings.notifySound")}
-            </ChoiceButton>
-            <ChoiceButton
-              active={vibrateEnabled}
-              onClick={() => settings.toggleNotifyFlag("vibrate")}
-            >
-              {t("settings.notifyVibrate")}
-            </ChoiceButton>
-          </div>
-          <div className="hint">{t("settings.notificationHint")}</div>
-        </div>
+        <section className={styles.section} aria-labelledby="settings-notification-heading">
+          <h4 id="settings-notification-heading" className={styles.sectionTitle}>
+            {t("settings.notification")}
+          </h4>
 
-        <div className={styles.section}>
-          <div className={styles.title}>{t("settings.voice")}</div>
-          <div className="choice-row">
-            {(["male", "female"] as Voice[]).map((v) => (
-              <ChoiceButton
-                key={v}
-                active={settings.voice === v}
-                onClick={() => settings.setVoice(v)}
-              >
-                {t(`settings.voice${v === "male" ? "Male" : "Female"}`)}
-              </ChoiceButton>
-            ))}
-          </div>
-        </div>
+          <SwitchRow
+            id="settings-sound"
+            label={t("settings.notifySound")}
+            checked={soundEnabled}
+            onChange={() => settings.toggleNotifyFlag("sound")}
+          />
 
-        <div className={styles.section}>
-          <div className={styles.title}>{t("settings.animation")}</div>
-          <div className="choice-row">
-            <ChoiceButton
-              active={settings.animation}
-              onClick={() => settings.setAnimation(true)}
-            >
-              {t("settings.animShow")}
-            </ChoiceButton>
-            <ChoiceButton
-              active={!settings.animation}
-              onClick={() => settings.setAnimation(false)}
-            >
-              {t("settings.animHide")}
-            </ChoiceButton>
+          <div className={styles.dependentGroup} aria-disabled={!soundEnabled}>
+            <div className={styles.rowLabel}>{t("settings.voice")}</div>
+            <SegmentedControl
+              ariaLabel={t("settings.voice")}
+              value={settings.voice}
+              disabled={!soundEnabled}
+              onChange={(voice) => settings.setVoice(voice as Voice)}
+              options={[
+                { value: "male", label: t("settings.voiceMale") },
+                { value: "female", label: t("settings.voiceFemale") },
+              ]}
+            />
           </div>
-        </div>
 
-        <div className={styles.section}>
-          <div className={styles.title}>{t("settings.debug")}</div>
-          <div className="choice-row">
-            <ChoiceButton
-              active={settings.debugEnabled}
-              onClick={() => settings.setDebugEnabled(!settings.debugEnabled)}
-            >
-              {settings.debugEnabled ? t("settings.debugOn") : t("settings.debugOff")}
-            </ChoiceButton>
-          </div>
-          <div className="hint">{t("settings.debugHint")}</div>
-        </div>
+          <SwitchRow
+            id="settings-vibrate"
+            label={t("settings.notifyVibrate")}
+            checked={vibrateEnabled}
+            onChange={() => settings.toggleNotifyFlag("vibrate")}
+          />
+
+          <p className={styles.hint}>{t("settings.notificationHint")}</p>
+        </section>
+
+        <section className={styles.section} aria-labelledby="settings-display-heading">
+          <h4 id="settings-display-heading" className={styles.sectionTitle}>
+            {t("settings.display")}
+          </h4>
+          <SwitchRow
+            id="settings-animation"
+            label={t("settings.animation")}
+            checked={settings.animation}
+            onChange={settings.setAnimation}
+          />
+        </section>
+
+        <section className={styles.section} aria-labelledby="settings-developer-heading">
+          <h4 id="settings-developer-heading" className={styles.sectionTitle}>
+            {t("settings.developer")}
+          </h4>
+          <SwitchRow
+            id="settings-debug"
+            label={t("settings.debug")}
+            checked={settings.debugEnabled}
+            onChange={settings.setDebugEnabled}
+          />
+          <p className={styles.hint}>{t("settings.debugHint")}</p>
+        </section>
 
         <div className={styles.actions}>
-          <button className={styles.closeBtn} onClick={onClose}>
+          <button type="button" className={styles.closeBtn} onClick={onClose}>
             {t("settings.close")}
           </button>
         </div>

@@ -7,7 +7,7 @@
     "title": "設定",
     "language": "言語",
     "notification": "通知",
-    "notificationHint": "5秒前に通知します（複数選択可）",
+    "notificationHint": "次ステップの5秒前に通知します",
     "voice": "音声",
     "voiceMale": "男性",
     "voiceFemale": "女性",
@@ -18,11 +18,13 @@
     "debugHint": "タイマーを高速再生します",
     "debugOff": "オフ",
     "debugX5": "x5倍速",
-    "notifySound": "音声",
+    "notifySound": "サウンド",
     "notifyVibrate": "バイブ",
     "save": "保存",
     "close": "閉じる",
-    "debugOn": "オン"
+    "debugOn": "オン",
+    "display": "表示",
+    "developer": "開発者向け"
   },
   "intro": {
     "title": "新しいハイブリッドメソッド",
