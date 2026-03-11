@@ -38,14 +38,12 @@ export function TimerPage() {
     <main className="content">
       <section className="card">
         <div>{t("timer.recipe")}</div>
-        <div className="hint">
-          {t("timer.beansLabel")} {beans}g / {t("timer.flavorLabel")} {flavorLabel}{" "}
-          / {t("timer.waterLabel")} {totalWater}g
+        <div className={styles.chipRow}>
+          <span className={styles.chip}>{t("timer.beansChipLabel")} {beans}g</span>
+          <span className={styles.chip}>{flavorLabel}</span>
+          <span className={styles.chip}>{t("timer.waterChipLabel")} {totalWater}g</span>
         </div>
-        <button
-          className={styles.textLink}
-          onClick={() => navigate("/setup")}
-        >
+        <button className={styles.textLink} onClick={() => navigate("/setup")}>
           {t("timer.editParams")}
         </button>
       </section>
@@ -92,7 +90,7 @@ export function TimerPage() {
             </button>
           )}
         </div>
-        <button className={`${styles.btn} ${styles.secondary}`} onClick={handleReset}>
+        <button className={`${styles.btn} ${styles.outline}`} onClick={handleReset}>
           {t("timer.reset")}
         </button>
       </section>

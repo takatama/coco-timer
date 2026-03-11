@@ -8,9 +8,10 @@ interface Props {
   steps: ComputedStep[];
   currentStepIndex: number;
   currentTime: number;
+  hideCard?: boolean;
 }
 
-export function Timeline({ steps, currentStepIndex, currentTime }: Props) {
+export function Timeline({ steps, currentStepIndex, currentTime, hideCard = false }: Props) {
   const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
@@ -34,10 +35,8 @@ export function Timeline({ steps, currentStepIndex, currentTime }: Props) {
   const nowRatio = totalTime ? currentTime / totalTime : 0;
   const nowLeft = pad + lineWidth * nowRatio;
 
-  return (
-    <section className={`card ${styles.timelineCard}`}>
-      <div className="card-title">{t("timer.timeline")}</div>
-      <div className={styles.stepper} ref={containerRef}>
+  const timelineContent = (
+    <div className={styles.stepper} ref={containerRef}>
         <div className={styles.timelineLine} />
         <div
           className={styles.timelineNow}
@@ -70,6 +69,16 @@ export function Timeline({ steps, currentStepIndex, currentTime }: Props) {
           );
         })}
       </div>
+  );
+
+  if (hideCard) {
+    return timelineContent;
+  }
+
+  return (
+    <section className={`card ${styles.timelineCard}`}>
+      <div className="card-title">{t("timer.timeline")}</div>
+      {timelineContent}
     </section>
   );
 }

@@ -46,7 +46,8 @@
     "detailsAction": "View",
     "closeAction": "Close",
     "equipment": "Required gear",
-    "affiliate": "As an Amazon Associate, COCO Timer earns from qualifying purchases."
+    "affiliate": "As an Amazon Associate, COCO Timer earns from qualifying purchases.",
+    "water": "Water"
   },
   "timer": {
     "currentStep": "Current Step",
@@ -75,7 +76,9 @@
     "beansLabel": "Beans",
     "flavorLabel": "Flavor",
     "waterLabel": "Water",
-    "pourToAmount": "Pour to <num>{{amount}}</num><unit>g</unit>"
+    "pourToAmount": "Pour to <num>{{amount}}</num><unit>g</unit>",
+    "beansChipLabel": "Beans",
+    "waterChipLabel": "Water"
   },
   "stepLabels": [
     "Close & Bloom",
