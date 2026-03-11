@@ -35,6 +35,9 @@ describe("useSettingsStore", () => {
       debugEnabled: false,
       debugSpeed: 1,
       animation: true,
+      calibrationMode: true,
+      step3ExtraSecPer10g: 0,
+      pauseCalibrationHistory: [],
     });
   });
 
@@ -45,6 +48,8 @@ describe("useSettingsStore", () => {
     expect(state.debugEnabled).toBe(false);
     expect(state.debugSpeed).toBe(1);
     expect(state.animation).toBe(true);
+    expect(state.calibrationMode).toBe(true);
+    expect(state.step3ExtraSecPer10g).toBe(0);
   });
 
   it("setLanguage updates language", () => {
@@ -118,5 +123,25 @@ describe("useSettingsStore", () => {
   it("setAnimation updates animation", () => {
     useSettingsStore.getState().setAnimation(false);
     expect(useSettingsStore.getState().animation).toBe(false);
+  });
+
+  it("stores step3 adjustment and clamps values", () => {
+    useSettingsStore.getState().setStep3ExtraSecPer10g(6);
+    expect(useSettingsStore.getState().step3ExtraSecPer10g).toBe(6);
+
+    useSettingsStore.getState().setStep3ExtraSecPer10g(100);
+    expect(useSettingsStore.getState().step3ExtraSecPer10g).toBe(30);
+  });
+
+  it("stores pause history up to 30 records", () => {
+    for (let i = 0; i < 35; i += 1) {
+      useSettingsStore.getState().addPauseCalibrationRecord({
+        stepIndex: 2,
+        beans: 20,
+        pausedSec: i,
+        timestamp: i,
+      });
+    }
+    expect(useSettingsStore.getState().pauseCalibrationHistory).toHaveLength(30);
   });
 });

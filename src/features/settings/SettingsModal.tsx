@@ -129,6 +129,41 @@ export function SettingsModal({ open, onClose }: Props) {
           <div className="hint">{t("settings.debugHint")}</div>
         </div>
 
+        <div className={styles.section}>
+          <div className={styles.title}>{t("settings.calibrationMode")}</div>
+          <div className="choice-row">
+            <ChoiceButton
+              active={settings.calibrationMode}
+              onClick={() => settings.setCalibrationMode(true)}
+            >
+              {t("settings.calibrationOn")}
+            </ChoiceButton>
+            <ChoiceButton
+              active={!settings.calibrationMode}
+              onClick={() => settings.setCalibrationMode(false)}
+            >
+              {t("settings.calibrationOff")}
+            </ChoiceButton>
+          </div>
+          <div className="hint">{t("settings.calibrationHint")}</div>
+        </div>
+
+        <div className={styles.section}>
+          <div className={styles.title}>{t("settings.step3Extra")}</div>
+          <div className="choice-row">
+            {[0, 2, 4, 6].map((seconds) => (
+              <ChoiceButton
+                key={seconds}
+                active={settings.step3ExtraSecPer10g === seconds}
+                onClick={() => settings.setStep3ExtraSecPer10g(seconds)}
+              >
+                {seconds === 0 ? t("settings.step3ExtraNone") : t("settings.step3ExtraValue", { seconds })}
+              </ChoiceButton>
+            ))}
+          </div>
+          <div className="hint">{t("settings.step3ExtraHint")}</div>
+        </div>
+
         <div className={styles.actions}>
           <button className={styles.closeBtn} onClick={onClose}>
             {t("settings.close")}

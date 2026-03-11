@@ -6,17 +6,25 @@ import { newHybridMethod, computeSteps, getTotalWater } from "../../recipe";
 import { useTimer } from "./useTimer";
 import { useWakeLock } from "./useWakeLock";
 import { useNotification } from "./useNotification";
+import { buildCalibrationSuggestion } from "./calibration";
 
 export function useTimerOrchestrator() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { beans, flavor } = useSessionStore();
-  const { debugSpeed, animation } = useSettingsStore();
+  const settings = useSettingsStore();
+  const {
+    debugSpeed,
+    animation,
+    step3ExtraSecPer10g,
+    calibrationMode,
+    pauseCalibrationHistory,
+  } = settings;
   const { playSound, vibrate } = useNotification();
   const wakeLock = useWakeLock();
 
   const steps = useMemo(
-    () => computeSteps(newHybridMethod, beans, flavor),
-    [beans, flavor],
+    () => computeSteps(newHybridMethod, beans, flavor, { step3ExtraSecPer10g }),
+    [beans, flavor, step3ExtraSecPer10g],
   );
   const totalWater = getTotalWater(beans, newHybridMethod.waterRatio);
 
@@ -26,6 +34,12 @@ export function useTimerOrchestrator() {
   } | null>(null);
 
   const startDelayRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pauseStartRef = useRef<number | null>(null);
+  const pauseStepIndexRef = useRef<number | null>(null);
+  const [calibrationPrompt, setCalibrationPrompt] = useState<{
+    recommendedPer10g: number;
+    latestPauseSec: number;
+  } | null>(null);
 
   const onPreNotify = useCallback(
     (nextStepIndex: number, isFinish: boolean) => {
@@ -90,9 +104,26 @@ export function useTimerOrchestrator() {
     }
 
     if (timer.status === "running") {
+      pauseStartRef.current = Date.now();
+      pauseStepIndexRef.current = timer.currentStepIndex;
       timer.pause();
       wakeLock.release();
     } else {
+      if (timer.status === "paused" && pauseStartRef.current !== null) {
+        const pausedSec = Math.max(0, Math.round((Date.now() - pauseStartRef.current) / 1000));
+        pauseStartRef.current = null;
+        const stepIndex = pauseStepIndexRef.current ?? timer.currentStepIndex;
+        pauseStepIndexRef.current = null;
+        if (pausedSec > 0) {
+          settings.addPauseCalibrationRecord({
+            stepIndex,
+            beans,
+            pausedSec,
+            timestamp: Date.now(),
+          });
+        }
+      }
+
       if (timer.currentTime === 0 && animation) {
         startWithAnimation();
       } else {
@@ -100,7 +131,7 @@ export function useTimerOrchestrator() {
         wakeLock.request();
       }
     }
-  }, [timer, animation, wakeLock, startWithAnimation]);
+  }, [timer, animation, wakeLock, startWithAnimation, settings, beans]);
 
   const handleReset = useCallback(() => {
     if (startDelayRef.current) {
@@ -109,6 +140,9 @@ export function useTimerOrchestrator() {
     }
     setOverlayStep(null);
     timer.reset();
+    pauseStartRef.current = null;
+    pauseStepIndexRef.current = null;
+    setCalibrationPrompt(null);
     wakeLock.release();
   }, [timer, wakeLock]);
 
@@ -134,8 +168,28 @@ export function useTimerOrchestrator() {
     if (timer.status === "finished") {
       setOverlayStep(null);
       wakeLock.release();
+      if (calibrationMode) {
+        const suggestion = buildCalibrationSuggestion(pauseCalibrationHistory, beans);
+        if (
+          suggestion &&
+          suggestion.recommendedPer10g > 0 &&
+          suggestion.recommendedPer10g !== step3ExtraSecPer10g
+        ) {
+          setCalibrationPrompt({
+            recommendedPer10g: suggestion.recommendedPer10g,
+            latestPauseSec: suggestion.latestPauseSec,
+          });
+        }
+      }
     }
-  }, [timer.status, wakeLock]);
+  }, [
+    timer.status,
+    wakeLock,
+    calibrationMode,
+    pauseCalibrationHistory,
+    beans,
+    step3ExtraSecPer10g,
+  ]);
 
   // Cleanup start delay on unmount
   useEffect(() => {
@@ -163,6 +217,13 @@ export function useTimerOrchestrator() {
     isRunningOrStarting,
     animation,
     wakeLock,
+    calibrationPrompt,
+    applyCalibrationSuggestion: () => {
+      if (!calibrationPrompt) return;
+      settings.setStep3ExtraSecPer10g(calibrationPrompt.recommendedPer10g);
+      setCalibrationPrompt(null);
+    },
+    dismissCalibrationSuggestion: () => setCalibrationPrompt(null),
     handlePlayPause,
     handleReset,
   };

@@ -22,7 +22,15 @@
     "notifyVibrate": "Vibrate",
     "save": "Save",
     "close": "Close",
-    "debugOn": "On"
+    "debugOn": "On",
+    "calibrationMode": "Calibration Suggestions",
+    "calibrationOn": "On",
+    "calibrationOff": "Off",
+    "calibrationHint": "Records manual pauses and suggests a Step 3 time adjustment.",
+    "step3Extra": "Step 3 extension (per 10g beans)",
+    "step3ExtraNone": "No extension",
+    "step3ExtraValue": "+{{seconds}} sec",
+    "step3ExtraHint": "Use this when darker, finer grinds drain more slowly."
   },
   "intro": {
     "title": "New Hybrid Method",
@@ -73,7 +81,11 @@
     "beansLabel": "Beans",
     "flavorLabel": "Flavor",
     "waterLabel": "Water",
-    "pourToAmount": "Pour to <num>{{amount}}</num><unit>g</unit>"
+    "pourToAmount": "Pour to <num>{{amount}}</num><unit>g</unit>",
+    "calibrationTitle": "Brew Time Adjustment Suggestion",
+    "calibrationMessage": "You paused for about {{paused}}s. Apply +{{suggested}}s per 10g to Step 3?",
+    "calibrationApply": "Apply to settings",
+    "calibrationSkip": "Skip for now"
   },
   "stepLabels": [
     "Close & Bloom",

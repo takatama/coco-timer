@@ -119,6 +119,13 @@ describe("computeSteps", () => {
     expect(steps10[steps10.length - 1].cumulative).toBe(150);
     expect(steps30[steps30.length - 1].cumulative).toBe(450);
   });
+
+  it("extends step 3+ timing based on beans and user setting", () => {
+    const steps = computeSteps(newHybridMethod, 20, "neutral", {
+      step3ExtraSecPer10g: 4,
+    });
+    expect(steps.map((s) => s.timeSec)).toEqual([0, 40, 98, 138, 173, 218]);
+  });
 });
 
 describe("getCurrentStepIndex", () => {
