@@ -6,6 +6,7 @@ import { useSettingsStore } from "../../features/settings/store";
 import { newHybridMethod, computeSteps, getTotalWater } from "../../features/recipe";
 import type { FlavorProfile } from "../../features/recipe";
 import { CoffeeNews } from "../../features/timer/components/CoffeeNews";
+import { Timeline } from "../../features/timer/components/Timeline";
 import { useCoffeeNews } from "../../features/timer/hooks/useCoffeeNews";
 import styles from "./SetupPage.module.css";
 const heroImage = "/assets/images/goran-ivos-1JsjRW6Sbwg-unsplash.jpg";
@@ -104,11 +105,20 @@ export function SetupPage() {
         {t("setup.start")}
       </button>
 
-      <details
-        className="card"
-        open={detailsOpen}
-        onToggle={(e) => setDetailsOpen((e.target as HTMLDetailsElement).open)}
-      >
+      <section className="card">
+        <div className="card-title">{t("timer.timeline")}</div>
+        <div className={styles.timelineHint}>
+          {t("setup.total")}: {totalWater}g
+        </div>
+        <Timeline
+          steps={steps}
+          currentStepIndex={0}
+          currentTime={0}
+          hideCard
+        />
+      </section>
+
+      <details className="card" open={detailsOpen} onToggle={(e) => setDetailsOpen((e.target as HTMLDetailsElement).open)}>
         <summary className={styles.detailsSummary}>
           <span>{t("setup.details")}</span>
           <span className={styles.detailsSummaryLink}>
@@ -122,6 +132,19 @@ export function SetupPage() {
             alt="New Hybrid Method"
           />
           <div className={styles.detailsText}>{t("intro.description")}</div>
+          <div>
+            <div className={styles.detailsSubTitle}>{t("setup.steps")}</div>
+            <div className={styles.stepList}>
+              {steps.map((step, idx) => (
+                <div key={`${step.timeSec}-${step.actionType}`} className={styles.stepItem}>
+                  <span>
+                    Step {idx + 1}: {stepLabels[idx] ?? ""}
+                  </span>
+                  <span>{step.cumulative}g</span>
+                </div>
+              ))}
+            </div>
+          </div>
           <div className={styles.detailsVideo}>
             <iframe
               src="https://www.youtube.com/embed/4FeUp_zNiiY"
@@ -151,23 +174,6 @@ export function SetupPage() {
             </li>
           ))}
         </ul>
-      </section>
-
-      <section className="card">
-        <div className="card-title">{t("setup.steps")}</div>
-        <div className="hint">
-          {t("setup.total")}: {totalWater}g
-        </div>
-        <div className={styles.stepList}>
-          {steps.map((step, idx) => (
-            <div key={`${step.timeSec}-${step.actionType}`} className={styles.stepItem}>
-              <span>
-                Step {idx + 1}: {stepLabels[idx] ?? ""}
-              </span>
-              <span>{step.cumulative}g</span>
-            </div>
-          ))}
-        </div>
       </section>
 
       {debugEnabled && <section className="card"><CoffeeNews news={news} loading={newsLoading} /></section>}
