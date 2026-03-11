@@ -105,10 +105,10 @@ export function SetupPage() {
         {t("setup.start")}
       </button>
 
-      <section className="card">
+      <section className={`card ${styles.timelineCard}`}>
         <div className="card-title">{t("timer.timeline")}</div>
         <div className={styles.timelineHint}>
-          {t("setup.total")}: {totalWater}g
+          {t("setup.water")}: {totalWater}g
         </div>
         <Timeline
           steps={steps}

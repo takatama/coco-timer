@@ -46,7 +46,8 @@
     "detailsAction": "見る",
     "closeAction": "閉じる",
     "equipment": "必要な器具",
-    "affiliate": "Amazonのアソシエイトとして、COCO Timerは適格販売により収入を得ています。"
+    "affiliate": "Amazonのアソシエイトとして、COCO Timerは適格販売により収入を得ています。",
+    "water": "湯量"
   },
   "timer": {
     "currentStep": "今のステップ",
