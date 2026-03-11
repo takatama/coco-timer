@@ -39,9 +39,9 @@ export function TimerPage() {
       <section className="card">
         <div>{t("timer.recipe")}</div>
         <div className={styles.chipRow}>
-          <span className={styles.chip}>{t("timer.beansLabel")} {beans}g</span>
+          <span className={styles.chip}>{t("timer.beansChipLabel")} {beans}g</span>
           <span className={styles.chip}>{flavorLabel}</span>
-          <span className={styles.chip}>{t("timer.waterLabel")} {totalWater}g</span>
+          <span className={styles.chip}>{t("timer.waterChipLabel")} {totalWater}g</span>
         </div>
         <button className={styles.textLink} onClick={() => navigate("/setup")}>
           {t("timer.editParams")}

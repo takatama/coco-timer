@@ -76,7 +76,9 @@
     "beansLabel": "豆量",
     "flavorLabel": "味わい",
     "waterLabel": "抽出量",
-    "pourToAmount": "<num>{{amount}}</num><unit>g</unit> まで注ぐ"
+    "pourToAmount": "<num>{{amount}}</num><unit>g</unit> まで注ぐ",
+    "beansChipLabel": "豆",
+    "waterChipLabel": "湯"
   },
   "stepLabels": [
     "閉じて蒸らし",

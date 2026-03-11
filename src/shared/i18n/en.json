@@ -76,7 +76,9 @@
     "beansLabel": "Beans",
     "flavorLabel": "Flavor",
     "waterLabel": "Water",
-    "pourToAmount": "Pour to <num>{{amount}}</num><unit>g</unit>"
+    "pourToAmount": "Pour to <num>{{amount}}</num><unit>g</unit>",
+    "beansChipLabel": "Beans",
+    "waterChipLabel": "Water"
   },
   "stepLabels": [
     "Close & Bloom",
