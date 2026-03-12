@@ -8,6 +8,33 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      pwaAssets: {
+        image: 'public/icon.svg',
+        preset: {
+          transparent: {
+            sizes: [192, 512],
+            favicons: [
+              [32, 'favicon-32x32.png'],
+              [16, 'favicon-16x16.png'],
+            ],
+          },
+          maskable: {
+            sizes: [],
+          },
+          apple: {
+            sizes: [180],
+          },
+          assetName: (type, size) => {
+            if (type === 'apple' && size.width === 180 && size.height === 180)
+              return 'apple-touch-icon.png';
+
+            if (type === 'transparent')
+              return `pwa-${size.width}x${size.height}.png`;
+
+            return `maskable-icon-${size.width}x${size.height}.png`;
+          },
+        },
+      },
       manifest: {
         name: 'COCO Timer',
         short_name: 'COCO Timer',
@@ -18,13 +45,13 @@ export default defineConfig({
         start_url: '/',
         icons: [
           {
-            src: '/assets/images/icon-192.png',
+            src: 'pwa-192x192.png',
             sizes: '192x192',
             type: 'image/png',
             purpose: 'any maskable',
           },
           {
-            src: '/assets/images/icon-512.png',
+            src: 'pwa-512x512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable',
@@ -56,7 +83,7 @@ export default defineConfig({
       },
     }),
   ],
-  publicDir: 'static',
+  publicDir: 'public',
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),

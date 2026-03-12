@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { SettingsModal } from "../../features/settings/SettingsModal";
-import styles from "./Header.module.css";
+import { useState } from 'react';
+import { SettingsModal } from '../../features/settings/SettingsModal';
+import styles from './Header.module.css';
 
 const SettingsIcon = () => (
   <svg
@@ -26,7 +26,16 @@ export function Header() {
   return (
     <>
       <header className={styles.appBar}>
-        <div className={styles.appTitle}>COCO Timer</div>
+        <div className={styles.appTitle}>
+          <img
+            src="/icon.svg"
+            width="28"
+            height="28"
+            alt=""
+            aria-hidden="true"
+          />
+          <span>COCO Timer</span>
+        </div>
         <button
           className={styles.iconBtn}
           onClick={() => setSettingsOpen(true)}
