@@ -66,7 +66,7 @@ Make sure your Pages project is configured to deploy the `dist/` directory.
 
 ```
 src/        # React SPA source
-public/     # publicDir (assets, _redirects)
+public/     # publicDir (assets)
 ```
 
 ## Notes
