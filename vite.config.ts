@@ -9,31 +9,7 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       pwaAssets: {
-        image: 'public/icon.svg',
-        preset: {
-          transparent: {
-            sizes: [192, 512],
-            favicons: [
-              [32, 'favicon-32x32.png'],
-              [16, 'favicon-16x16.png'],
-            ],
-          },
-          maskable: {
-            sizes: [],
-          },
-          apple: {
-            sizes: [180],
-          },
-          assetName: (type, size) => {
-            if (type === 'apple' && size.width === 180 && size.height === 180)
-              return 'apple-touch-icon.png';
-
-            if (type === 'transparent')
-              return `pwa-${size.width}x${size.height}.png`;
-
-            return `maskable-icon-${size.width}x${size.height}.png`;
-          },
-        },
+        disabled: true,
       },
       manifest: {
         name: 'COCO Timer',

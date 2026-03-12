@@ -8,7 +8,9 @@
 		"preview": "vite preview",
 		"deploy": "wrangler pages deploy dist",
 		"test": "vitest run",
-		"test:watch": "vitest"
+		"test:watch": "vitest",
+		"generate:icons": "node scripts/generate-pwa-icons.mjs",
+		"prebuild": "npm run generate:icons"
 	},
 	"dependencies": {
 		"i18next": "^25.8.13",
