@@ -15,7 +15,7 @@ See `SPEC.md` for full UI/UX specification.
 - **Styling:** CSS Modules (`.module.css`) + global design tokens (`tokens.css`)
 - **Build:** Vite 7, `public/` as publicDir, vite-plugin-pwa for offline support
 - **Test:** Vitest + Testing Library
-- **Deploy:** Cloudflare Pages (static SPA with `_redirects` fallback)
+- **Deploy:** Cloudflare Pages (static SPA; default fallback to `/` when no top-level `404.html`)
 
 ## Project Structure
 
@@ -48,7 +48,6 @@ src/
     └── styles/
         └── tokens.css             # Design tokens + shared primitives (card, choice, hint)
 public/                            # Vite publicDir — served as-is at /
-├── _redirects                     # SPA fallback: /*  /index.html  200
 └── assets/
     ├── audio/                     # {lang}-{voice}-{type}.wav
     ├── images/
