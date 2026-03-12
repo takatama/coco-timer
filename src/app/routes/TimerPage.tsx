@@ -31,6 +31,7 @@ export function TimerPage() {
   } = useTimerOrchestrator();
 
   const flavorLabel = t(`flavorLabels.${flavor}`);
+  const isFinishStep = currentStep?.actionType === "none";
   const { debugEnabled, debugSpeed, setDebugSpeed, language } = useSettingsStore();
   const { news, loading: newsLoading } = useCoffeeNews(language);
 
@@ -77,19 +78,21 @@ export function TimerPage() {
       )}
 
       <section className={styles.controls}>
-        <div className={styles.primaryControlRow}>
-          <button className={`${styles.btn} ${styles.primary}`} onClick={handlePlayPause}>
-            {isRunningOrStarting ? t("timer.pause") : t("timer.play")}
-          </button>
-          {debugEnabled && (
-            <button
-              className={`${styles.speedToggle} ${debugSpeed === 5 ? styles.speedToggleActive : ""}`}
-              onClick={() => setDebugSpeed(debugSpeed === 5 ? 1 : 5)}
-            >
-              {t("settings.debugX5")}
+        {!isFinishStep && (
+          <div className={styles.primaryControlRow}>
+            <button className={`${styles.btn} ${styles.primary}`} onClick={handlePlayPause}>
+              {isRunningOrStarting ? t("timer.pause") : t("timer.play")}
             </button>
-          )}
-        </div>
+            {debugEnabled && (
+              <button
+                className={`${styles.speedToggle} ${debugSpeed === 5 ? styles.speedToggleActive : ""}`}
+                onClick={() => setDebugSpeed(debugSpeed === 5 ? 1 : 5)}
+              >
+                {t("settings.debugX5")}
+              </button>
+            )}
+          </div>
+        )}
         <button className={`${styles.btn} ${styles.outline}`} onClick={handleReset}>
           {t("timer.reset")}
         </button>

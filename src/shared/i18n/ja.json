@@ -59,7 +59,7 @@
     "recipe": "新しいハイブリッドメソッド",
     "editParams": "設定を変更",
     "timeline": "タイムライン",
-    "waitNoPour": "待つ（注がない）",
+    "openWaitNoPour": "開けて待つ（注がない）",
     "pourTo": "まで注ぐ",
     "close": "閉じる",
     "open": "開ける",
@@ -77,8 +77,8 @@
     "flavorLabel": "味わい",
     "waterLabel": "抽出量",
     "pourToAmount": "<num>{{amount}}</num><unit>g</unit> まで注ぐ",
-    "beansChipLabel": "豆",
-    "waterChipLabel": "湯"
+    "beansChipLabel": "豆量",
+    "waterChipLabel": "湯量"
   },
   "stepLabels": [
     "閉じて蒸らし",

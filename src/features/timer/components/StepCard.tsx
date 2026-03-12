@@ -44,7 +44,7 @@ function InstructionText({ step }: { step: ComputedStep }) {
     return <>{t("timer.enjoyCoffee")}</>;
   }
   if (step.actionType === "switch_open") {
-    return <>{t("timer.waitNoPour")}</>;
+    return <>{t("timer.openWaitNoPour")}</>;
   }
 
   const amount = step.cumulative;

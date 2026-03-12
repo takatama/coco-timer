@@ -47,12 +47,12 @@ function AnimationInstructionText({
     );
   }
   if (step.actionType === "switch_open") {
-    return <>{t("timer.waitNoPour")}</>;
+    return <>{t("timer.openWaitNoPour")}</>;
   }
   if (step.actionType === "none") {
     return <>{t("timer.enjoyCoffee")}</>;
   }
-  return <>{t("timer.waitNoPour")}</>;
+  return <>{t("timer.wait")}</>;
 }
 
 export function NextStepPreview({ step, prevCumulative, visible }: Props) {
