@@ -13,7 +13,7 @@ See `SPEC.md` for full UI/UX specification.
 - **i18n:** react-i18next with JSON translation files (`src/shared/i18n/{ja,en}.json`)
 - **Animation:** lottie-web (direct `loadAnimation`/`destroy` control — do NOT use lottie-react)
 - **Styling:** CSS Modules (`.module.css`) + global design tokens (`tokens.css`)
-- **Build:** Vite 7, `static/` as publicDir, vite-plugin-pwa for offline support
+- **Build:** Vite 7, `public/` as publicDir, vite-plugin-pwa for offline support
 - **Test:** Vitest + Testing Library
 - **Deploy:** Cloudflare Pages (static SPA with `_redirects` fallback)
 
@@ -47,7 +47,7 @@ src/
     ├── i18n/                      # config.ts, ja.json, en.json
     └── styles/
         └── tokens.css             # Design tokens + shared primitives (card, choice, hint)
-static/                            # Vite publicDir — served as-is at /
+public/                            # Vite publicDir — served as-is at /
 ├── _redirects                     # SPA fallback: /*  /index.html  200
 └── assets/
     ├── audio/                     # {lang}-{voice}-{type}.wav
@@ -86,16 +86,16 @@ static/                            # Vite publicDir — served as-is at /
 
 ### Static Assets
 
-- Audio, images, and Lottie JSON files live in `static/assets/` (Vite publicDir).
+- Audio, images, and Lottie JSON files live in `public/assets/` (Vite publicDir).
 - Reference them as URL strings (e.g., `/assets/audio/ja-male-next-step.wav`), not as ES module imports.
 
 ### State Management
 
-| Layer | Tool | Persisted | Examples |
-|-------|------|-----------|----------|
-| Settings | Zustand + persist | localStorage | language, notifyMode, voice, animation, debugSpeed |
-| Session | Zustand (no persist) | No | beans, flavor, introSeen |
-| Derived | useMemo / computed | No | computedSteps, currentStepIndex, waterAmounts |
+| Layer    | Tool                 | Persisted    | Examples                                           |
+| -------- | -------------------- | ------------ | -------------------------------------------------- |
+| Settings | Zustand + persist    | localStorage | language, notifyMode, voice, animation, debugSpeed |
+| Session  | Zustand (no persist) | No           | beans, flavor, introSeen                           |
+| Derived  | useMemo / computed   | No           | computedSteps, currentStepIndex, waterAmounts      |
 
 ### i18n
 
