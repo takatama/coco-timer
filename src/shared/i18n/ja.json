@@ -34,7 +34,7 @@
     "skip": "スキップ"
   },
   "setup": {
-    "beans": "豆の量",
+    "beans": "豆",
     "flavor": "味わい",
     "sweet": "甘味",
     "neutral": "バランス",
@@ -77,7 +77,7 @@
     "flavorLabel": "味わい",
     "waterLabel": "抽出量",
     "pourToAmount": "<num>{{amount}}</num><unit>g</unit> まで注ぐ",
-    "beansChipLabel": "豆量",
+    "beansChipLabel": "豆",
     "waterChipLabel": "湯量"
   },
   "stepLabels": [
