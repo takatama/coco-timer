@@ -59,7 +59,7 @@
     "recipe": "New Hybrid Method",
     "editParams": "Edit settings",
     "timeline": "Timeline",
-    "waitNoPour": "Wait (no pour)",
+    "openWaitNoPour": "Open and wait (no pour)",
     "pourTo": "Pour to",
     "close": "CLOSE",
     "open": "OPEN",
