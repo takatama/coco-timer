@@ -164,7 +164,6 @@ export function SetupPage() {
 
       {debugEnabled && <section className="card"><CoffeeNews news={news} loading={newsLoading} /></section>}
 
-      <p className={styles.affiliateNote}>{t("setup.affiliate")}</p>
     </main>
   );
 }

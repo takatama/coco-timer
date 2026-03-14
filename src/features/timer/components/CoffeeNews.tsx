@@ -16,6 +16,7 @@ interface AdItem {
 }
 
 const AD_CYCLE_KEY = "coco-timer-news-ad-cycle";
+const NEWS_DISPLAY_LIMIT = 5;
 
 function pickAd(cycle: number, language: SupportedLanguage): AdItem | null {
   if (cycle % 2 !== 0) {
@@ -81,39 +82,47 @@ export function CoffeeNews({ news, loading }: Props) {
 
   if (news.length === 0) return null;
 
+  const displayNews = news.slice(0, NEWS_DISPLAY_LIMIT);
+  const canInsertAdAsFifth = Boolean(ad) && displayNews.length === NEWS_DISPLAY_LIMIT;
+
   return (
     <>
       <div className="card-title">{t("news.title")}</div>
       <ul className={styles.newsList}>
-        {news.map((item) => (
-          <li key={item.id}>
-            <a
-              href={item.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.newsItem}
-            >
-              <span className={styles.newsItemTitle}>{item.short_title}</span>
-              <span className={styles.newsItemSource}>{item.source}</span>
-            </a>
-          </li>
-        ))}
+        {displayNews.map((item, index) => {
+          if (canInsertAdAsFifth && index === NEWS_DISPLAY_LIMIT - 1 && ad) {
+            return (
+              <li key={`ad-${ad.titleKey}`}>
+                <a
+                  href={ad.url}
+                  target="_blank"
+                  rel="noopener noreferrer sponsored"
+                  className={styles.newsItem}
+                >
+                  <span className={styles.newsItemTitle}>
+                    {t("news.ads.label")} {t(ad.titleKey)}
+                  </span>
+                  <span className={styles.newsItemSource}>{t(ad.descriptionKey)}</span>
+                </a>
+              </li>
+            );
+          }
+
+          return (
+            <li key={item.id}>
+              <a
+                href={item.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.newsItem}
+              >
+                <span className={styles.newsItemTitle}>{item.short_title}</span>
+                <span className={styles.newsItemSource}>{item.source}</span>
+              </a>
+            </li>
+          );
+        })}
       </ul>
-      {ad ? (
-        <aside className={styles.adSection}>
-          <div className={styles.adLabel}>{t("news.ads.label")}</div>
-          <a
-            href={ad.url}
-            target="_blank"
-            rel="noopener noreferrer sponsored"
-            className={styles.adLink}
-          >
-            <span className={styles.adTitle}>{t(ad.titleKey)}</span>
-            <span className={styles.adDescription}>{t(ad.descriptionKey)}</span>
-          </a>
-          <div className="hint">{t("setup.affiliate")}</div>
-        </aside>
-      ) : null}
     </>
   );
 }

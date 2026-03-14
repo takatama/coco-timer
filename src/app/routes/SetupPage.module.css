@@ -183,9 +183,3 @@
   text-decoration: underline;
 }
 
-.affiliateNote {
-  margin: -4px 2px 8px;
-  font-size: 0.72rem;
-  color: var(--md-text-muted);
-  line-height: 1.4;
-}
