@@ -5,10 +5,9 @@ interface EquipmentItem {
   href: string;
 }
 
-interface NewsAdLinks {
-  filter: string;
-  dripper: string;
-}
+type NewsAdKind = "filter" | "dripper" | "kettle" | "scale";
+
+type NewsAdLinks = Record<NewsAdKind, string>;
 
 const AMAZON_ASSOCIATE_TAG: Record<SupportedLanguage, string> = {
   ja: "tktm-22",
@@ -52,5 +51,7 @@ export function getNewsAdLinks(language: SupportedLanguage): NewsAdLinks {
   return {
     filter: buildAmazonSearchUrl(language, language === "ja" ? "コーヒー ペーパーフィルター" : "coffee paper filters"),
     dripper: buildAmazonSearchUrl(language, "Hario Switch"),
+    kettle: buildAmazonSearchUrl(language, language === "ja" ? "温度調整 コーヒーケトル" : "temperature control coffee kettle"),
+    scale: buildAmazonSearchUrl(language, language === "ja" ? "コーヒースケール タイマー" : "coffee scale timer"),
   };
 }

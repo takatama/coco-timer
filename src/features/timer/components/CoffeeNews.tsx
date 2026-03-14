@@ -9,6 +9,8 @@ interface Props {
   loading: boolean;
 }
 
+type AdKey = "filter" | "dripper" | "kettle" | "scale";
+
 interface AdItem {
   titleKey: string;
   descriptionKey: string;
@@ -17,6 +19,7 @@ interface AdItem {
 
 const AD_CYCLE_KEY = "coco-timer-news-ad-cycle";
 const NEWS_DISPLAY_LIMIT = 5;
+const AD_ROTATION: AdKey[] = ["filter", "dripper", "filter", "kettle", "filter", "scale"];
 
 function pickAd(cycle: number, language: SupportedLanguage): AdItem | null {
   if (cycle % 2 !== 0) {
@@ -24,19 +27,13 @@ function pickAd(cycle: number, language: SupportedLanguage): AdItem | null {
   }
 
   const links = getNewsAdLinks(language);
-
-  if (cycle % 4 === 0 || cycle % 6 === 0) {
-    return {
-      titleKey: "news.ads.filter.title",
-      descriptionKey: "news.ads.filter.description",
-      url: links.filter,
-    };
-  }
+  const rotationIndex = Math.floor(cycle / 2) % AD_ROTATION.length;
+  const adKey = AD_ROTATION[rotationIndex];
 
   return {
-    titleKey: "news.ads.dripper.title",
-    descriptionKey: "news.ads.dripper.description",
-    url: links.dripper,
+    titleKey: `news.ads.${adKey}.title`,
+    descriptionKey: `news.ads.${adKey}.description`,
+    url: links[adKey],
   };
 }
 
