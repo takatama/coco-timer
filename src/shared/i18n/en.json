@@ -90,7 +90,26 @@
   ],
   "news": {
     "title": "Today's Coffee News",
-    "loading": "Loading news..."
+    "loading": "Loading news...",
+    "ads": {
+      "label": "[Ad]",
+      "filter": {
+        "title": "HARIO V60 Paper Filters",
+        "description": "A classic consumable that saves you from mornings when you have coffee but no filters."
+      },
+      "dripper": {
+        "title": "HARIO Switch Dripper",
+        "description": "This recipe is designed for the HARIO Switch, so you can follow COCO Timer step by step."
+      },
+      "kettle": {
+        "title": "Temperature-Control Coffee Kettle",
+        "description": "Keeping water temperature stable greatly improves recipe repeatability."
+      },
+      "scale": {
+        "title": "Coffee Scale",
+        "description": "Measure both water and time precisely to brew exactly as the COCO Timer recipe intends."
+      }
+    }
   },
   "flavorLabels": {
     "sweet": "Sweet",

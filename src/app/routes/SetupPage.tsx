@@ -9,24 +9,10 @@ import { CoffeeNews } from "../../features/timer/components/CoffeeNews";
 import { Timeline } from "../../features/timer/components/Timeline";
 import { useCoffeeNews } from "../../features/timer/hooks/useCoffeeNews";
 import styles from "./SetupPage.module.css";
+import { getEquipmentItems, type SupportedLanguage } from "../../shared/affiliate/amazon";
 const heroImage = "/assets/images/goran-ivos-1JsjRW6Sbwg-unsplash.jpg";
 
 const validFlavors: FlavorProfile[] = ["sweet", "neutral", "sour"];
-
-const equipmentData = {
-  ja: [
-    { name: "Hario Switch", href: "https://www.amazon.co.jp/s?k=Hario+Switch&tag=tktm-22" },
-    { name: "V60 フィルター", href: "https://www.amazon.co.jp/s?k=V60+フィルター&tag=tktm-22" },
-    { name: "スケール", href: "https://www.amazon.co.jp/s?k=コーヒー+スケール&tag=tktm-22" },
-    { name: "ケトル", href: "https://www.amazon.co.jp/s?k=コーヒー+電気ケトル&tag=tktm-22" },
-  ],
-  en: [
-    { name: "Hario Switch", href: "https://www.amazon.com/s?k=Hario+Switch&tag=tktm-20" },
-    { name: "V60 Filters", href: "https://www.amazon.com/s?k=V60+filters&tag=tktm-20" },
-    { name: "Coffee Scale", href: "https://www.amazon.com/s?k=coffee+scale&tag=tktm-20" },
-    { name: "Pour-over kettle", href: "https://www.amazon.com/s?k=pour+over+electric+kettle&tag=tktm-20" },
-  ],
-};
 
 export function SetupPage() {
   const { t, i18n } = useTranslation();
@@ -51,11 +37,11 @@ export function SetupPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const lang = i18n.language as "ja" | "en";
+  const lang: SupportedLanguage = i18n.language === "ja" ? "ja" : "en";
   const steps = computeSteps(newHybridMethod, beans, flavor);
   const totalWater = getTotalWater(beans, newHybridMethod.waterRatio);
   const stepLabels: string[] = t("stepLabels", { returnObjects: true }) as string[];
-  const equipment = equipmentData[lang] || equipmentData.en;
+  const equipment = getEquipmentItems(lang);
 
   const handleStart = () => {
     navigate("/timer?autostart=1");
@@ -178,7 +164,6 @@ export function SetupPage() {
 
       {debugEnabled && <section className="card"><CoffeeNews news={news} loading={newsLoading} /></section>}
 
-      <p className={styles.affiliateNote}>{t("setup.affiliate")}</p>
     </main>
   );
 }
