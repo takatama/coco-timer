@@ -34,3 +34,38 @@ li:last-child .newsItem {
   font-size: 0.72rem;
   color: var(--md-text-muted);
 }
+
+.adSection {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--md-outline);
+}
+
+.adLabel {
+  font-size: 0.72rem;
+  color: var(--md-text-muted);
+  letter-spacing: 0.4px;
+  margin-bottom: 6px;
+}
+
+.adLink {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  padding: 8px 6px;
+  background: var(--md-surface-2);
+}
+
+.adTitle {
+  font-size: 0.82rem;
+  color: var(--md-text);
+  font-weight: 700;
+}
+
+.adDescription {
+  font-size: 0.74rem;
+  color: var(--md-text-muted);
+  line-height: 1.5;
+}

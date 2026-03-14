@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Header } from "../shared/components/Header";
 import { IntroPage } from "./routes/IntroPage";
 import { SetupPage } from "./routes/SetupPage";
@@ -13,6 +14,8 @@ function RootRedirect() {
 }
 
 export function App() {
+  const { t } = useTranslation();
+
   return (
     <BrowserRouter>
       <div className={styles.app}>
@@ -26,7 +29,10 @@ export function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </ErrorBoundary>
-        <footer className={styles.footer}>COCO Timer</footer>
+        <footer className={styles.footer}>
+          <div>{t("app.footer")}</div>
+          <div>{t("setup.affiliate")}</div>
+        </footer>
       </div>
     </BrowserRouter>
   );

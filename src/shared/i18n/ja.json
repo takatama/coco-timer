@@ -90,7 +90,18 @@
   ],
   "news": {
     "title": "今日のコーヒーニュース",
-    "loading": "ニュースを読み込み中..."
+    "loading": "ニュースを読み込み中...",
+    "ads": {
+      "label": "[広告]",
+      "filter": {
+        "title": "HARIO V60用 ペーパーフィルター",
+        "description": "消耗品なので切らしやすいアイテム。まとめ買い向きです。"
+      },
+      "dripper": {
+        "title": "HARIO Switch ドリッパー",
+        "description": "ニュースで使っている抽出器具。レシピの再現用に。"
+      }
+    }
   },
   "flavorLabels": {
     "sweet": "甘味",

@@ -90,7 +90,18 @@
   ],
   "news": {
     "title": "Today's Coffee News",
-    "loading": "Loading news..."
+    "loading": "Loading news...",
+    "ads": {
+      "label": "[Ad]",
+      "filter": {
+        "title": "HARIO V60 Paper Filters",
+        "description": "A consumable you run out of often. Good to keep in stock."
+      },
+      "dripper": {
+        "title": "HARIO Switch Dripper",
+        "description": "The brewer used in this recipe, helpful for matching the workflow."
+      }
+    }
   },
   "flavorLabels": {
     "sweet": "Sweet",
