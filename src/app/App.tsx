@@ -29,10 +29,7 @@ export function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </ErrorBoundary>
-        <footer className={styles.footer}>
-          <div>{t("app.footer")}</div>
-          <div>{t("setup.affiliate")}</div>
-        </footer>
+        <footer className={styles.footer}>{t("setup.affiliate")}</footer>
       </div>
     </BrowserRouter>
   );
