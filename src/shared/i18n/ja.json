@@ -112,6 +112,10 @@
       "grinder": {
         "title": "コーヒーグラインダー",
         "description": "挽きたての香りは、やっぱり別格。"
+      },
+      "canister": {
+        "title": "コーヒー キャニスター",
+        "description": "豆の鮮度を守る、毎日の保存に。"
       }
     }
   },

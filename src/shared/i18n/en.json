@@ -112,6 +112,10 @@
       "grinder": {
         "title": "Coffee Grinder",
         "description": "Freshly ground coffee changes everything."
+      },
+      "canister": {
+        "title": "Coffee Canister",
+        "description": "Keep your beans fresher for everyday brewing."
       }
     }
   },

@@ -5,7 +5,7 @@ interface EquipmentItem {
   href: string;
 }
 
-type ItemKind = "filter" | "dripper" | "kettle" | "scale" | "grinder";
+type ItemKind = "filter" | "dripper" | "kettle" | "scale" | "grinder" | "canister";
 
 type NewsAdKind = ItemKind;
 
@@ -17,14 +17,16 @@ const AMAZON_SEARCH_KEYWORDS: Record<SupportedLanguage, Record<ItemKind, string>
     filter: "V60 フィルター",
     scale: "コーヒー スケール",
     kettle: "コーヒー 電気ケトル",
-    grinder: "コーヒーミル ステンレス 臼式",
+    grinder: "コーヒーグラインダー 臼式",
+    canister: "コーヒー キャニスター",
   },
   en: {
     dripper: "Hario Switch",
     filter: "V60 filters",
     scale: "coffee scale",
     kettle: "pour over electric kettle",
-    grinder: "stainless steel burr coffee grinder",
+    grinder: "burr coffee grinder",
+    canister: "coffee bean canister",
   },
 };
 
@@ -55,6 +57,7 @@ export function getEquipmentItems(language: SupportedLanguage): EquipmentItem[] 
       { name: "V60 フィルター", href: buildAmazonSearchUrl("ja", AMAZON_SEARCH_KEYWORDS.ja.filter) },
       { name: "スケール", href: buildAmazonSearchUrl("ja", AMAZON_SEARCH_KEYWORDS.ja.scale) },
       { name: "ケトル", href: buildAmazonSearchUrl("ja", AMAZON_SEARCH_KEYWORDS.ja.kettle) },
+      { name: "キャニスター", href: buildAmazonSearchUrl("ja", AMAZON_SEARCH_KEYWORDS.ja.canister) },
     ];
   }
 
@@ -63,6 +66,7 @@ export function getEquipmentItems(language: SupportedLanguage): EquipmentItem[] 
     { name: "V60 Filters", href: buildAmazonSearchUrl("en", AMAZON_SEARCH_KEYWORDS.en.filter) },
     { name: "Coffee Scale", href: buildAmazonSearchUrl("en", AMAZON_SEARCH_KEYWORDS.en.scale) },
     { name: "Pour-over kettle", href: buildAmazonSearchUrl("en", AMAZON_SEARCH_KEYWORDS.en.kettle) },
+    { name: "Bean canister", href: buildAmazonSearchUrl("en", AMAZON_SEARCH_KEYWORDS.en.canister) },
   ];
 }
 
@@ -75,5 +79,6 @@ export function getNewsAdLinks(language: SupportedLanguage): NewsAdLinks {
     kettle: buildAmazonSearchUrl(language, keywords.kettle),
     scale: buildAmazonSearchUrl(language, keywords.scale),
     grinder: buildAmazonSearchUrl(language, keywords.grinder),
+    canister: buildAmazonSearchUrl(language, keywords.canister),
   };
 }
