@@ -95,19 +95,23 @@
       "label": "[広告]",
       "filter": {
         "title": "HARIO V60用 ペーパーフィルター",
-        "description": "コーヒーはあるのにフィルターがない…そんな朝を防ぐための定番消耗品。"
+        "description": "コーヒーはあるのにフィルターがない朝、ありませんか。"
       },
       "dripper": {
         "title": "HARIO Switch ドリッパー",
-        "description": "このレシピは HARIO Switch 前提。COCO Timer の手順どおりに抽出できます。"
+        "description": "COCO Timer のレシピは、このドリッパーから始まりました。"
       },
       "kettle": {
         "title": "温度調整付きコーヒーケトル",
-        "description": "お湯の温度を一定に保てるので、レシピの再現性がぐっと上がります。"
+        "description": "狙った温度で淹れると、味がブレません。"
       },
       "scale": {
         "title": "コーヒースケール",
-        "description": "湯量と時間を正確に測れるので、COCO Timer のレシピ通りに抽出できます。"
+        "description": "安定の美味しさは、いつもの数字から。"
+      },
+      "grinder": {
+        "title": "コーヒーグラインダー",
+        "description": "挽きたての香りは、やっぱり別格。"
       }
     }
   },

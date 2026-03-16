@@ -5,9 +5,28 @@ interface EquipmentItem {
   href: string;
 }
 
-type NewsAdKind = "filter" | "dripper" | "kettle" | "scale";
+type ItemKind = "filter" | "dripper" | "kettle" | "scale" | "grinder";
+
+type NewsAdKind = ItemKind;
 
 type NewsAdLinks = Record<NewsAdKind, string>;
+
+const AMAZON_SEARCH_KEYWORDS: Record<SupportedLanguage, Record<ItemKind, string>> = {
+  ja: {
+    dripper: "Hario Switch",
+    filter: "V60 フィルター",
+    scale: "コーヒー スケール",
+    kettle: "コーヒー 電気ケトル",
+    grinder: "コーヒー グラインダー",
+  },
+  en: {
+    dripper: "Hario Switch",
+    filter: "V60 filters",
+    scale: "coffee scale",
+    kettle: "pour over electric kettle",
+    grinder: "coffee grinder",
+  },
+};
 
 const AMAZON_ASSOCIATE_TAG: Record<SupportedLanguage, string> = {
   ja: "tktm-22",
@@ -32,26 +51,29 @@ export function buildAmazonSearchUrl(language: SupportedLanguage, query: string)
 export function getEquipmentItems(language: SupportedLanguage): EquipmentItem[] {
   if (language === "ja") {
     return [
-      { name: "Hario Switch", href: buildAmazonSearchUrl("ja", "Hario Switch") },
-      { name: "V60 フィルター", href: buildAmazonSearchUrl("ja", "V60 フィルター") },
-      { name: "スケール", href: buildAmazonSearchUrl("ja", "コーヒー スケール") },
-      { name: "ケトル", href: buildAmazonSearchUrl("ja", "コーヒー 電気ケトル") },
+      { name: "Hario Switch", href: buildAmazonSearchUrl("ja", AMAZON_SEARCH_KEYWORDS.ja.dripper) },
+      { name: "V60 フィルター", href: buildAmazonSearchUrl("ja", AMAZON_SEARCH_KEYWORDS.ja.filter) },
+      { name: "スケール", href: buildAmazonSearchUrl("ja", AMAZON_SEARCH_KEYWORDS.ja.scale) },
+      { name: "ケトル", href: buildAmazonSearchUrl("ja", AMAZON_SEARCH_KEYWORDS.ja.kettle) },
     ];
   }
 
   return [
-    { name: "Hario Switch", href: buildAmazonSearchUrl("en", "Hario Switch") },
-    { name: "V60 Filters", href: buildAmazonSearchUrl("en", "V60 filters") },
-    { name: "Coffee Scale", href: buildAmazonSearchUrl("en", "coffee scale") },
-    { name: "Pour-over kettle", href: buildAmazonSearchUrl("en", "pour over electric kettle") },
+    { name: "Hario Switch", href: buildAmazonSearchUrl("en", AMAZON_SEARCH_KEYWORDS.en.dripper) },
+    { name: "V60 Filters", href: buildAmazonSearchUrl("en", AMAZON_SEARCH_KEYWORDS.en.filter) },
+    { name: "Coffee Scale", href: buildAmazonSearchUrl("en", AMAZON_SEARCH_KEYWORDS.en.scale) },
+    { name: "Pour-over kettle", href: buildAmazonSearchUrl("en", AMAZON_SEARCH_KEYWORDS.en.kettle) },
   ];
 }
 
 export function getNewsAdLinks(language: SupportedLanguage): NewsAdLinks {
+  const keywords = AMAZON_SEARCH_KEYWORDS[language];
+
   return {
-    filter: buildAmazonSearchUrl(language, language === "ja" ? "コーヒー ペーパーフィルター" : "coffee paper filters"),
-    dripper: buildAmazonSearchUrl(language, "Hario Switch"),
-    kettle: buildAmazonSearchUrl(language, language === "ja" ? "温度調整 コーヒーケトル" : "temperature control coffee kettle"),
-    scale: buildAmazonSearchUrl(language, language === "ja" ? "コーヒースケール タイマー" : "coffee scale timer"),
+    filter: buildAmazonSearchUrl(language, keywords.filter),
+    dripper: buildAmazonSearchUrl(language, keywords.dripper),
+    kettle: buildAmazonSearchUrl(language, keywords.kettle),
+    scale: buildAmazonSearchUrl(language, keywords.scale),
+    grinder: buildAmazonSearchUrl(language, keywords.grinder),
   };
 }

@@ -9,7 +9,7 @@ interface Props {
   loading: boolean;
 }
 
-type AdKey = "filter" | "dripper" | "kettle" | "scale";
+type AdKey = "filter" | "dripper" | "kettle" | "scale" | "grinder";
 
 interface AdItem {
   titleKey: string;
@@ -19,7 +19,7 @@ interface AdItem {
 
 const AD_CYCLE_KEY = "coco-timer-news-ad-cycle";
 const NEWS_DISPLAY_LIMIT = 5;
-const AD_ROTATION: AdKey[] = ["filter", "dripper", "filter", "kettle", "filter", "scale"];
+const AD_ROTATION: AdKey[] = ["filter", "dripper", "filter", "kettle", "filter", "scale", "filter", "grinder"];
 
 function pickAd(cycle: number, language: SupportedLanguage): AdItem | null {
   if (cycle % 2 !== 0) {
