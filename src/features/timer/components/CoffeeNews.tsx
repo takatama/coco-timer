@@ -19,7 +19,7 @@ interface AdItem {
 
 const AD_CYCLE_KEY = "coco-timer-news-ad-cycle";
 const NEWS_DISPLAY_LIMIT = 5;
-const AD_ROTATION: AdKey[] = ["filter", "dripper", "filter", "kettle", "filter", "scale", "filter", "grinder", "filter", "canister"];
+const AD_ROTATION: AdKey[] = ["filter", "dripper", "kettle", "scale", "grinder", "canister"];
 
 function pickAd(cycle: number, language: SupportedLanguage): AdItem | null {
   if (cycle % 2 !== 0) {
@@ -27,7 +27,7 @@ function pickAd(cycle: number, language: SupportedLanguage): AdItem | null {
   }
 
   const links = getNewsAdLinks(language);
-  const rotationIndex = Math.floor(cycle / 2) % AD_ROTATION.length;
+  const rotationIndex = Math.floor((cycle - 1) / 2) % AD_ROTATION.length;
   const adKey = AD_ROTATION[rotationIndex];
 
   return {
