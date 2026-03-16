@@ -17,14 +17,14 @@ const AMAZON_SEARCH_KEYWORDS: Record<SupportedLanguage, Record<ItemKind, string>
     filter: "V60 フィルター",
     scale: "コーヒー スケール",
     kettle: "コーヒー 電気ケトル",
-    grinder: "コーヒー グラインダー",
+    grinder: "コーヒーミル ステンレス 臼式",
   },
   en: {
     dripper: "Hario Switch",
     filter: "V60 filters",
     scale: "coffee scale",
     kettle: "pour over electric kettle",
-    grinder: "coffee grinder",
+    grinder: "stainless steel burr coffee grinder",
   },
 };
 
