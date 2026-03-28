@@ -34,3 +34,10 @@ li:last-child .newsItem {
   font-size: 0.72rem;
   color: var(--md-text-muted);
 }
+
+.affiliateDisclosure {
+  margin-top: 2px;
+  font-size: 0.68rem;
+  color: var(--md-text-muted);
+  line-height: 1.35;
+}
