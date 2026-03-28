@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import { Header } from "../shared/components/Header";
 import { IntroPage } from "./routes/IntroPage";
 import { SetupPage } from "./routes/SetupPage";
@@ -18,7 +17,6 @@ function RootRedirect() {
 }
 
 function AppShell() {
-  const { t } = useTranslation();
   const { pathname } = useLocation();
   const hasStartedTimer = useSessionStore((s) => s.hasStartedTimer);
   const bgmEnabled = useSettingsStore((s) => s.bgmEnabled);
@@ -58,7 +56,6 @@ function AppShell() {
       {shouldShowMiniPlayer && currentTrack && (
         <FloatingMiniPlayer track={currentTrack} onNextTrack={handleNextTrack} />
       )}
-      <footer className={styles.footer}>{t("setup.affiliate")}</footer>
     </div>
   );
 }

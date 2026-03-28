@@ -160,6 +160,7 @@ export function SetupPage() {
             </li>
           ))}
         </ul>
+        <p className={styles.affiliateDisclosure}>{t("setup.affiliate")}</p>
       </section>
 
       {debugEnabled && (

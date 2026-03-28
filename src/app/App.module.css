@@ -6,15 +6,6 @@
   flex-direction: column;
 }
 
-.footer {
-  margin-top: auto;
-  padding: 16px;
-  text-align: center;
-  font-size: 0.8rem;
-  color: var(--md-text-muted);
-  line-height: 1.5;
-}
-
 .withMiniPlayer :global(.content) {
   padding-bottom: calc(100px + env(safe-area-inset-bottom));
 }
