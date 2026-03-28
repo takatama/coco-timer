@@ -9,4 +9,5 @@ export interface Settings {
   debugEnabled: boolean;
   debugSpeed: number;
   animation: boolean;
+  bgmEnabled: boolean;
 }

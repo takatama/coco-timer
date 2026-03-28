@@ -22,6 +22,7 @@ export interface SettingsStore extends Settings {
   setDebugEnabled: (enabled: boolean) => void;
   setDebugSpeed: (speed: number) => void;
   setAnimation: (enabled: boolean) => void;
+  setBgmEnabled: (enabled: boolean) => void;
   isSoundEnabled: () => boolean;
   isVibrateEnabled: () => boolean;
 }
@@ -35,6 +36,7 @@ export const useSettingsStore = create<SettingsStore>()(
       debugEnabled: false,
       debugSpeed: 1,
       animation: true,
+      bgmEnabled: true,
 
       setLanguage: (language) => set({ language }),
       setNotifyMode: (notifyMode) => set({ notifyMode }),
@@ -67,6 +69,7 @@ export const useSettingsStore = create<SettingsStore>()(
           debugSpeed: debugSpeed === 5 ? 5 : 1,
         }),
       setAnimation: (animation) => set({ animation }),
+      setBgmEnabled: (bgmEnabled) => set({ bgmEnabled }),
 
       isSoundEnabled: () => {
         const mode = get().notifyMode;
@@ -79,7 +82,7 @@ export const useSettingsStore = create<SettingsStore>()(
     }),
     {
       name: "coco-timer-settings",
-      version: 2,
+      version: 3,
       migrate: (persistedState: unknown) => {
         const state = (persistedState ?? {}) as Partial<Settings>;
         const debugSpeed = state.debugSpeed === 5 ? 5 : 1;
@@ -87,6 +90,7 @@ export const useSettingsStore = create<SettingsStore>()(
           ...state,
           debugSpeed,
           debugEnabled: state.debugEnabled ?? debugSpeed > 1,
+          bgmEnabled: state.bgmEnabled ?? true,
         };
       },
       partialize: (state) => ({
@@ -96,6 +100,7 @@ export const useSettingsStore = create<SettingsStore>()(
         debugEnabled: state.debugEnabled,
         debugSpeed: state.debugSpeed,
         animation: state.animation,
+        bgmEnabled: state.bgmEnabled,
       }),
     },
   ),
