@@ -6,7 +6,7 @@ import { SetupPage } from "./routes/SetupPage";
 import { TimerPage } from "./routes/TimerPage";
 import { useSessionStore } from "../features/timer/store";
 import { useSettingsStore } from "../features/settings/store";
-import { getDebugBgmTracks } from "../features/timer/data/bgm";
+import { getActiveBgmTracks } from "../features/timer/data/bgm";
 import { FloatingMiniPlayer } from "../features/timer/components/FloatingMiniPlayer";
 import { ErrorBoundary } from "../shared/components/ErrorBoundary";
 import styles from "./App.module.css";
@@ -20,8 +20,12 @@ function AppShell() {
   const { pathname } = useLocation();
   const hasStartedTimer = useSessionStore((s) => s.hasStartedTimer);
   const bgmEnabled = useSettingsStore((s) => s.bgmEnabled);
+  const debugEnabled = useSettingsStore((s) => s.debugEnabled);
   const debugBgmDayType = useSettingsStore((s) => s.debugBgmDayType);
-  const tracks = useMemo(() => getDebugBgmTracks(debugBgmDayType), [debugBgmDayType]);
+  const tracks = useMemo(
+    () => getActiveBgmTracks({ debugEnabled, debugDayType: debugBgmDayType }),
+    [debugEnabled, debugBgmDayType],
+  );
   const [trackIndex, setTrackIndex] = useState(0);
 
   const currentTrack = tracks[trackIndex] ?? tracks[0];
