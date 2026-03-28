@@ -5,6 +5,7 @@ import styles from "./MiniAudioPlayer.module.css";
 interface MiniAudioPlayerProps {
   track: AudioTrack;
   className?: string;
+  autoPlay?: boolean;
   onNextTrack?: () => void;
 }
 
@@ -54,12 +55,14 @@ function SkipForwardIcon({ size = 18, strokeWidth = 2.4 }: IconProps) {
 export function MiniAudioPlayer({
   track,
   className,
+  autoPlay = false,
   onNextTrack,
 }: MiniAudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isBuffering, setIsBuffering] = useState(false);
   const isPlayingRef = useRef(false);
+  const shouldAutoPlayRef = useRef(autoPlay);
   const onNextTrackRef = useRef(onNextTrack);
 
   useEffect(() => {
@@ -110,7 +113,8 @@ export function MiniAudioPlayer({
     audio.addEventListener("pause", handlePause);
     audioRef.current = audio;
 
-    if (isPlayingRef.current) {
+    if (isPlayingRef.current || shouldAutoPlayRef.current) {
+      shouldAutoPlayRef.current = false;
       setIsBuffering(true);
       audio.play().catch((error: unknown) => {
         console.error("[MiniAudioPlayer] Failed to resume audio", error);
