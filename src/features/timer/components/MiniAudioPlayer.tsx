@@ -35,7 +35,7 @@ export function MiniAudioPlayer({
     audio.addEventListener("ended", handleEnded);
     audioRef.current = audio;
 
-    if (isPlaying) {
+    if (shouldResumePlayback) {
       audio.play().catch((error: unknown) => {
         console.error("[MiniAudioPlayer] Failed to resume audio", error);
         setIsPlaying(false);
@@ -75,6 +75,15 @@ export function MiniAudioPlayer({
     }
   };
 
+  const handleNextAndPlay = () => {
+    if (!onNextTrack) {
+      return;
+    }
+
+    setIsPlaying(true);
+    onNextTrack();
+  };
+
   return (
     <section className={rootClassName}>
       <img className={styles.artwork} src={track.artworkUrl} alt="" />
@@ -102,14 +111,24 @@ export function MiniAudioPlayer({
           </button>
         )}
         {onNextTrack && (
-          <button
-            type="button"
-            className={styles.navButton}
-            onClick={onNextTrack}
-            aria-label="Next track"
-          >
-            Next
-          </button>
+          <>
+            <button
+              type="button"
+              className={styles.navButton}
+              onClick={onNextTrack}
+              aria-label="Next track"
+            >
+              Next
+            </button>
+            <button
+              type="button"
+              className={styles.nextPlayButton}
+              onClick={handleNextAndPlay}
+              aria-label="Play next track"
+            >
+              Next &amp; Play
+            </button>
+          </>
         )}
       </div>
     </section>
