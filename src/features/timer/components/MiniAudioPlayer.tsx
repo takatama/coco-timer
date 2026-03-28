@@ -1,26 +1,31 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { AudioTrack } from "../data/debugMondayTracks";
 import styles from "./MiniAudioPlayer.module.css";
 
 interface MiniAudioPlayerProps {
-  title: string;
-  subtitle?: string;
-  artworkUrl: string;
-  audioUrl: string;
+  track: AudioTrack;
   className?: string;
+  onNextTrack?: () => void;
+  onPrevTrack?: () => void;
 }
 
 export function MiniAudioPlayer({
-  title,
-  subtitle,
-  artworkUrl,
-  audioUrl,
+  track,
   className,
+  onNextTrack,
+  onPrevTrack,
 }: MiniAudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const isPlayingRef = useRef(false);
 
   useEffect(() => {
-    const audio = new Audio(audioUrl);
+    isPlayingRef.current = isPlaying;
+  }, [isPlaying]);
+
+  useEffect(() => {
+    const shouldResumePlayback = isPlayingRef.current;
+    const audio = new Audio(track.audioUrl);
     audio.preload = "metadata";
 
     const handleEnded = () => {
@@ -30,12 +35,19 @@ export function MiniAudioPlayer({
     audio.addEventListener("ended", handleEnded);
     audioRef.current = audio;
 
+    if (isPlaying) {
+      audio.play().catch((error: unknown) => {
+        console.error("[MiniAudioPlayer] Failed to resume audio", error);
+        setIsPlaying(false);
+      });
+    }
+
     return () => {
       audio.pause();
       audio.removeEventListener("ended", handleEnded);
       audioRef.current = null;
     };
-  }, [audioUrl]);
+  }, [track.audioUrl]);
 
   const rootClassName = useMemo(
     () => [styles.player, className].filter(Boolean).join(" "),
@@ -65,19 +77,41 @@ export function MiniAudioPlayer({
 
   return (
     <section className={rootClassName}>
-      <img className={styles.artwork} src={artworkUrl} alt="" />
+      <img className={styles.artwork} src={track.artworkUrl} alt="" />
       <div className={styles.meta}>
-        <div className={styles.title} title={title}>{title}</div>
-        {subtitle && <div className={styles.subtitle}>{subtitle}</div>}
+        <div className={styles.title} title={track.title}>{track.title}</div>
+        <div className={styles.subtitle}>{track.subtitle}</div>
       </div>
-      <button
-        type="button"
-        className={styles.toggleButton}
-        onClick={handleTogglePlay}
-        aria-label={isPlaying ? "Pause BGM" : "Play BGM"}
-      >
-        {isPlaying ? "Pause" : "Play"}
-      </button>
+      <div className={styles.controls}>
+        <button
+          type="button"
+          className={styles.toggleButton}
+          onClick={handleTogglePlay}
+          aria-label={isPlaying ? "Pause BGM" : "Play BGM"}
+        >
+          {isPlaying ? "Pause" : "Play"}
+        </button>
+        {onPrevTrack && (
+          <button
+            type="button"
+            className={styles.navButton}
+            onClick={onPrevTrack}
+            aria-label="Previous track"
+          >
+            Prev
+          </button>
+        )}
+        {onNextTrack && (
+          <button
+            type="button"
+            className={styles.navButton}
+            onClick={onNextTrack}
+            aria-label="Next track"
+          >
+            Next
+          </button>
+        )}
+      </div>
     </section>
   );
 }
