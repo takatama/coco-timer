@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useTimerOrchestrator } from "../../features/timer/hooks/useTimerOrchestrator";
@@ -36,6 +37,12 @@ export function TimerPage() {
   const { debugEnabled, debugSpeed, setDebugSpeed, language } = useSettingsStore();
   const setHasStartedTimer = useSessionStore((s) => s.setHasStartedTimer);
   const { news, loading: newsLoading } = useCoffeeNews(language);
+
+  useEffect(() => {
+    if (isRunningOrStarting || timer.currentTime > 0 || timer.status === "finished") {
+      setHasStartedTimer(true);
+    }
+  }, [isRunningOrStarting, setHasStartedTimer, timer.currentTime, timer.status]);
 
   const handleResetTimer = () => {
     handleReset();
