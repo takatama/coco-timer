@@ -6,10 +6,8 @@ import { useSettingsStore } from "../../features/settings/store";
 import { newHybridMethod, computeSteps, getTotalWater } from "../../features/recipe";
 import type { FlavorProfile } from "../../features/recipe";
 import { CoffeeNews } from "../../features/timer/components/CoffeeNews";
-import { MiniAudioPlayer } from "../../features/timer/components/MiniAudioPlayer";
 import { Timeline } from "../../features/timer/components/Timeline";
 import { useCoffeeNews } from "../../features/timer/hooks/useCoffeeNews";
-import { getDebugWeekdayTracks } from "../../features/timer/data/debugMondayTracks";
 import styles from "./SetupPage.module.css";
 import { getEquipmentItems, type SupportedLanguage } from "../../shared/affiliate/amazon";
 const heroImage = "/assets/images/goran-ivos-1JsjRW6Sbwg-unsplash.jpg";
@@ -20,11 +18,10 @@ export function SetupPage() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { beans, flavor, setBeans, setFlavor } = useSessionStore();
-  const { debugEnabled, bgmEnabled, language } = useSettingsStore();
+  const { beans, flavor, setBeans, setFlavor, setHasStartedTimer } = useSessionStore();
+  const { debugEnabled, language } = useSettingsStore();
   const { news, loading: newsLoading } = useCoffeeNews(language, debugEnabled);
   const [detailsOpen, setDetailsOpen] = useState(false);
-  const [debugTrackIndex, setDebugTrackIndex] = useState(0);
 
   // Apply URL parameters on mount (e.g. ?beans=25&flavor=sweet)
   useEffect(() => {
@@ -47,21 +44,11 @@ export function SetupPage() {
   const equipment = getEquipmentItems(lang);
 
   const handleStart = () => {
+    setHasStartedTimer(true);
     navigate("/timer?autostart=1");
   };
 
   const flavorOptions: FlavorProfile[] = ["sweet", "neutral", "sour"];
-  const debugTracks = getDebugWeekdayTracks();
-  const debugMondayTrack = debugTracks[debugTrackIndex] ?? debugTracks[0];
-
-  const handleNextDebugTrack = () => {
-    if (debugTracks.length <= 1) {
-      return;
-    }
-
-    setDebugTrackIndex((prevIndex) => (prevIndex + 1) % debugTracks.length);
-  };
-
   return (
     <main className="content">
       <section className="card">
@@ -177,14 +164,6 @@ export function SetupPage() {
 
       {debugEnabled && (
         <>
-          {bgmEnabled && debugMondayTrack && (
-            <section className="card">
-              <MiniAudioPlayer
-                track={debugMondayTrack}
-                onNextTrack={handleNextDebugTrack}
-              />
-            </section>
-          )}
           <section className="card">
             <CoffeeNews news={news} loading={newsLoading} />
           </section>

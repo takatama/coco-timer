@@ -164,7 +164,6 @@ export function MiniAudioPlayer({
       <img className={styles.artwork} src={track.artworkUrl} alt="" />
       <div className={styles.meta}>
         <div className={styles.title} title={track.title}>{track.title}</div>
-        <div className={styles.subtitle}>{track.subtitle}</div>
       </div>
       <div className={styles.controls}>
         <button

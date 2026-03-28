@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useTimerOrchestrator } from "../../features/timer/hooks/useTimerOrchestrator";
 import { useSettingsStore } from "../../features/settings/store";
+import { useSessionStore } from "../../features/timer/store";
 import { StepCard } from "../../features/timer/components/StepCard";
 import { FinishCard } from "../../features/timer/components/FinishCard";
 import { NextStepPreview } from "../../features/timer/components/NextStepPreview";
@@ -32,8 +33,14 @@ export function TimerPage() {
 
   const flavorLabel = t(`flavorLabels.${flavor}`);
   const isFinishStep = currentStep?.actionType === "none";
-  const { debugEnabled, bgmEnabled, debugSpeed, setDebugSpeed, language } = useSettingsStore();
+  const { debugEnabled, debugSpeed, setDebugSpeed, language } = useSettingsStore();
+  const setHasStartedTimer = useSessionStore((s) => s.setHasStartedTimer);
   const { news, loading: newsLoading } = useCoffeeNews(language);
+
+  const handleResetTimer = () => {
+    handleReset();
+    setHasStartedTimer(false);
+  };
 
   return (
     <main className="content">
@@ -66,7 +73,6 @@ export function TimerPage() {
           totalSteps={steps.length}
           news={news}
           newsLoading={newsLoading}
-          showDebugBgmPlayer={debugEnabled && bgmEnabled}
         />
       )}
 
@@ -94,7 +100,7 @@ export function TimerPage() {
             )}
           </div>
         )}
-        <button className={`${styles.btn} ${styles.outline}`} onClick={handleReset}>
+        <button className={`${styles.btn} ${styles.outline}`} onClick={handleResetTimer}>
           {t("timer.reset")}
         </button>
       </section>

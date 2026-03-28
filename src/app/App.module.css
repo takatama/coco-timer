@@ -14,3 +14,7 @@
   color: var(--md-text-muted);
   line-height: 1.5;
 }
+
+.withMiniPlayer :global(.content) {
+  padding-bottom: calc(100px + env(safe-area-inset-bottom));
+}
