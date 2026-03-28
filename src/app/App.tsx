@@ -1,10 +1,13 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
+import { useMemo, useState } from "react";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { Header } from "../shared/components/Header";
 import { IntroPage } from "./routes/IntroPage";
 import { SetupPage } from "./routes/SetupPage";
 import { TimerPage } from "./routes/TimerPage";
 import { useSessionStore } from "../features/timer/store";
+import { useSettingsStore } from "../features/settings/store";
+import { getDebugWeekdayTracks } from "../features/timer/data/debugMondayTracks";
+import { FloatingMiniPlayer } from "../features/timer/components/FloatingMiniPlayer";
 import { ErrorBoundary } from "../shared/components/ErrorBoundary";
 import styles from "./App.module.css";
 
@@ -13,24 +16,54 @@ function RootRedirect() {
   return <Navigate to={introSeen ? "/setup" : "/intro"} replace />;
 }
 
-export function App() {
-  const { t } = useTranslation();
+function AppShell() {
+  const { pathname } = useLocation();
+  const hasStartedTimer = useSessionStore((s) => s.hasStartedTimer);
+  const bgmEnabled = useSettingsStore((s) => s.bgmEnabled);
+  const tracks = useMemo(() => getDebugWeekdayTracks(), []);
+  const [trackIndex, setTrackIndex] = useState(0);
+
+  const currentTrack = tracks[trackIndex] ?? tracks[0];
+  const isSetupPage = pathname === "/setup";
+  const isTimerPage = pathname === "/timer";
+
+  const shouldShowMiniPlayer =
+    Boolean(currentTrack) &&
+    bgmEnabled &&
+    hasStartedTimer &&
+    (isTimerPage || isSetupPage);
+
+  const handleNextTrack = () => {
+    if (tracks.length <= 1) {
+      return;
+    }
+
+    setTrackIndex((prevIndex) => (prevIndex + 1) % tracks.length);
+  };
 
   return (
+    <div className={`${styles.app} ${shouldShowMiniPlayer ? styles.withMiniPlayer : ""}`}>
+      <Header />
+      <ErrorBoundary>
+        <Routes>
+          <Route path="/" element={<RootRedirect />} />
+          <Route path="/intro" element={<IntroPage />} />
+          <Route path="/setup" element={<SetupPage />} />
+          <Route path="/timer" element={<TimerPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </ErrorBoundary>
+      {shouldShowMiniPlayer && currentTrack && (
+        <FloatingMiniPlayer track={currentTrack} onNextTrack={handleNextTrack} />
+      )}
+    </div>
+  );
+}
+
+export function App() {
+  return (
     <BrowserRouter>
-      <div className={styles.app}>
-        <Header />
-        <ErrorBoundary>
-          <Routes>
-            <Route path="/" element={<RootRedirect />} />
-            <Route path="/intro" element={<IntroPage />} />
-            <Route path="/setup" element={<SetupPage />} />
-            <Route path="/timer" element={<TimerPage />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </ErrorBoundary>
-        <footer className={styles.footer}>{t("setup.affiliate")}</footer>
-      </div>
+      <AppShell />
     </BrowserRouter>
   );
 }

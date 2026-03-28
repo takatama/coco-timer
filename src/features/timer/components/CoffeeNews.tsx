@@ -100,6 +100,7 @@ export function CoffeeNews({ news, loading }: Props) {
                     {t("news.ads.label")} {t(ad.titleKey)}
                   </span>
                   <span className={styles.newsItemSource}>{t(ad.descriptionKey)}</span>
+                  <span className={styles.affiliateDisclosure}>{t("setup.affiliate")}</span>
                 </a>
               </li>
             );
