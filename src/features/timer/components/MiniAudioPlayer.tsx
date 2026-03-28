@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { AudioTrack } from "../data/debugMondayTracks";
 import styles from "./MiniAudioPlayer.module.css";
 
 interface MiniAudioPlayerProps {
   track: AudioTrack;
   className?: string;
+  autoPlay?: boolean;
   onNextTrack?: () => void;
 }
 
@@ -54,6 +55,7 @@ function SkipForwardIcon({ size = 18, strokeWidth = 2.4 }: IconProps) {
 export function MiniAudioPlayer({
   track,
   className,
+  autoPlay = false,
   onNextTrack,
 }: MiniAudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -61,6 +63,19 @@ export function MiniAudioPlayer({
   const [isBuffering, setIsBuffering] = useState(false);
   const isPlayingRef = useRef(false);
   const onNextTrackRef = useRef(onNextTrack);
+
+  const tryPlayAudio = useCallback(async (audio: HTMLAudioElement, errorLabel: string) => {
+    setIsBuffering(true);
+
+    try {
+      await audio.play();
+      setIsPlaying(true);
+    } catch (error) {
+      console.error(errorLabel, error);
+      setIsPlaying(false);
+      setIsBuffering(false);
+    }
+  }, []);
 
   useEffect(() => {
     isPlayingRef.current = isPlaying;
@@ -110,13 +125,8 @@ export function MiniAudioPlayer({
     audio.addEventListener("pause", handlePause);
     audioRef.current = audio;
 
-    if (isPlayingRef.current) {
-      setIsBuffering(true);
-      audio.play().catch((error: unknown) => {
-        console.error("[MiniAudioPlayer] Failed to resume audio", error);
-        setIsPlaying(false);
-        setIsBuffering(false);
-      });
+    if (isPlayingRef.current || autoPlay) {
+      void tryPlayAudio(audio, "[MiniAudioPlayer] Failed to resume audio");
     }
 
     return () => {
@@ -127,7 +137,20 @@ export function MiniAudioPlayer({
       audio.removeEventListener("pause", handlePause);
       audioRef.current = null;
     };
-  }, [track.audioUrl]);
+  }, [autoPlay, track.audioUrl, tryPlayAudio]);
+
+  useEffect(() => {
+    if (!autoPlay || isPlayingRef.current) {
+      return;
+    }
+
+    const audio = audioRef.current;
+    if (!audio) {
+      return;
+    }
+
+    void tryPlayAudio(audio, "[MiniAudioPlayer] Failed to auto-play audio");
+  }, [autoPlay, tryPlayAudio]);
 
   const rootClassName = useMemo(
     () => [styles.player, className].filter(Boolean).join(" "),
@@ -147,16 +170,7 @@ export function MiniAudioPlayer({
       return;
     }
 
-    setIsBuffering(true);
-
-    try {
-      await audio.play();
-      setIsPlaying(true);
-    } catch (error) {
-      console.error("[MiniAudioPlayer] Failed to play audio", error);
-      setIsPlaying(false);
-      setIsBuffering(false);
-    }
+    await tryPlayAudio(audio, "[MiniAudioPlayer] Failed to play audio");
   };
 
   return (

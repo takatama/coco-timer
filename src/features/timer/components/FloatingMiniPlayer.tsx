@@ -13,6 +13,7 @@ export function FloatingMiniPlayer({ track, onNextTrack }: FloatingMiniPlayerPro
       <MiniAudioPlayer
         className={styles.player}
         track={track}
+        autoPlay={true}
         onNextTrack={onNextTrack}
       />
     </div>
