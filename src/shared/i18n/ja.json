@@ -48,7 +48,10 @@
     "closeAction": "閉じる",
     "equipment": "必要な器具",
     "affiliate": "Amazonのアソシエイトとして、COCO Timerは適格販売により収入を得ています。",
-    "water": "湯量"
+    "water": "湯量",
+    "debugBgmType": "デバッグBGMタイプ",
+    "debugBgmWeekday": "平日",
+    "debugBgmHoliday": "休日"
   },
   "timer": {
     "currentStep": "今のステップ",

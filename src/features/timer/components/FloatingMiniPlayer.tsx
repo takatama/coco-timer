@@ -1,4 +1,4 @@
-import type { AudioTrack } from "../data/debugMondayTracks";
+import type { AudioTrack } from "../data/bgm";
 import { MiniAudioPlayer } from "./MiniAudioPlayer";
 import styles from "./FloatingMiniPlayer.module.css";
 

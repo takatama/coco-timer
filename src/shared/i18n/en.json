@@ -48,7 +48,10 @@
     "closeAction": "Close",
     "equipment": "Required gear",
     "affiliate": "As an Amazon Associate, COCO Timer earns from qualifying purchases.",
-    "water": "Water"
+    "water": "Water",
+    "debugBgmType": "Debug BGM Type",
+    "debugBgmWeekday": "Weekday",
+    "debugBgmHoliday": "Holiday"
   },
   "timer": {
     "currentStep": "Current Step",

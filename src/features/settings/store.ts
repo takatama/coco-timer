@@ -1,10 +1,33 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { Language, NotifyMode, Settings, Voice } from "./types";
+import type { DebugBgmDayType, Language, NotifyMode, Settings, Voice } from "./types";
 
 function getDefaultLanguage(): Language {
   if (typeof navigator === "undefined") return "en";
   return navigator.language.startsWith("ja") ? "ja" : "en";
+}
+
+function getDefaultDebugBgmDayType(): DebugBgmDayType {
+  if (typeof navigator === "undefined") {
+    return "weekday";
+  }
+
+  const locale = navigator.language;
+  const today = new Date();
+
+  const localeInfo = typeof Intl.Locale !== "undefined"
+    ? new Intl.Locale(locale)
+    : null;
+  const weekendDays = localeInfo?.weekInfo?.weekend;
+
+  const jsDay = today.getDay();
+  const dayForWeekInfo = jsDay === 0 ? 7 : jsDay;
+
+  if (Array.isArray(weekendDays) && weekendDays.includes(dayForWeekInfo)) {
+    return "holiday";
+  }
+
+  return jsDay === 0 || jsDay === 6 ? "holiday" : "weekday";
 }
 
 function normalizeNotifyMode(mode: string | undefined): NotifyMode {
@@ -23,6 +46,7 @@ export interface SettingsStore extends Settings {
   setDebugSpeed: (speed: number) => void;
   setAnimation: (enabled: boolean) => void;
   setBgmEnabled: (enabled: boolean) => void;
+  setDebugBgmDayType: (dayType: DebugBgmDayType) => void;
   isSoundEnabled: () => boolean;
   isVibrateEnabled: () => boolean;
 }
@@ -37,6 +61,7 @@ export const useSettingsStore = create<SettingsStore>()(
       debugSpeed: 1,
       animation: true,
       bgmEnabled: true,
+      debugBgmDayType: getDefaultDebugBgmDayType(),
 
       setLanguage: (language) => set({ language }),
       setNotifyMode: (notifyMode) => set({ notifyMode }),
@@ -70,6 +95,7 @@ export const useSettingsStore = create<SettingsStore>()(
         }),
       setAnimation: (animation) => set({ animation }),
       setBgmEnabled: (bgmEnabled) => set({ bgmEnabled }),
+      setDebugBgmDayType: (debugBgmDayType) => set({ debugBgmDayType }),
 
       isSoundEnabled: () => {
         const mode = get().notifyMode;
@@ -82,7 +108,7 @@ export const useSettingsStore = create<SettingsStore>()(
     }),
     {
       name: "coco-timer-settings",
-      version: 3,
+      version: 4,
       migrate: (persistedState: unknown) => {
         const state = (persistedState ?? {}) as Partial<Settings>;
         const debugSpeed = state.debugSpeed === 5 ? 5 : 1;
@@ -91,6 +117,7 @@ export const useSettingsStore = create<SettingsStore>()(
           debugSpeed,
           debugEnabled: state.debugEnabled ?? debugSpeed > 1,
           bgmEnabled: state.bgmEnabled ?? true,
+          debugBgmDayType: state.debugBgmDayType ?? getDefaultDebugBgmDayType(),
         };
       },
       partialize: (state) => ({
@@ -101,6 +128,7 @@ export const useSettingsStore = create<SettingsStore>()(
         debugSpeed: state.debugSpeed,
         animation: state.animation,
         bgmEnabled: state.bgmEnabled,
+        debugBgmDayType: state.debugBgmDayType,
       }),
     },
   ),

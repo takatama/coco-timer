@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { AudioTrack } from "../data/debugMondayTracks";
+import type { AudioTrack } from "../data/bgm";
 import styles from "./MiniAudioPlayer.module.css";
 
 interface MiniAudioPlayerProps {
