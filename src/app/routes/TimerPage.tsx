@@ -66,6 +66,7 @@ export function TimerPage() {
           totalSteps={steps.length}
           news={news}
           newsLoading={newsLoading}
+          showDebugBgmPlayer={debugEnabled}
         />
       )}
 
