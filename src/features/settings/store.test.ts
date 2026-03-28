@@ -36,6 +36,7 @@ describe("useSettingsStore", () => {
       debugSpeed: 1,
       animation: true,
       bgmEnabled: true,
+      debugBgmDayType: "weekday",
     });
   });
 
@@ -47,6 +48,7 @@ describe("useSettingsStore", () => {
     expect(state.debugSpeed).toBe(1);
     expect(state.animation).toBe(true);
     expect(state.bgmEnabled).toBe(true);
+    expect(["weekday", "holiday"]).toContain(state.debugBgmDayType);
   });
 
   it("setLanguage updates language", () => {
@@ -128,5 +130,20 @@ describe("useSettingsStore", () => {
 
     useSettingsStore.getState().setBgmEnabled(true);
     expect(useSettingsStore.getState().bgmEnabled).toBe(true);
+  });
+
+  it("setDebugBgmDayType updates debug BGM day type", () => {
+    useSettingsStore.getState().setDebugBgmDayType("holiday");
+    expect(useSettingsStore.getState().debugBgmDayType).toBe("holiday");
+
+    useSettingsStore.getState().setDebugBgmDayType("weekday");
+    expect(useSettingsStore.getState().debugBgmDayType).toBe("weekday");
+  });
+
+  it("normalizes unexpected debug BGM day type values", () => {
+    (useSettingsStore.getState() as unknown as { setDebugBgmDayType: (v: unknown) => void })
+      .setDebugBgmDayType("invalid");
+
+    expect(useSettingsStore.getState().debugBgmDayType).toBe("weekday");
   });
 });

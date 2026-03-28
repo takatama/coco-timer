@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useSessionStore } from "../../features/timer/store";
 import { useSettingsStore } from "../../features/settings/store";
+import type { DebugBgmDayType } from "../../features/settings/types";
 import { newHybridMethod, computeSteps, getTotalWater } from "../../features/recipe";
 import type { FlavorProfile } from "../../features/recipe";
 import { CoffeeNews } from "../../features/timer/components/CoffeeNews";
@@ -19,7 +20,7 @@ export function SetupPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { beans, flavor, setBeans, setFlavor, setHasStartedTimer } = useSessionStore();
-  const { debugEnabled, language } = useSettingsStore();
+  const { debugEnabled, language, debugBgmDayType, setDebugBgmDayType } = useSettingsStore();
   const { news, loading: newsLoading } = useCoffeeNews(language, debugEnabled);
   const [detailsOpen, setDetailsOpen] = useState(false);
 
@@ -165,6 +166,23 @@ export function SetupPage() {
 
       {debugEnabled && (
         <>
+          <section className="card">
+            <div className="card-title">{t("setup.debugBgmType")}</div>
+            <div className="choice-row">
+              {([
+                { value: "weekday", label: t("setup.debugBgmWeekday") },
+                { value: "holiday", label: t("setup.debugBgmHoliday") },
+              ] as const).map((option) => (
+                <button
+                  key={option.value}
+                  className={`choice${debugBgmDayType === option.value ? " active" : ""}`}
+                  onClick={() => setDebugBgmDayType(option.value as DebugBgmDayType)}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </section>
           <section className="card">
             <CoffeeNews news={news} loading={newsLoading} />
           </section>
