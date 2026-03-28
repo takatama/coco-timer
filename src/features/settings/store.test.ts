@@ -35,6 +35,7 @@ describe("useSettingsStore", () => {
       debugEnabled: false,
       debugSpeed: 1,
       animation: true,
+      bgmEnabled: true,
     });
   });
 
@@ -45,6 +46,7 @@ describe("useSettingsStore", () => {
     expect(state.debugEnabled).toBe(false);
     expect(state.debugSpeed).toBe(1);
     expect(state.animation).toBe(true);
+    expect(state.bgmEnabled).toBe(true);
   });
 
   it("setLanguage updates language", () => {
@@ -118,5 +120,13 @@ describe("useSettingsStore", () => {
   it("setAnimation updates animation", () => {
     useSettingsStore.getState().setAnimation(false);
     expect(useSettingsStore.getState().animation).toBe(false);
+  });
+
+  it("setBgmEnabled updates BGM toggle", () => {
+    useSettingsStore.getState().setBgmEnabled(false);
+    expect(useSettingsStore.getState().bgmEnabled).toBe(false);
+
+    useSettingsStore.getState().setBgmEnabled(true);
+    expect(useSettingsStore.getState().bgmEnabled).toBe(true);
   });
 });

@@ -155,6 +155,12 @@ export function SettingsModal({ open, onClose }: Props) {
             {t("settings.display")}
           </h4>
           <SwitchRow
+            id="settings-bgm"
+            label={t("settings.bgm")}
+            checked={settings.bgmEnabled}
+            onChange={settings.setBgmEnabled}
+          />
+          <SwitchRow
             id="settings-animation"
             label={t("settings.animation")}
             checked={settings.animation}

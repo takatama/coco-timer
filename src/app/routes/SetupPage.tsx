@@ -25,7 +25,7 @@ export function SetupPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { beans, flavor, setBeans, setFlavor } = useSessionStore();
-  const { debugEnabled, language } = useSettingsStore();
+  const { debugEnabled, bgmEnabled, language } = useSettingsStore();
   const { news, loading: newsLoading } = useCoffeeNews(language, debugEnabled);
   const [detailsOpen, setDetailsOpen] = useState(false);
 
@@ -170,14 +170,16 @@ export function SetupPage() {
 
       {debugEnabled && (
         <>
-          <section className="card">
-            <MiniAudioPlayer
-              title="Monday Morning Piano Upbeat"
-              subtitle="Monday / Piano / Upbeat"
-              artworkUrl={DEBUG_BGM_ARTWORK_URL}
-              audioUrl={DEBUG_BGM_AUDIO_URL}
-            />
-          </section>
+          {bgmEnabled && (
+            <section className="card">
+              <MiniAudioPlayer
+                title="Monday Morning Piano Upbeat"
+                subtitle="Monday / Piano / Upbeat"
+                artworkUrl={DEBUG_BGM_ARTWORK_URL}
+                audioUrl={DEBUG_BGM_AUDIO_URL}
+              />
+            </section>
+          )}
           <section className="card">
             <CoffeeNews news={news} loading={newsLoading} />
           </section>

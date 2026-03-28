@@ -32,7 +32,7 @@ export function TimerPage() {
 
   const flavorLabel = t(`flavorLabels.${flavor}`);
   const isFinishStep = currentStep?.actionType === "none";
-  const { debugEnabled, debugSpeed, setDebugSpeed, language } = useSettingsStore();
+  const { debugEnabled, bgmEnabled, debugSpeed, setDebugSpeed, language } = useSettingsStore();
   const { news, loading: newsLoading } = useCoffeeNews(language);
 
   return (
@@ -66,7 +66,7 @@ export function TimerPage() {
           totalSteps={steps.length}
           news={news}
           newsLoading={newsLoading}
-          showDebugBgmPlayer={debugEnabled}
+          showDebugBgmPlayer={debugEnabled && bgmEnabled}
         />
       )}
 
