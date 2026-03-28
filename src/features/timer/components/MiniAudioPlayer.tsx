@@ -233,6 +233,17 @@ export function MiniAudioPlayer({
     };
   }, [handleNext, handlePause, handlePlay]);
 
+  useEffect(() => {
+    if (!("mediaSession" in navigator)) {
+      return;
+    }
+
+    return () => {
+      navigator.mediaSession.playbackState = "none";
+      navigator.mediaSession.metadata = null;
+    };
+  }, []);
+
   const rootClassName = useMemo(
     () => [styles.player, className].filter(Boolean).join(" "),
     [className],
