@@ -139,4 +139,11 @@ describe("useSettingsStore", () => {
     useSettingsStore.getState().setDebugBgmDayType("weekday");
     expect(useSettingsStore.getState().debugBgmDayType).toBe("weekday");
   });
+
+  it("normalizes unexpected debug BGM day type values", () => {
+    (useSettingsStore.getState() as unknown as { setDebugBgmDayType: (v: unknown) => void })
+      .setDebugBgmDayType("invalid");
+
+    expect(useSettingsStore.getState().debugBgmDayType).toBe("weekday");
+  });
 });

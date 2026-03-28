@@ -30,6 +30,10 @@ function getDefaultDebugBgmDayType(): DebugBgmDayType {
   return jsDay === 0 || jsDay === 6 ? "holiday" : "weekday";
 }
 
+function normalizeDebugBgmDayType(dayType: unknown): DebugBgmDayType {
+  return dayType === "holiday" ? "holiday" : "weekday";
+}
+
 function normalizeNotifyMode(mode: string | undefined): NotifyMode {
   if (mode === "both" || mode === "sound" || mode === "vibrate" || mode === "none") {
     return mode;
@@ -95,7 +99,9 @@ export const useSettingsStore = create<SettingsStore>()(
         }),
       setAnimation: (animation) => set({ animation }),
       setBgmEnabled: (bgmEnabled) => set({ bgmEnabled }),
-      setDebugBgmDayType: (debugBgmDayType) => set({ debugBgmDayType }),
+      setDebugBgmDayType: (debugBgmDayType) => set({
+        debugBgmDayType: normalizeDebugBgmDayType(debugBgmDayType),
+      }),
 
       isSoundEnabled: () => {
         const mode = get().notifyMode;
@@ -117,7 +123,9 @@ export const useSettingsStore = create<SettingsStore>()(
           debugSpeed,
           debugEnabled: state.debugEnabled ?? debugSpeed > 1,
           bgmEnabled: state.bgmEnabled ?? true,
-          debugBgmDayType: state.debugBgmDayType ?? getDefaultDebugBgmDayType(),
+          debugBgmDayType: state.debugBgmDayType == null
+            ? getDefaultDebugBgmDayType()
+            : normalizeDebugBgmDayType(state.debugBgmDayType),
         };
       },
       partialize: (state) => ({
@@ -128,7 +136,7 @@ export const useSettingsStore = create<SettingsStore>()(
         debugSpeed: state.debugSpeed,
         animation: state.animation,
         bgmEnabled: state.bgmEnabled,
-        debugBgmDayType: state.debugBgmDayType,
+        debugBgmDayType: normalizeDebugBgmDayType(state.debugBgmDayType),
       }),
     },
   ),

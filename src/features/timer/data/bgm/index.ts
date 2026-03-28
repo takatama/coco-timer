@@ -16,6 +16,10 @@ const TRACKS_BY_CONTEXT_KEY: Record<string, AudioTrack[]> = {
   "holiday:sat:clear": holidaySatClearTracks,
 };
 
+const normalizeBgmDayTypePreset = (dayType: unknown): BgmDayTypePreset => {
+  return dayType === "holiday" ? "holiday" : "weekday";
+};
+
 const toContextKey = (context: BgmContext): string =>
   `${context.dayType}:${context.dayOfWeek}:${context.weather}`;
 
@@ -24,7 +28,8 @@ export const getTracksForContext = (context: BgmContext): AudioTrack[] => {
 };
 
 export const getBgmContextForDayType = (dayType: BgmDayTypePreset): BgmContext => {
-  return BGM_CONTEXT_BY_DAY_TYPE[dayType];
+  const normalizedDayType = normalizeBgmDayTypePreset(dayType);
+  return BGM_CONTEXT_BY_DAY_TYPE[normalizedDayType];
 };
 
 export const getBgmTracksForDayType = (dayType: BgmDayTypePreset): AudioTrack[] => {
@@ -58,6 +63,8 @@ export const getActiveBgmTracks = (params: {
   debugEnabled: boolean;
   debugDayType: BgmDayTypePreset;
 }): AudioTrack[] => {
-  const dayType = params.debugEnabled ? params.debugDayType : getAutoBgmDayType();
+  const dayType = params.debugEnabled
+    ? normalizeBgmDayTypePreset(params.debugDayType)
+    : getAutoBgmDayType();
   return getBgmTracksForDayType(dayType);
 };
