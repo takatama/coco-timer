@@ -6,11 +6,17 @@ import { useSettingsStore } from "../../features/settings/store";
 import { newHybridMethod, computeSteps, getTotalWater } from "../../features/recipe";
 import type { FlavorProfile } from "../../features/recipe";
 import { CoffeeNews } from "../../features/timer/components/CoffeeNews";
+import { MiniAudioPlayer } from "../../features/timer/components/MiniAudioPlayer";
 import { Timeline } from "../../features/timer/components/Timeline";
 import { useCoffeeNews } from "../../features/timer/hooks/useCoffeeNews";
 import styles from "./SetupPage.module.css";
 import { getEquipmentItems, type SupportedLanguage } from "../../shared/affiliate/amazon";
 const heroImage = "/assets/images/goran-ivos-1JsjRW6Sbwg-unsplash.jpg";
+
+const DEBUG_BGM_ARTWORK_URL =
+  "https://pub-dafc6a76fed548fc9d46bd2db7bc61b5.r2.dev/artwork/weekday/mon/weekday_mon_clear_01_piano_upbeat.webp";
+const DEBUG_BGM_AUDIO_URL =
+  "https://pub-dafc6a76fed548fc9d46bd2db7bc61b5.r2.dev/audio/weekday/mon/weekday_mon_clear_01_piano_upbeat.mp3";
 
 const validFlavors: FlavorProfile[] = ["sweet", "neutral", "sour"];
 
@@ -162,7 +168,21 @@ export function SetupPage() {
         </ul>
       </section>
 
-      {debugEnabled && <section className="card"><CoffeeNews news={news} loading={newsLoading} /></section>}
+      {debugEnabled && (
+        <>
+          <section className="card">
+            <MiniAudioPlayer
+              title="Monday Morning Piano Upbeat"
+              subtitle="Monday / Piano / Upbeat"
+              artworkUrl={DEBUG_BGM_ARTWORK_URL}
+              audioUrl={DEBUG_BGM_AUDIO_URL}
+            />
+          </section>
+          <section className="card">
+            <CoffeeNews news={news} loading={newsLoading} />
+          </section>
+        </>
+      )}
 
     </main>
   );
