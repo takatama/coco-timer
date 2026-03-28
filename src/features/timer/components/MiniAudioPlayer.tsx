@@ -85,6 +85,35 @@ export function MiniAudioPlayer({
     onNextTrackRef.current = onNextTrack;
   }, [onNextTrack]);
 
+  const handlePlay = useCallback(async () => {
+    const audio = audioRef.current;
+    if (!audio) {
+      return;
+    }
+
+    await tryPlayAudio(audio, "[MiniAudioPlayer] Failed to play audio");
+  }, [tryPlayAudio]);
+
+  const handlePause = useCallback(() => {
+    const audio = audioRef.current;
+    if (!audio) {
+      return;
+    }
+
+    audio.pause();
+    setIsPlaying(false);
+    setIsBuffering(false);
+  }, []);
+
+  const handleNext = useCallback(() => {
+    const nextTrackHandler = onNextTrackRef.current;
+    if (!nextTrackHandler) {
+      return;
+    }
+
+    nextTrackHandler();
+  }, []);
+
   useEffect(() => {
     const audio = new Audio(track.audioUrl);
     audio.preload = "metadata";
@@ -152,25 +181,81 @@ export function MiniAudioPlayer({
     void tryPlayAudio(audio, "[MiniAudioPlayer] Failed to auto-play audio");
   }, [autoPlay, tryPlayAudio]);
 
+  useEffect(() => {
+    if (!("mediaSession" in navigator)) {
+      return;
+    }
+
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: track.title,
+      artist: "COCO Timer",
+      album: "Coffee Timer BGM",
+      artwork: [
+        { src: track.artworkUrl, sizes: "96x96", type: "image/webp" },
+        { src: track.artworkUrl, sizes: "128x128", type: "image/webp" },
+        { src: track.artworkUrl, sizes: "256x256", type: "image/webp" },
+        { src: track.artworkUrl, sizes: "512x512", type: "image/webp" },
+      ],
+    });
+  }, [track.artworkUrl, track.title]);
+
+  useEffect(() => {
+    if (!("mediaSession" in navigator)) {
+      return;
+    }
+
+    navigator.mediaSession.playbackState = isPlaying ? "playing" : "paused";
+  }, [isPlaying]);
+
+  useEffect(() => {
+    if (!("mediaSession" in navigator)) {
+      return;
+    }
+
+    try {
+      navigator.mediaSession.setActionHandler("play", () => {
+        void handlePlay();
+      });
+      navigator.mediaSession.setActionHandler("pause", handlePause);
+      navigator.mediaSession.setActionHandler("nexttrack", handleNext);
+    } catch (error) {
+      console.warn("[MiniAudioPlayer] Failed to set Media Session handlers", error);
+    }
+
+    return () => {
+      try {
+        navigator.mediaSession.setActionHandler("play", null);
+        navigator.mediaSession.setActionHandler("pause", null);
+        navigator.mediaSession.setActionHandler("nexttrack", null);
+      } catch {
+        // noop
+      }
+    };
+  }, [handleNext, handlePause, handlePlay]);
+
+  useEffect(() => {
+    if (!("mediaSession" in navigator)) {
+      return;
+    }
+
+    return () => {
+      navigator.mediaSession.playbackState = "none";
+      navigator.mediaSession.metadata = null;
+    };
+  }, []);
+
   const rootClassName = useMemo(
     () => [styles.player, className].filter(Boolean).join(" "),
     [className],
   );
 
   const handleTogglePlay = async () => {
-    const audio = audioRef.current;
-    if (!audio) {
-      return;
-    }
-
     if (isPlaying) {
-      audio.pause();
-      setIsPlaying(false);
-      setIsBuffering(false);
+      handlePause();
       return;
     }
 
-    await tryPlayAudio(audio, "[MiniAudioPlayer] Failed to play audio");
+    await handlePlay();
   };
 
   return (
@@ -192,7 +277,7 @@ export function MiniAudioPlayer({
           <button
             type="button"
             className={styles.iconButton}
-            onClick={onNextTrack}
+            onClick={handleNext}
             aria-label="Next track"
           >
             <SkipForwardIcon />
