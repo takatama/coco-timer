@@ -24,6 +24,7 @@ export function SetupPage() {
   const { debugEnabled, bgmEnabled, language } = useSettingsStore();
   const { news, loading: newsLoading } = useCoffeeNews(language, debugEnabled);
   const [detailsOpen, setDetailsOpen] = useState(false);
+  const [debugTrackIndex, setDebugTrackIndex] = useState(0);
 
   // Apply URL parameters on mount (e.g. ?beans=25&flavor=sweet)
   useEffect(() => {
@@ -50,7 +51,16 @@ export function SetupPage() {
   };
 
   const flavorOptions: FlavorProfile[] = ["sweet", "neutral", "sour"];
-  const debugMondayTrack = getDebugWeekdayTracks()[0];
+  const debugTracks = getDebugWeekdayTracks();
+  const debugMondayTrack = debugTracks[debugTrackIndex] ?? debugTracks[0];
+
+  const handleNextDebugTrack = () => {
+    if (debugTracks.length <= 1) {
+      return;
+    }
+
+    setDebugTrackIndex((prevIndex) => (prevIndex + 1) % debugTracks.length);
+  };
 
   return (
     <main className="content">
@@ -169,7 +179,10 @@ export function SetupPage() {
         <>
           {bgmEnabled && debugMondayTrack && (
             <section className="card">
-              <MiniAudioPlayer track={debugMondayTrack} />
+              <MiniAudioPlayer
+                track={debugMondayTrack}
+                onNextTrack={handleNextDebugTrack}
+              />
             </section>
           )}
           <section className="card">
