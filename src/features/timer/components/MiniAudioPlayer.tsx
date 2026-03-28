@@ -71,7 +71,6 @@ export function MiniAudioPlayer({
   }, [onNextTrack]);
 
   useEffect(() => {
-    const shouldResumePlayback = isPlayingRef.current;
     const audio = new Audio(track.audioUrl);
     audio.preload = "metadata";
 
@@ -111,7 +110,7 @@ export function MiniAudioPlayer({
     audio.addEventListener("pause", handlePause);
     audioRef.current = audio;
 
-    if (shouldResumePlayback) {
+    if (isPlayingRef.current) {
       setIsBuffering(true);
       audio.play().catch((error: unknown) => {
         console.error("[MiniAudioPlayer] Failed to resume audio", error);
