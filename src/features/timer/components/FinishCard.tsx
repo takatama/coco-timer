@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { NewsItem } from "../hooks/useCoffeeNews";
+import { getDebugWeekdayTracks } from "../data/debugMondayTracks";
 import { CoffeeNews } from "./CoffeeNews";
 import { MiniAudioPlayer } from "./MiniAudioPlayer";
 import styles from "./FinishCard.module.css";
@@ -12,10 +14,7 @@ interface Props {
   showDebugBgmPlayer: boolean;
 }
 
-const DEBUG_BGM_ARTWORK_URL =
-  "https://pub-dafc6a76fed548fc9d46bd2db7bc61b5.r2.dev/artwork/weekday/mon/weekday_mon_clear_01_piano_upbeat.webp";
-const DEBUG_BGM_AUDIO_URL =
-  "https://pub-dafc6a76fed548fc9d46bd2db7bc61b5.r2.dev/audio/weekday/mon/weekday_mon_clear_01_piano_upbeat.mp3";
+const debugTracks = getDebugWeekdayTracks();
 
 export function FinishCard({
   stepIndex,
@@ -25,6 +24,16 @@ export function FinishCard({
   showDebugBgmPlayer,
 }: Props) {
   const { t } = useTranslation();
+  const [trackIndex, setTrackIndex] = useState(0);
+  const currentTrack = debugTracks[trackIndex] ?? debugTracks[0];
+
+  const handleNextTrack = () => {
+    if (debugTracks.length <= 1) {
+      return;
+    }
+
+    setTrackIndex((prevIndex) => (prevIndex + 1) % debugTracks.length);
+  };
 
   return (
     <section className={`card ${styles.finishCard}`}>
@@ -33,13 +42,11 @@ export function FinishCard({
       </div>
       <div className={styles.stepVerb}>{t("timer.finish")}</div>
       <div className={styles.stepSub}>{t("timer.enjoyCoffee")}</div>
-      {showDebugBgmPlayer && (
+      {showDebugBgmPlayer && currentTrack && (
         <MiniAudioPlayer
           className={styles.bgmPlayer}
-          title="Monday Morning Piano Upbeat"
-          subtitle="Monday / Piano / Upbeat"
-          artworkUrl={DEBUG_BGM_ARTWORK_URL}
-          audioUrl={DEBUG_BGM_AUDIO_URL}
+          track={currentTrack}
+          onNextTrack={handleNextTrack}
         />
       )}
       <div className={styles.extras}>

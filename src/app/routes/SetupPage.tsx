@@ -9,14 +9,10 @@ import { CoffeeNews } from "../../features/timer/components/CoffeeNews";
 import { MiniAudioPlayer } from "../../features/timer/components/MiniAudioPlayer";
 import { Timeline } from "../../features/timer/components/Timeline";
 import { useCoffeeNews } from "../../features/timer/hooks/useCoffeeNews";
+import { getDebugWeekdayTracks } from "../../features/timer/data/debugMondayTracks";
 import styles from "./SetupPage.module.css";
 import { getEquipmentItems, type SupportedLanguage } from "../../shared/affiliate/amazon";
 const heroImage = "/assets/images/goran-ivos-1JsjRW6Sbwg-unsplash.jpg";
-
-const DEBUG_BGM_ARTWORK_URL =
-  "https://pub-dafc6a76fed548fc9d46bd2db7bc61b5.r2.dev/artwork/weekday/mon/weekday_mon_clear_01_piano_upbeat.webp";
-const DEBUG_BGM_AUDIO_URL =
-  "https://pub-dafc6a76fed548fc9d46bd2db7bc61b5.r2.dev/audio/weekday/mon/weekday_mon_clear_01_piano_upbeat.mp3";
 
 const validFlavors: FlavorProfile[] = ["sweet", "neutral", "sour"];
 
@@ -28,6 +24,7 @@ export function SetupPage() {
   const { debugEnabled, bgmEnabled, language } = useSettingsStore();
   const { news, loading: newsLoading } = useCoffeeNews(language, debugEnabled);
   const [detailsOpen, setDetailsOpen] = useState(false);
+  const [debugTrackIndex, setDebugTrackIndex] = useState(0);
 
   // Apply URL parameters on mount (e.g. ?beans=25&flavor=sweet)
   useEffect(() => {
@@ -54,6 +51,16 @@ export function SetupPage() {
   };
 
   const flavorOptions: FlavorProfile[] = ["sweet", "neutral", "sour"];
+  const debugTracks = getDebugWeekdayTracks();
+  const debugMondayTrack = debugTracks[debugTrackIndex] ?? debugTracks[0];
+
+  const handleNextDebugTrack = () => {
+    if (debugTracks.length <= 1) {
+      return;
+    }
+
+    setDebugTrackIndex((prevIndex) => (prevIndex + 1) % debugTracks.length);
+  };
 
   return (
     <main className="content">
@@ -170,13 +177,11 @@ export function SetupPage() {
 
       {debugEnabled && (
         <>
-          {bgmEnabled && (
+          {bgmEnabled && debugMondayTrack && (
             <section className="card">
               <MiniAudioPlayer
-                title="Monday Morning Piano Upbeat"
-                subtitle="Monday / Piano / Upbeat"
-                artworkUrl={DEBUG_BGM_ARTWORK_URL}
-                audioUrl={DEBUG_BGM_AUDIO_URL}
+                track={debugMondayTrack}
+                onNextTrack={handleNextDebugTrack}
               />
             </section>
           )}
