@@ -58,11 +58,17 @@ export function MiniAudioPlayer({
 }: MiniAudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isBuffering, setIsBuffering] = useState(false);
   const isPlayingRef = useRef(false);
+  const onNextTrackRef = useRef(onNextTrack);
 
   useEffect(() => {
     isPlayingRef.current = isPlaying;
   }, [isPlaying]);
+
+  useEffect(() => {
+    onNextTrackRef.current = onNextTrack;
+  }, [onNextTrack]);
 
   useEffect(() => {
     const shouldResumePlayback = isPlayingRef.current;
@@ -70,22 +76,56 @@ export function MiniAudioPlayer({
     audio.preload = "metadata";
 
     const handleEnded = () => {
-      setIsPlaying(false);
+      const nextTrackHandler = onNextTrackRef.current;
+      if (!nextTrackHandler) {
+        setIsPlaying(false);
+        setIsBuffering(false);
+        return;
+      }
+
+      setIsPlaying(true);
+      setIsBuffering(true);
+      nextTrackHandler();
+    };
+
+    const handlePlaying = () => {
+      setIsPlaying(true);
+      setIsBuffering(false);
+    };
+
+    const handleWaiting = () => {
+      if (isPlayingRef.current) {
+        setIsBuffering(true);
+      }
+    };
+
+    const handlePause = () => {
+      if (!audio.ended) {
+        setIsBuffering(false);
+      }
     };
 
     audio.addEventListener("ended", handleEnded);
+    audio.addEventListener("playing", handlePlaying);
+    audio.addEventListener("waiting", handleWaiting);
+    audio.addEventListener("pause", handlePause);
     audioRef.current = audio;
 
     if (shouldResumePlayback) {
+      setIsBuffering(true);
       audio.play().catch((error: unknown) => {
         console.error("[MiniAudioPlayer] Failed to resume audio", error);
         setIsPlaying(false);
+        setIsBuffering(false);
       });
     }
 
     return () => {
       audio.pause();
       audio.removeEventListener("ended", handleEnded);
+      audio.removeEventListener("playing", handlePlaying);
+      audio.removeEventListener("waiting", handleWaiting);
+      audio.removeEventListener("pause", handlePause);
       audioRef.current = null;
     };
   }, [track.audioUrl]);
@@ -104,8 +144,11 @@ export function MiniAudioPlayer({
     if (isPlaying) {
       audio.pause();
       setIsPlaying(false);
+      setIsBuffering(false);
       return;
     }
+
+    setIsBuffering(true);
 
     try {
       await audio.play();
@@ -113,6 +156,7 @@ export function MiniAudioPlayer({
     } catch (error) {
       console.error("[MiniAudioPlayer] Failed to play audio", error);
       setIsPlaying(false);
+      setIsBuffering(false);
     }
   };
 
@@ -130,7 +174,7 @@ export function MiniAudioPlayer({
           onClick={handleTogglePlay}
           aria-label={isPlaying ? "Pause BGM" : "Play BGM"}
         >
-          {isPlaying ? <PauseIcon /> : <PlayIcon />}
+          {isBuffering ? <span className={styles.spinner} aria-hidden="true" /> : isPlaying ? <PauseIcon /> : <PlayIcon />}
         </button>
         {onNextTrack && (
           <button
