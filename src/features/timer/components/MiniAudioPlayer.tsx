@@ -1,6 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { AudioTrack } from "../data/bgm";
+import {
+  VOICE_NOTIFICATION_END_EVENT,
+  VOICE_NOTIFICATION_EVENT,
+} from "../hooks/useNotification";
 import styles from "./MiniAudioPlayer.module.css";
+
+const DEFAULT_BGM_VOLUME = 1;
+const DUCKED_BGM_VOLUME = 0.3;
 
 interface MiniAudioPlayerProps {
   track: AudioTrack;
@@ -63,6 +70,34 @@ export function MiniAudioPlayer({
   const [isBuffering, setIsBuffering] = useState(false);
   const isPlayingRef = useRef(false);
   const onNextTrackRef = useRef(onNextTrack);
+  const activeVoicePlaybackCountRef = useRef(0);
+
+  const restoreVolume = useCallback(() => {
+    const audio = audioRef.current;
+    if (!audio) {
+      return;
+    }
+
+    audio.volume = DEFAULT_BGM_VOLUME;
+  }, []);
+
+  const duckVolumeTemporarily = useCallback(() => {
+    const audio = audioRef.current;
+    if (!audio || audio.paused || audio.ended) {
+      return;
+    }
+
+    activeVoicePlaybackCountRef.current += 1;
+    audio.volume = DUCKED_BGM_VOLUME;
+  }, []);
+
+  const handleVoiceNotificationCompleted = useCallback(() => {
+    activeVoicePlaybackCountRef.current = Math.max(0, activeVoicePlaybackCountRef.current - 1);
+
+    if (activeVoicePlaybackCountRef.current === 0) {
+      restoreVolume();
+    }
+  }, [restoreVolume]);
 
   const tryPlayAudio = useCallback(async (audio: HTMLAudioElement, errorLabel: string) => {
     setIsBuffering(true);
@@ -117,6 +152,7 @@ export function MiniAudioPlayer({
   useEffect(() => {
     const audio = new Audio(track.audioUrl);
     audio.preload = "metadata";
+    audio.volume = DEFAULT_BGM_VOLUME;
 
     const handleEnded = () => {
       const nextTrackHandler = onNextTrackRef.current;
@@ -159,6 +195,8 @@ export function MiniAudioPlayer({
     }
 
     return () => {
+      restoreVolume();
+      activeVoicePlaybackCountRef.current = 0;
       audio.pause();
       audio.removeEventListener("ended", handleEnded);
       audio.removeEventListener("playing", handlePlaying);
@@ -166,7 +204,19 @@ export function MiniAudioPlayer({
       audio.removeEventListener("pause", handlePause);
       audioRef.current = null;
     };
-  }, [autoPlay, track.audioUrl, tryPlayAudio]);
+  }, [autoPlay, restoreVolume, track.audioUrl, tryPlayAudio]);
+
+  useEffect(() => {
+    window.addEventListener(VOICE_NOTIFICATION_EVENT, duckVolumeTemporarily);
+    window.addEventListener(VOICE_NOTIFICATION_END_EVENT, handleVoiceNotificationCompleted);
+
+    return () => {
+      window.removeEventListener(VOICE_NOTIFICATION_EVENT, duckVolumeTemporarily);
+      window.removeEventListener(VOICE_NOTIFICATION_END_EVENT, handleVoiceNotificationCompleted);
+      activeVoicePlaybackCountRef.current = 0;
+      restoreVolume();
+    };
+  }, [duckVolumeTemporarily, handleVoiceNotificationCompleted, restoreVolume]);
 
   useEffect(() => {
     if (!autoPlay || isPlayingRef.current) {

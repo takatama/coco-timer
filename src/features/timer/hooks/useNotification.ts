@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useRef } from "react";
 import { useSettingsStore } from "../../settings/store";
 
+export const VOICE_NOTIFICATION_EVENT = "coco:voice-notification";
+export const VOICE_NOTIFICATION_END_EVENT = "coco:voice-notification-end";
+
 function loadAudioPair(
   language: string,
   voice: string,
@@ -42,8 +45,47 @@ export function useNotification() {
     if (!useSettingsStore.getState().isSoundEnabled()) return;
     const audio = isFinish ? finishAudioRef.current : nextStepAudioRef.current;
     if (!audio) return;
+
+    let isStarted = false;
+    let isCompleted = false;
+
+    const handleStarted = () => {
+      if (isStarted) {
+        return;
+      }
+
+      isStarted = true;
+      window.dispatchEvent(new CustomEvent(VOICE_NOTIFICATION_EVENT));
+    };
+
+    const handleCompleted = () => {
+      if (isCompleted) {
+        return;
+      }
+
+      isCompleted = true;
+      audio.removeEventListener("playing", handleStarted);
+      audio.removeEventListener("ended", handleCompleted);
+      audio.removeEventListener("pause", handleCompleted);
+      window.dispatchEvent(new CustomEvent(VOICE_NOTIFICATION_END_EVENT));
+    };
+
+    audio.addEventListener("playing", handleStarted);
+    audio.addEventListener("ended", handleCompleted);
+    audio.addEventListener("pause", handleCompleted);
     audio.currentTime = 0;
-    audio.play().catch(() => {});
+
+    audio.play()
+      .then(() => {
+        // Some browsers dispatch `playing` immediately, but if it already started before
+        // the event callback runs we still guarantee a single start notification.
+        if (!isStarted && !audio.paused) {
+          handleStarted();
+        }
+      })
+      .catch(() => {
+        handleCompleted();
+      });
   }, []);
 
   const vibrate = useCallback((type: "pre-step" | "step-change") => {
