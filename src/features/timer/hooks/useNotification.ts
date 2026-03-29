@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef } from "react";
 import { useSettingsStore } from "../../settings/store";
 
+export const VOICE_NOTIFICATION_EVENT = "coco:voice-notification";
+
 function loadAudioPair(
   language: string,
   voice: string,
@@ -42,6 +44,7 @@ export function useNotification() {
     if (!useSettingsStore.getState().isSoundEnabled()) return;
     const audio = isFinish ? finishAudioRef.current : nextStepAudioRef.current;
     if (!audio) return;
+    window.dispatchEvent(new CustomEvent(VOICE_NOTIFICATION_EVENT));
     audio.currentTime = 0;
     audio.play().catch(() => {});
   }, []);
