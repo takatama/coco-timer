@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef } from "react";
 import { useSettingsStore } from "../../settings/store";
 
 export const VOICE_NOTIFICATION_EVENT = "coco:voice-notification";
+export const VOICE_NOTIFICATION_END_EVENT = "coco:voice-notification-end";
 
 function loadAudioPair(
   language: string,
@@ -44,9 +45,29 @@ export function useNotification() {
     if (!useSettingsStore.getState().isSoundEnabled()) return;
     const audio = isFinish ? finishAudioRef.current : nextStepAudioRef.current;
     if (!audio) return;
-    window.dispatchEvent(new CustomEvent(VOICE_NOTIFICATION_EVENT));
+    let isCompleted = false;
+    const handleCompleted = () => {
+      if (isCompleted) {
+        return;
+      }
+
+      isCompleted = true;
+      audio.removeEventListener("ended", handleCompleted);
+      audio.removeEventListener("pause", handleCompleted);
+      window.dispatchEvent(new CustomEvent(VOICE_NOTIFICATION_END_EVENT));
+    };
+
+    audio.addEventListener("ended", handleCompleted);
+    audio.addEventListener("pause", handleCompleted);
     audio.currentTime = 0;
-    audio.play().catch(() => {});
+
+    audio.play()
+      .then(() => {
+        window.dispatchEvent(new CustomEvent(VOICE_NOTIFICATION_EVENT));
+      })
+      .catch(() => {
+        handleCompleted();
+      });
   }, []);
 
   const vibrate = useCallback((type: "pre-step" | "step-change") => {
