@@ -1,19 +1,49 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useSettingsStore } from "../../settings/store";
 
+function loadAudioPair(
+  language: string,
+  voice: string,
+): [HTMLAudioElement, HTMLAudioElement] {
+  const nextStep = new Audio(`/assets/audio/${language}-${voice}-next-step.wav`);
+  const finish = new Audio(`/assets/audio/${language}-${voice}-finish.wav`);
+  nextStep.load();
+  finish.load();
+  return [nextStep, finish];
+}
+
 export function useNotification() {
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const nextStepAudioRef = useRef<HTMLAudioElement | null>(null);
+  const finishAudioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    const { language, voice } = useSettingsStore.getState();
+    [nextStepAudioRef.current, finishAudioRef.current] = loadAudioPair(language, voice);
+
+    const unsubscribe = useSettingsStore.subscribe((state, prev) => {
+      if (state.language !== prev.language || state.voice !== prev.voice) {
+        nextStepAudioRef.current?.pause();
+        finishAudioRef.current?.pause();
+        [nextStepAudioRef.current, finishAudioRef.current] = loadAudioPair(
+          state.language,
+          state.voice,
+        );
+      }
+    });
+
+    return () => {
+      unsubscribe();
+      nextStepAudioRef.current?.pause();
+      finishAudioRef.current?.pause();
+    };
+  }, []);
 
   const playSound = useCallback((isFinish: boolean) => {
-    const { language, voice } = useSettingsStore.getState();
     if (!useSettingsStore.getState().isSoundEnabled()) return;
-    const type = isFinish ? "finish" : "next-step";
-    const src = `/assets/audio/${language}-${voice}-${type}.wav`;
-    if (audioRef.current) {
-      audioRef.current.pause();
-    }
-    audioRef.current = new Audio(src);
-    audioRef.current.play().catch(() => {});
+    const audio = isFinish ? finishAudioRef.current : nextStepAudioRef.current;
+    if (!audio) return;
+    audio.currentTime = 0;
+    audio.play().catch(() => {});
   }, []);
 
   const vibrate = useCallback((type: "pre-step" | "step-change") => {
