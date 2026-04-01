@@ -51,7 +51,15 @@
     "water": "Water",
     "debugBgmType": "Debug BGM Type",
     "debugBgmWeekday": "Weekday",
-    "debugBgmHoliday": "Holiday"
+    "debugBgmHoliday": "Holiday",
+    "debugBgmDay": "Debug BGM Day",
+    "daySun": "Sun",
+    "dayMon": "Mon",
+    "dayTue": "Tue",
+    "dayWed": "Wed",
+    "dayThu": "Thu",
+    "dayFri": "Fri",
+    "daySat": "Sat"
   },
   "timer": {
     "currentStep": "Current Step",

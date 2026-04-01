@@ -21,10 +21,10 @@ function AppShell() {
   const hasStartedTimer = useSessionStore((s) => s.hasStartedTimer);
   const bgmEnabled = useSettingsStore((s) => s.bgmEnabled);
   const debugEnabled = useSettingsStore((s) => s.debugEnabled);
-  const debugBgmDayType = useSettingsStore((s) => s.debugBgmDayType);
+  const debugBgmDayOfWeek = useSettingsStore((s) => s.debugBgmDayOfWeek);
   const tracks = useMemo(
-    () => getActiveBgmTracks({ debugEnabled, debugDayType: debugBgmDayType }),
-    [debugEnabled, debugBgmDayType],
+    () => getActiveBgmTracks({ debugEnabled, debugDayOfWeek: debugBgmDayOfWeek }),
+    [debugEnabled, debugBgmDayOfWeek],
   );
   const [trackIndex, setTrackIndex] = useState(0);
 

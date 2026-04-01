@@ -36,7 +36,7 @@ describe("useSettingsStore", () => {
       debugSpeed: 1,
       animation: true,
       bgmEnabled: true,
-      debugBgmDayType: "weekday",
+      debugBgmDayOfWeek: "mon",
     });
   });
 
@@ -48,7 +48,7 @@ describe("useSettingsStore", () => {
     expect(state.debugSpeed).toBe(1);
     expect(state.animation).toBe(true);
     expect(state.bgmEnabled).toBe(true);
-    expect(["weekday", "holiday"]).toContain(state.debugBgmDayType);
+    expect(["sun", "mon", "tue", "wed", "thu", "fri", "sat"]).toContain(state.debugBgmDayOfWeek);
   });
 
   it("setLanguage updates language", () => {
@@ -132,18 +132,18 @@ describe("useSettingsStore", () => {
     expect(useSettingsStore.getState().bgmEnabled).toBe(true);
   });
 
-  it("setDebugBgmDayType updates debug BGM day type", () => {
-    useSettingsStore.getState().setDebugBgmDayType("holiday");
-    expect(useSettingsStore.getState().debugBgmDayType).toBe("holiday");
+  it("setDebugBgmDayOfWeek updates debug BGM day", () => {
+    useSettingsStore.getState().setDebugBgmDayOfWeek("sun");
+    expect(useSettingsStore.getState().debugBgmDayOfWeek).toBe("sun");
 
-    useSettingsStore.getState().setDebugBgmDayType("weekday");
-    expect(useSettingsStore.getState().debugBgmDayType).toBe("weekday");
+    useSettingsStore.getState().setDebugBgmDayOfWeek("fri");
+    expect(useSettingsStore.getState().debugBgmDayOfWeek).toBe("fri");
   });
 
-  it("normalizes unexpected debug BGM day type values", () => {
-    (useSettingsStore.getState() as unknown as { setDebugBgmDayType: (v: unknown) => void })
-      .setDebugBgmDayType("invalid");
+  it("normalizes unexpected debug BGM day values", () => {
+    (useSettingsStore.getState() as unknown as { setDebugBgmDayOfWeek: (v: unknown) => void })
+      .setDebugBgmDayOfWeek("invalid");
 
-    expect(useSettingsStore.getState().debugBgmDayType).toBe("weekday");
+    expect(useSettingsStore.getState().debugBgmDayOfWeek).toBe("mon");
   });
 });

@@ -7,7 +7,7 @@ export type AudioTrack = {
 };
 
 export type BgmDayType = "weekday" | "holiday";
-export type BgmDayOfWeek = "mon" | "sat";
+export type BgmDayOfWeek = "sun" | "mon" | "tue" | "wed" | "thu" | "fri" | "sat";
 export type BgmWeather = "clear";
 
 export type BgmContext = {

@@ -1,70 +1,73 @@
 import { holidaySatClearTracks } from "./holiday/sat/clear";
+import { holidaySunClearTracks } from "./holiday/sun/clear";
+import { weekdayFriClearTracks } from "./weekday/fri/clear";
 import { weekdayMonClearTracks } from "./weekday/mon/clear";
-import type { AudioTrack, BgmContext } from "./types";
+import { weekdayThuClearTracks } from "./weekday/thu/clear";
+import { weekdayTueClearTracks } from "./weekday/tue/clear";
+import { weekdayWedClearTracks } from "./weekday/wed/clear";
+import type { AudioTrack, BgmContext, BgmDayOfWeek } from "./types";
 
 export type { AudioTrack, BgmContext } from "./types";
 
-export type BgmDayTypePreset = "weekday" | "holiday";
-
-const BGM_CONTEXT_BY_DAY_TYPE: Record<BgmDayTypePreset, BgmContext> = {
-  weekday: { dayType: "weekday", dayOfWeek: "mon", weather: "clear" },
-  holiday: { dayType: "holiday", dayOfWeek: "sat", weather: "clear" },
-};
-
 const TRACKS_BY_CONTEXT_KEY: Record<string, AudioTrack[]> = {
   "weekday:mon:clear": weekdayMonClearTracks,
+  "weekday:tue:clear": weekdayTueClearTracks,
+  "weekday:wed:clear": weekdayWedClearTracks,
+  "weekday:thu:clear": weekdayThuClearTracks,
+  "weekday:fri:clear": weekdayFriClearTracks,
   "holiday:sat:clear": holidaySatClearTracks,
+  "holiday:sun:clear": holidaySunClearTracks,
 };
 
-const normalizeBgmDayTypePreset = (dayType: unknown): BgmDayTypePreset => {
-  return dayType === "holiday" ? "holiday" : "weekday";
-};
+const DAY_OF_WEEK_BY_JS_DAY: BgmDayOfWeek[] = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 
 const toContextKey = (context: BgmContext): string =>
   `${context.dayType}:${context.dayOfWeek}:${context.weather}`;
+
+const getDayTypeFromDayOfWeek = (dayOfWeek: BgmDayOfWeek): BgmContext["dayType"] => {
+  return dayOfWeek === "sat" || dayOfWeek === "sun" ? "holiday" : "weekday";
+};
+
+const normalizeBgmDayOfWeek = (dayOfWeek: unknown): BgmDayOfWeek => {
+  return dayOfWeek === "sun"
+    || dayOfWeek === "mon"
+    || dayOfWeek === "tue"
+    || dayOfWeek === "wed"
+    || dayOfWeek === "thu"
+    || dayOfWeek === "fri"
+    || dayOfWeek === "sat"
+    ? dayOfWeek
+    : "mon";
+};
 
 export const getTracksForContext = (context: BgmContext): AudioTrack[] => {
   return TRACKS_BY_CONTEXT_KEY[toContextKey(context)] ?? weekdayMonClearTracks;
 };
 
-export const getBgmContextForDayType = (dayType: BgmDayTypePreset): BgmContext => {
-  const normalizedDayType = normalizeBgmDayTypePreset(dayType);
-  return BGM_CONTEXT_BY_DAY_TYPE[normalizedDayType];
+export const getBgmContextForDayOfWeek = (dayOfWeek: BgmDayOfWeek): BgmContext => {
+  const normalizedDayOfWeek = normalizeBgmDayOfWeek(dayOfWeek);
+  return {
+    dayType: getDayTypeFromDayOfWeek(normalizedDayOfWeek),
+    dayOfWeek: normalizedDayOfWeek,
+    weather: "clear",
+  };
 };
 
-export const getBgmTracksForDayType = (dayType: BgmDayTypePreset): AudioTrack[] => {
-  return getTracksForContext(getBgmContextForDayType(dayType));
+export const getBgmTracksForDayOfWeek = (dayOfWeek: BgmDayOfWeek): AudioTrack[] => {
+  return getTracksForContext(getBgmContextForDayOfWeek(dayOfWeek));
 };
 
-export const getAutoBgmDayType = (): BgmDayTypePreset => {
-  if (typeof navigator === "undefined") {
-    return "weekday";
-  }
-
-  const locale = navigator.language;
-  const today = new Date();
-
-  const localeInfo = typeof Intl.Locale !== "undefined"
-    ? new Intl.Locale(locale)
-    : null;
-  const weekendDays = localeInfo?.weekInfo?.weekend;
-
-  const jsDay = today.getDay();
-  const dayForWeekInfo = jsDay === 0 ? 7 : jsDay;
-
-  if (Array.isArray(weekendDays) && weekendDays.includes(dayForWeekInfo)) {
-    return "holiday";
-  }
-
-  return jsDay === 0 || jsDay === 6 ? "holiday" : "weekday";
+export const getAutoBgmDayOfWeek = (): BgmDayOfWeek => {
+  const jsDay = new Date().getDay();
+  return DAY_OF_WEEK_BY_JS_DAY[jsDay] ?? "mon";
 };
 
 export const getActiveBgmTracks = (params: {
   debugEnabled: boolean;
-  debugDayType: BgmDayTypePreset;
+  debugDayOfWeek: BgmDayOfWeek;
 }): AudioTrack[] => {
-  const dayType = params.debugEnabled
-    ? normalizeBgmDayTypePreset(params.debugDayType)
-    : getAutoBgmDayType();
-  return getBgmTracksForDayType(dayType);
+  const dayOfWeek = params.debugEnabled
+    ? normalizeBgmDayOfWeek(params.debugDayOfWeek)
+    : getAutoBgmDayOfWeek();
+  return getBgmTracksForDayOfWeek(dayOfWeek);
 };

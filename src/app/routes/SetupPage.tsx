@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useSessionStore } from "../../features/timer/store";
 import { useSettingsStore } from "../../features/settings/store";
-import type { DebugBgmDayType } from "../../features/settings/types";
+import type { BgmDayOfWeek } from "../../features/settings/types";
 import { newHybridMethod, computeSteps, getTotalWater } from "../../features/recipe";
 import type { FlavorProfile } from "../../features/recipe";
 import { CoffeeNews } from "../../features/timer/components/CoffeeNews";
@@ -20,7 +20,7 @@ export function SetupPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { beans, flavor, setBeans, setFlavor, setHasStartedTimer } = useSessionStore();
-  const { debugEnabled, language, debugBgmDayType, setDebugBgmDayType } = useSettingsStore();
+  const { debugEnabled, language, debugBgmDayOfWeek, setDebugBgmDayOfWeek } = useSettingsStore();
   const { news, loading: newsLoading } = useCoffeeNews(language, debugEnabled);
   const [detailsOpen, setDetailsOpen] = useState(false);
 
@@ -167,16 +167,21 @@ export function SetupPage() {
       {debugEnabled && (
         <>
           <section className="card">
-            <div className="card-title">{t("setup.debugBgmType")}</div>
+            <div className="card-title">{t("setup.debugBgmDay")}</div>
             <div className="choice-row">
               {([
-                { value: "weekday", label: t("setup.debugBgmWeekday") },
-                { value: "holiday", label: t("setup.debugBgmHoliday") },
+                { value: "sun", label: t("setup.daySun") },
+                { value: "mon", label: t("setup.dayMon") },
+                { value: "tue", label: t("setup.dayTue") },
+                { value: "wed", label: t("setup.dayWed") },
+                { value: "thu", label: t("setup.dayThu") },
+                { value: "fri", label: t("setup.dayFri") },
+                { value: "sat", label: t("setup.daySat") },
               ] as const).map((option) => (
                 <button
                   key={option.value}
-                  className={`choice${debugBgmDayType === option.value ? " active" : ""}`}
-                  onClick={() => setDebugBgmDayType(option.value as DebugBgmDayType)}
+                  className={`choice${debugBgmDayOfWeek === option.value ? " active" : ""}`}
+                  onClick={() => setDebugBgmDayOfWeek(option.value as BgmDayOfWeek)}
                 >
                   {option.label}
                 </button>
