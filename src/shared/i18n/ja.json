@@ -51,7 +51,15 @@
     "water": "湯量",
     "debugBgmType": "デバッグBGMタイプ",
     "debugBgmWeekday": "平日",
-    "debugBgmHoliday": "休日"
+    "debugBgmHoliday": "休日",
+    "debugBgmDay": "デバッグBGM曜日",
+    "daySun": "日",
+    "dayMon": "月",
+    "dayTue": "火",
+    "dayWed": "水",
+    "dayThu": "木",
+    "dayFri": "金",
+    "daySat": "土"
   },
   "timer": {
     "currentStep": "今のステップ",
