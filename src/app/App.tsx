@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { Header } from "../shared/components/Header";
 import { IntroPage } from "./routes/IntroPage";
@@ -6,7 +6,8 @@ import { SetupPage } from "./routes/SetupPage";
 import { TimerPage } from "./routes/TimerPage";
 import { useSessionStore } from "../features/timer/store";
 import { useSettingsStore } from "../features/settings/store";
-import { getActiveBgmTracks } from "../features/timer/data/bgm";
+import { getActiveBgmDayOfWeek, getActiveBgmTracks } from "../features/timer/data/bgm";
+import { getSavedBgmTrackIndex, setSavedBgmTrackIndex } from "../features/timer/data/bgm/playbackProgress";
 import { FloatingMiniPlayer } from "../features/timer/components/FloatingMiniPlayer";
 import { ErrorBoundary } from "../shared/components/ErrorBoundary";
 import styles from "./App.module.css";
@@ -18,15 +19,28 @@ function RootRedirect() {
 
 function AppShell() {
   const { pathname } = useLocation();
-  const hasStartedTimer = useSessionStore((s) => s.hasStartedTimer);
   const bgmEnabled = useSettingsStore((s) => s.bgmEnabled);
   const debugEnabled = useSettingsStore((s) => s.debugEnabled);
   const debugBgmDayOfWeek = useSettingsStore((s) => s.debugBgmDayOfWeek);
+  const currentBgmDayOfWeek = useMemo(
+    () => getActiveBgmDayOfWeek({ debugEnabled, debugDayOfWeek: debugBgmDayOfWeek }),
+    [debugEnabled, debugBgmDayOfWeek],
+  );
   const tracks = useMemo(
     () => getActiveBgmTracks({ debugEnabled, debugDayOfWeek: debugBgmDayOfWeek }),
     [debugEnabled, debugBgmDayOfWeek],
   );
   const [trackIndex, setTrackIndex] = useState(0);
+
+  useEffect(() => {
+    if (tracks.length === 0) {
+      setTrackIndex(0);
+      return;
+    }
+
+    const savedTrackIndex = getSavedBgmTrackIndex(currentBgmDayOfWeek);
+    setTrackIndex(savedTrackIndex % tracks.length);
+  }, [currentBgmDayOfWeek, tracks.length]);
 
   const currentTrack = tracks[trackIndex] ?? tracks[0];
   const isSetupPage = pathname === "/setup";
@@ -35,15 +49,29 @@ function AppShell() {
   const shouldShowMiniPlayer =
     Boolean(currentTrack) &&
     bgmEnabled &&
-    hasStartedTimer &&
     (isTimerPage || isSetupPage);
 
-  const handleNextTrack = () => {
+  const handleNextTrack = (trigger: "manual" | "ended") => {
     if (tracks.length <= 1) {
       return;
     }
 
-    setTrackIndex((prevIndex) => (prevIndex + 1) % tracks.length);
+    setTrackIndex((prevIndex) => {
+      const nextIndex = (prevIndex + 1) % tracks.length;
+      if (trigger === "ended") {
+        setSavedBgmTrackIndex(currentBgmDayOfWeek, nextIndex);
+      }
+      return nextIndex;
+    });
+  };
+
+  const handleTrackPlaybackStarted = () => {
+    if (tracks.length === 0) {
+      return;
+    }
+
+    const nextIndex = (trackIndex + 1) % tracks.length;
+    setSavedBgmTrackIndex(currentBgmDayOfWeek, nextIndex);
   };
 
   return (
@@ -59,7 +87,11 @@ function AppShell() {
         </Routes>
       </ErrorBoundary>
       {shouldShowMiniPlayer && currentTrack && (
-        <FloatingMiniPlayer track={currentTrack} onNextTrack={handleNextTrack} />
+        <FloatingMiniPlayer
+          track={currentTrack}
+          onNextTrack={handleNextTrack}
+          onTrackPlaybackStarted={handleTrackPlaybackStarted}
+        />
       )}
     </div>
   );
