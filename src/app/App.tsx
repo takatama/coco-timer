@@ -65,6 +65,15 @@ function AppShell() {
     });
   };
 
+  const handleTrackPlaybackStarted = () => {
+    if (tracks.length === 0) {
+      return;
+    }
+
+    const nextIndex = (trackIndex + 1) % tracks.length;
+    setSavedBgmTrackIndex(currentBgmDayOfWeek, nextIndex);
+  };
+
   return (
     <div className={`${styles.app} ${shouldShowMiniPlayer ? styles.withMiniPlayer : ""}`}>
       <Header />
@@ -78,7 +87,11 @@ function AppShell() {
         </Routes>
       </ErrorBoundary>
       {shouldShowMiniPlayer && currentTrack && (
-        <FloatingMiniPlayer track={currentTrack} onNextTrack={handleNextTrack} />
+        <FloatingMiniPlayer
+          track={currentTrack}
+          onNextTrack={handleNextTrack}
+          onTrackPlaybackStarted={handleTrackPlaybackStarted}
+        />
       )}
     </div>
   );

@@ -14,6 +14,7 @@ interface MiniAudioPlayerProps {
   className?: string;
   autoPlay?: boolean;
   onNextTrack?: (trigger: "manual" | "ended") => void;
+  onTrackPlaybackStarted?: () => void;
 }
 
 interface IconProps {
@@ -64,12 +65,14 @@ export function MiniAudioPlayer({
   className,
   autoPlay = false,
   onNextTrack,
+  onTrackPlaybackStarted,
 }: MiniAudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isBuffering, setIsBuffering] = useState(false);
   const isPlayingRef = useRef(false);
   const onNextTrackRef = useRef(onNextTrack);
+  const onTrackPlaybackStartedRef = useRef(onTrackPlaybackStarted);
   const activeVoicePlaybackCountRef = useRef(0);
 
   const restoreVolume = useCallback(() => {
@@ -119,6 +122,10 @@ export function MiniAudioPlayer({
   useEffect(() => {
     onNextTrackRef.current = onNextTrack;
   }, [onNextTrack]);
+
+  useEffect(() => {
+    onTrackPlaybackStartedRef.current = onTrackPlaybackStarted;
+  }, [onTrackPlaybackStarted]);
 
   const handlePlay = useCallback(async () => {
     const audio = audioRef.current;
@@ -170,6 +177,7 @@ export function MiniAudioPlayer({
     const handlePlaying = () => {
       setIsPlaying(true);
       setIsBuffering(false);
+      onTrackPlaybackStartedRef.current?.();
     };
 
     const handleWaiting = () => {
