@@ -19,7 +19,7 @@ export function SetupPage() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { beans, flavor, setBeans, setFlavor, setHasStartedTimer } = useSessionStore();
+  const { beans, flavor, setBeans, setFlavor } = useSessionStore();
   const { debugEnabled, language, debugBgmDayOfWeek, setDebugBgmDayOfWeek } = useSettingsStore();
   const { news, loading: newsLoading } = useCoffeeNews(language, debugEnabled);
   const [detailsOpen, setDetailsOpen] = useState(false);
@@ -45,7 +45,6 @@ export function SetupPage() {
   const equipment = getEquipmentItems(lang);
 
   const handleStart = () => {
-    setHasStartedTimer(true);
     navigate("/timer?autostart=1");
   };
 

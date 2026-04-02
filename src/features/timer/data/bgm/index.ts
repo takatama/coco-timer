@@ -66,8 +66,15 @@ export const getActiveBgmTracks = (params: {
   debugEnabled: boolean;
   debugDayOfWeek: BgmDayOfWeek;
 }): AudioTrack[] => {
-  const dayOfWeek = params.debugEnabled
+  const dayOfWeek = getActiveBgmDayOfWeek(params);
+  return getBgmTracksForDayOfWeek(dayOfWeek);
+};
+
+export const getActiveBgmDayOfWeek = (params: {
+  debugEnabled: boolean;
+  debugDayOfWeek: BgmDayOfWeek;
+}): BgmDayOfWeek => {
+  return params.debugEnabled
     ? normalizeBgmDayOfWeek(params.debugDayOfWeek)
     : getAutoBgmDayOfWeek();
-  return getBgmTracksForDayOfWeek(dayOfWeek);
 };

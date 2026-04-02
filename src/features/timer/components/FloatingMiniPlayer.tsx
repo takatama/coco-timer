@@ -4,7 +4,7 @@ import styles from "./FloatingMiniPlayer.module.css";
 
 interface FloatingMiniPlayerProps {
   track: AudioTrack;
-  onNextTrack: () => void;
+  onNextTrack: (trigger: "manual" | "ended") => void;
 }
 
 export function FloatingMiniPlayer({ track, onNextTrack }: FloatingMiniPlayerProps) {
@@ -13,7 +13,6 @@ export function FloatingMiniPlayer({ track, onNextTrack }: FloatingMiniPlayerPro
       <MiniAudioPlayer
         className={styles.player}
         track={track}
-        autoPlay={true}
         onNextTrack={onNextTrack}
       />
     </div>

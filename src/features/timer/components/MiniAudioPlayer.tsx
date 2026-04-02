@@ -13,7 +13,7 @@ interface MiniAudioPlayerProps {
   track: AudioTrack;
   className?: string;
   autoPlay?: boolean;
-  onNextTrack?: () => void;
+  onNextTrack?: (trigger: "manual" | "ended") => void;
 }
 
 interface IconProps {
@@ -146,7 +146,7 @@ export function MiniAudioPlayer({
       return;
     }
 
-    nextTrackHandler();
+    nextTrackHandler("manual");
   }, []);
 
   useEffect(() => {
@@ -164,7 +164,7 @@ export function MiniAudioPlayer({
 
       setIsPlaying(true);
       setIsBuffering(true);
-      nextTrackHandler();
+      nextTrackHandler("ended");
     };
 
     const handlePlaying = () => {
