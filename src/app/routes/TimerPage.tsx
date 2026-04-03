@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useTimerOrchestrator } from "../../features/timer/hooks/useTimerOrchestrator";
@@ -7,6 +8,7 @@ import { FinishCard } from "../../features/timer/components/FinishCard";
 import { NextStepPreview } from "../../features/timer/components/NextStepPreview";
 import { Timeline } from "../../features/timer/components/Timeline";
 import { useCoffeeNews } from "../../features/timer/hooks/useCoffeeNews";
+import { ConfirmDialog } from "../../shared/components/ConfirmDialog";
 import styles from "./TimerPage.module.css";
 
 export function TimerPage() {
@@ -34,8 +36,14 @@ export function TimerPage() {
   const isFinishStep = currentStep?.actionType === "none";
   const { debugEnabled, debugSpeed, setDebugSpeed, language } = useSettingsStore();
   const { news, loading: newsLoading } = useCoffeeNews(language);
+  const [resetDialogOpen, setResetDialogOpen] = useState(false);
 
   const handleResetTimer = () => {
+    setResetDialogOpen(true);
+  };
+
+  const handleResetConfirm = () => {
+    setResetDialogOpen(false);
     handleReset();
   };
 
@@ -106,6 +114,16 @@ export function TimerPage() {
         steps={steps}
         currentStepIndex={timer.currentStepIndex}
         currentTime={timer.currentTime}
+      />
+
+      <ConfirmDialog
+        open={resetDialogOpen}
+        title={t("timer.reset")}
+        message={t("timer.resetConfirm")}
+        confirmLabel={t("timer.resetConfirmAction")}
+        cancelLabel={t("timer.resetCancelAction")}
+        onConfirm={handleResetConfirm}
+        onCancel={() => setResetDialogOpen(false)}
       />
     </main>
   );
