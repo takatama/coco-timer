@@ -27,17 +27,24 @@ export function useTimerOrchestrator() {
 
   const startDelayRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const onPreNotify = useCallback(
-    (nextStepIndex: number, isFinish: boolean) => {
+  const notifyPreStep = useCallback(
+    (isFinish: boolean) => {
       vibrate("pre-step");
       playSound(isFinish);
+    },
+    [vibrate, playSound],
+  );
+
+  const onPreNotify = useCallback(
+    (nextStepIndex: number, isFinish: boolean) => {
+      notifyPreStep(isFinish);
       if (!isFinish && nextStepIndex >= 0 && animation) {
         const prevCumulative =
           nextStepIndex > 0 ? steps[nextStepIndex - 1].cumulative : 0;
         setOverlayStep({ index: nextStepIndex, prevCumulative });
       }
     },
-    [vibrate, playSound, animation, steps],
+    [notifyPreStep, animation, steps],
   );
 
   const onStepCrossed = useCallback(() => {
@@ -69,6 +76,7 @@ export function useTimerOrchestrator() {
   const isImminent = remainingToNext > 0 && remainingToNext <= 5;
 
   const startWithAnimation = useCallback(() => {
+    notifyPreStep(false);
     setOverlayStep({ index: 0, prevCumulative: 0 });
     timer.setOverlayStep(0);
     wakeLock.request();
@@ -77,7 +85,7 @@ export function useTimerOrchestrator() {
       setOverlayStep(null);
       timer.start();
     }, 5000);
-  }, [timer, wakeLock]);
+  }, [notifyPreStep, timer, wakeLock]);
 
   const handlePlayPause = useCallback(() => {
     // Cancel pending startup countdown first, if any
