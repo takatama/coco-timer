@@ -81,14 +81,6 @@ export function TimerPage() {
         />
       )}
 
-      {overlayStep && animation && steps[overlayStep.index] && (
-        <NextStepPreview
-          step={steps[overlayStep.index]}
-          prevCumulative={overlayStep.prevCumulative}
-          visible={true}
-        />
-      )}
-
       <section className={styles.controls}>
         {!isFinishStep && (
           <div className={styles.primaryControlRow}>
@@ -109,6 +101,14 @@ export function TimerPage() {
           {t("timer.reset")}
         </button>
       </section>
+
+      {overlayStep && animation && steps[overlayStep.index] && (
+        <NextStepPreview
+          step={steps[overlayStep.index]}
+          prevCumulative={overlayStep.prevCumulative}
+          visible={true}
+        />
+      )}
 
       <Timeline
         steps={steps}
