@@ -14,7 +14,7 @@ export function useTimerOrchestrator() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { beans, flavor } = useSessionStore();
   const { debugSpeed, animation } = useSettingsStore();
-  const { playSound, vibrate } = useNotification();
+  const { playSound, playFirstSound, vibrate } = useNotification();
   const wakeLock = useWakeLock();
 
   const steps = useMemo(
@@ -38,13 +38,10 @@ export function useTimerOrchestrator() {
     [playSound, vibrate],
   );
 
-  // COCO has no separate first-step audio. Preserve its existing behavior:
-  // the regular next-step cue is used only when the startup preview is enabled.
   const onStart = useCallback(() => {
-    if (!animation) return;
     vibrate("pre-step");
-    playSound(false);
-  }, [animation, playSound, vibrate]);
+    playFirstSound();
+  }, [playFirstSound, vibrate]);
 
   const onStepCrossed = useCallback(() => {
     vibrate("step-change");
