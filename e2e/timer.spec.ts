@@ -38,7 +38,13 @@ test("setup carries the chosen amount into a brew that reaches completion", asyn
   await expect(page.getByText("Water 315g", { exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Pause", exact: true })).toBeVisible();
 
+  const mainCard = page.getByRole("region", { name: "Current Step" });
+  await expect(mainCard.getByRole("img", { name: "Timeline" })).toBeVisible();
+  await expect(mainCard.getByRole("status", { name: "First" })).toBeVisible();
+  await expect(page.getByRole("img", { name: "Timeline" })).toHaveCount(1);
+
   await page.clock.runFor(6_000);
+  await expect(mainCard.getByRole("status", { name: "First" })).toHaveCount(0);
   const before = await remaining(page).innerText();
   await page.clock.runFor(2_000);
   await expect(remaining(page)).not.toHaveText(before);

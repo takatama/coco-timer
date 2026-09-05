@@ -1,7 +1,7 @@
 # Shared brew timer source
 
 - Source repository: `https://github.com/takatama/neo-brew-timer`
-- Source commit: `b6de8c5fd5eb548f05897e055806f464fee23f1a`
+- Source commit: `f32ce33cb3eec2cc670c3e14993a2fff6433f42e`
 - Copied folder: `src/shared/brew-timer`
 - COCO connection: `src/features/timer/hooks/useTimerOrchestrator.ts`
 

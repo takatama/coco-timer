@@ -6,7 +6,6 @@ import { useSettingsStore } from "../../features/settings/store";
 import { StepCard } from "../../features/timer/components/StepCard";
 import { FinishCard } from "../../features/timer/components/FinishCard";
 import { NextStepPreview } from "../../features/timer/components/NextStepPreview";
-import { Timeline } from "../../features/timer/components/Timeline";
 import { useCoffeeNews } from "../../features/timer/hooks/useCoffeeNews";
 import { ConfirmDialog } from "../../shared/components/ConfirmDialog";
 import styles from "./TimerPage.module.css";
@@ -34,6 +33,7 @@ export function TimerPage() {
 
   const flavorLabel = t(`flavorLabels.${flavor}`);
   const isFinishStep = currentStep?.actionType === "none";
+  const brewStepCount = steps.filter((step) => step.actionType !== "none").length;
   const { debugEnabled, debugSpeed, setDebugSpeed, language } = useSettingsStore();
   const { news, loading: newsLoading } = useCoffeeNews(language);
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
@@ -65,10 +65,27 @@ export function TimerPage() {
         <StepCard
           step={currentStep}
           stepIndex={timer.currentStepIndex}
-          totalSteps={steps.length}
+          totalSteps={brewStepCount}
           remainingSeconds={remainingToNext}
           progress={progress}
           isImminent={isImminent}
+          hideTargetAmount={
+            timer.status === "idle" &&
+            timer.currentStepIndex === 0 &&
+            timer.currentTime === 0
+          }
+          nextStepPreview={
+            overlayStep && animation && steps[overlayStep.index] ? (
+              <NextStepPreview
+                step={steps[overlayStep.index]}
+                prevCumulative={overlayStep.prevCumulative}
+                visible
+                isFirstStep={overlayStep.index === 0}
+              />
+            ) : undefined
+          }
+          steps={steps}
+          currentTime={timer.currentTime}
         />
       )}
 
@@ -101,20 +118,6 @@ export function TimerPage() {
           {t("timer.reset")}
         </button>
       </section>
-
-      {overlayStep && animation && steps[overlayStep.index] && (
-        <NextStepPreview
-          step={steps[overlayStep.index]}
-          prevCumulative={overlayStep.prevCumulative}
-          visible={true}
-        />
-      )}
-
-      <Timeline
-        steps={steps}
-        currentStepIndex={timer.currentStepIndex}
-        currentTime={timer.currentTime}
-      />
 
       <ConfirmDialog
         open={resetDialogOpen}
