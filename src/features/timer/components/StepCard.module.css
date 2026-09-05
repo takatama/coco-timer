@@ -10,11 +10,12 @@
 }
 
 .cardFrameWithPreview > :global(.card) > :first-child > :last-child {
-  right: 24px;
+  right: 28px;
 }
 
 .cardFrameWithPreview .stepSub {
-  max-width: 140px;
+  max-width: 155px;
+  margin-left: 4px;
 }
 
 .stepVerb {

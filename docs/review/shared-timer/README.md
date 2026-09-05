@@ -16,9 +16,15 @@ The timer header uses bean, water, flavor order. The cool-water instruction is e
 
 The three flavor buttons are centered as a group. The main timer card keeps the same 320 px minimum height when animation is hidden, so the surrounding controls do not jump.
 
+The left current-step text and right preview text use slightly wider text areas with extra space from the card edges. The longest wait instruction remains on one line in both English and Japanese at the review viewport.
+
 | Animation hidden | Cool-step preview | Cool step | Finished |
 | --- | --- | --- | --- |
 | ![COCO timer with animation hidden](coco-running-animation-hidden.png) | ![COCO cool-step preview](coco-cool-preview-ja.png) | ![COCO cool step](coco-cool-step-ja.png) | ![COCO finished](coco-finished.png) |
+
+| Long preview (English) | Long preview (Japanese) |
+| --- | --- |
+| ![COCO long preview in English](coco-long-preview-en.png) | ![COCO long preview in Japanese](coco-long-preview-ja.png) |
 
 | State | Neo Brew Timer | COCO Timer |
 | --- | --- | --- |

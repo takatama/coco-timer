@@ -12,6 +12,7 @@
 }
 
 .animationText {
+  width: 170px;
   font-size: 0.8rem;
   line-height: 1.2;
   color: var(--md-text);
