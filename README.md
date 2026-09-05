@@ -49,7 +49,16 @@ http://localhost:5173/
 ## Build
 
 ```bash
+npm run typecheck
+npm test
 npm run build
+npm run test:e2e
+```
+
+The browser journeys use Chromium. On a new machine, install it once with:
+
+```bash
+npx playwright install chromium
 ```
 
 Output goes to `dist/`.
