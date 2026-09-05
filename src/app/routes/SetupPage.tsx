@@ -7,7 +7,6 @@ import type { BgmDayOfWeek } from "../../features/settings/types";
 import { newHybridMethod, computeSteps, getTotalWater } from "../../features/recipe";
 import type { FlavorProfile } from "../../features/recipe";
 import { CoffeeNews } from "../../features/timer/components/CoffeeNews";
-import { Timeline } from "../../features/timer/components/Timeline";
 import { useCoffeeNews } from "../../features/timer/hooks/useCoffeeNews";
 import styles from "./SetupPage.module.css";
 import { getEquipmentItems, type SupportedLanguage } from "../../shared/affiliate/amazon";
@@ -52,57 +51,53 @@ export function SetupPage() {
   return (
     <main className="content">
       <section className="card">
-        <div className="card-title">{t("setup.beans")}</div>
         <div className={styles.stepperRow}>
-          <button
-            className={styles.btnIcon}
-            onClick={() => setBeans(Math.max(1, beans - 1))}
-            aria-label="decrease"
-          >
-            −
-          </button>
-          <div className={styles.beansValue}>{beans}g</div>
-          <button
-            className={styles.btnIcon}
-            onClick={() => setBeans(beans + 1)}
-            aria-label="increase"
-          >
-            ＋
-          </button>
+          <span className={styles.fieldLabel}>{t("setup.beans")}</span>
+          <div className={styles.stepperControls}>
+            <button
+              className={styles.btnIcon}
+              onClick={() => setBeans(Math.max(1, beans - 1))}
+              aria-label="decrease"
+            >
+              −
+            </button>
+            <div className={styles.beansValue}>{beans}g</div>
+            <button
+              className={styles.btnIcon}
+              onClick={() => setBeans(beans + 1)}
+              aria-label="increase"
+            >
+              ＋
+            </button>
+          </div>
+        </div>
+        <div className={styles.calculatedWater}>
+          <span className={styles.calculatedWaterLabel}>{t("setup.water")}</span>
+          <span className={styles.calculatedWaterValue}>{totalWater}g</span>
+          <span className={styles.waterRatio}>1:{newHybridMethod.waterRatio}</span>
         </div>
       </section>
 
       <section className="card">
-        <div className="card-title">{t("setup.flavor")}</div>
-        <div className="choice-row">
-          {flavorOptions.map((f) => (
-            <button
-              key={f}
-              className={`choice${flavor === f ? " active" : ""}`}
-              onClick={() => setFlavor(f)}
-            >
-              {t(`setup.${f}`)}
-            </button>
-          ))}
+        <div className={styles.flavorRow}>
+          <span className={styles.fieldLabel}>{t("setup.flavor")}</span>
+          <div className="choice-row">
+            {flavorOptions.map((f) => (
+              <button
+                key={f}
+                className={`choice${flavor === f ? " active" : ""}`}
+                onClick={() => setFlavor(f)}
+              >
+                {t(`setup.${f}`)}
+              </button>
+            ))}
+          </div>
         </div>
       </section>
 
       <button className={styles.btnPrimary} onClick={handleStart}>
         {t("setup.start")}
       </button>
-
-      <section className={`card ${styles.timelineCard}`}>
-        <div className="card-title">{t("timer.timeline")}</div>
-        <div className={styles.timelineHint}>
-          {t("setup.water")}: {totalWater}g
-        </div>
-        <Timeline
-          steps={steps}
-          currentStepIndex={0}
-          currentTime={0}
-          hideCard
-        />
-      </section>
 
       <details className="card" open={detailsOpen} onToggle={(e) => setDetailsOpen((e.target as HTMLDetailsElement).open)}>
         <summary className={styles.detailsSummary}>
@@ -121,14 +116,21 @@ export function SetupPage() {
           <div>
             <div className={styles.detailsSubTitle}>{t("setup.steps")}</div>
             <div className={styles.stepList}>
-              {steps.map((step, idx) => (
-                <div key={`${step.timeSec}-${step.actionType}`} className={styles.stepItem}>
-                  <span>
-                    Step {idx + 1}: {stepLabels[idx] ?? ""}
-                  </span>
-                  <span>{step.cumulative}g</span>
-                </div>
-              ))}
+              {steps
+                .filter((step) => step.actionType !== "none")
+                .map((step, idx) => (
+                  <div key={`${step.timeSec}-${step.actionType}`} className={styles.stepItem}>
+                    <span className={styles.stepNumber}>STEP {idx + 1}</span>
+                    <span className={styles.stepInstruction}>
+                      {stepLabels[idx] ?? ""} · {step.cumulative}g
+                    </span>
+                    <span className={styles.stepDuration}>
+                      {t("setup.stepDuration", {
+                        seconds: steps[idx + 1].timeSec - step.timeSec,
+                      })}
+                    </span>
+                  </div>
+                ))}
             </div>
           </div>
           <div className={styles.detailsVideo}>

@@ -8,6 +8,7 @@ interface Props {
   step: ComputedStep;
   prevCumulative: number;
   visible: boolean;
+  isFirstStep?: boolean;
 }
 
 function AnimationInstructionText({
@@ -42,7 +43,11 @@ function AnimationInstructionText({
       <Trans
         i18nKey="timer.pourCoolTo"
         values={{ amount: displayAmount }}
-        components={{ num: <span className="pour-number" />, unit: <span className="pour-unit" /> }}
+        components={{
+          num: <span className="pour-number" />,
+          unit: <span className="pour-unit" />,
+          br: <br />,
+        }}
       />
     );
   }
@@ -55,7 +60,12 @@ function AnimationInstructionText({
   return <>{t("timer.wait")}</>;
 }
 
-export function NextStepPreview({ step, prevCumulative, visible }: Props) {
+export function NextStepPreview({
+  step,
+  prevCumulative,
+  visible,
+  isFirstStep = false,
+}: Props) {
   const { t } = useTranslation();
   const [displayAmount, setDisplayAmount] = useState(prevCumulative);
   const rafRef = useRef<number | null>(null);
@@ -107,17 +117,21 @@ export function NextStepPreview({ step, prevCumulative, visible }: Props) {
   if (!visible) return null;
 
   return (
-    <section className={`card ${styles.animationCard}`}>
-      <div className="card-title">{t("timer.nextStep")}</div>
-      <div className={styles.animationRow}>
-        <LottiePlayer animationKeys={lottieKeys} />
-        <div className={styles.animationText}>
-          <AnimationInstructionText
-            step={step}
-            displayAmount={isPour ? displayAmount : step.cumulative}
-          />
-        </div>
+    <div
+      className={styles.animationCard}
+      role="status"
+      aria-label={t(isFirstStep ? "timer.firstStep" : "timer.nextStep")}
+    >
+      <div className="card-title">
+        {t(isFirstStep ? "timer.firstStep" : "timer.nextStep")}
       </div>
-    </section>
+      <LottiePlayer animationKeys={lottieKeys} />
+      <div className={styles.animationText}>
+        <AnimationInstructionText
+          step={step}
+          displayAmount={isPour ? displayAmount : step.cumulative}
+        />
+      </div>
+    </div>
   );
 }

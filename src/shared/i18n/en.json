@@ -49,6 +49,7 @@
     "equipment": "Required gear",
     "affiliate": "As an Amazon Associate, COCO Timer earns from qualifying purchases.",
     "water": "Water",
+    "stepDuration": "{{seconds}} sec",
     "debugBgmType": "Debug BGM Type",
     "debugBgmWeekday": "Weekday",
     "debugBgmHoliday": "Holiday",
@@ -63,7 +64,8 @@
   },
   "timer": {
     "currentStep": "Current Step",
-    "nextStep": "Next Step is...",
+    "firstStep": "First",
+    "nextStep": "Next",
     "remaining": "Remaining",
     "play": "Play",
     "pause": "Pause",
@@ -87,13 +89,14 @@
     "screenOn": "Screen will stay on",
     "closePourTo": "Close, pour to <num>{{amount}}</num><unit>g</unit>",
     "openPourTo": "Open, pour to <num>{{amount}}</num><unit>g</unit>",
-    "pourCoolTo": "Pour to <num>{{amount}}</num><unit>g</unit>, cool to <num>70</num><unit>℃</unit>",
+    "pourCoolTo": "Pour to <num>{{amount}}</num><unit>g</unit>,<br/>cool to <num>70</num><unit>℃</unit>",
     "beansLabel": "Beans",
     "flavorLabel": "Flavor",
     "waterLabel": "Water",
     "pourToAmount": "Pour to <num>{{amount}}</num><unit>g</unit>",
     "beansChipLabel": "Beans",
-    "waterChipLabel": "Water"
+    "waterChipLabel": "Water",
+    "flavorChipLabel": "Flavor"
   },
   "stepLabels": [
     "Close & Bloom",

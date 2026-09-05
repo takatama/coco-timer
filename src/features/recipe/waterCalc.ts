@@ -1,4 +1,8 @@
 import type { ComputedStep, FlavorProfile, Recipe } from "./types";
+export {
+  formatTimerTime as formatTime,
+  getCurrentStepIndex,
+} from "../../shared/brew-timer";
 
 export function getTotalWater(beans: number, waterRatio: number): number {
   return Math.round(beans * waterRatio);
@@ -49,20 +53,4 @@ export function computeSteps(
     cumulative += increment;
     return { ...step, cumulative, increment };
   });
-}
-
-export function getCurrentStepIndex(
-  steps: ComputedStep[],
-  currentTime: number,
-): number {
-  for (let i = steps.length - 1; i >= 0; i--) {
-    if (currentTime >= steps[i].timeSec) return i;
-  }
-  return 0;
-}
-
-export function formatTime(sec: number): string {
-  const m = Math.floor(sec / 60);
-  const s = Math.floor(sec % 60);
-  return `${m}:${s.toString().padStart(2, "0")}`;
 }

@@ -6,7 +6,6 @@ import { useSettingsStore } from "../../features/settings/store";
 import { StepCard } from "../../features/timer/components/StepCard";
 import { FinishCard } from "../../features/timer/components/FinishCard";
 import { NextStepPreview } from "../../features/timer/components/NextStepPreview";
-import { Timeline } from "../../features/timer/components/Timeline";
 import { useCoffeeNews } from "../../features/timer/hooks/useCoffeeNews";
 import { ConfirmDialog } from "../../shared/components/ConfirmDialog";
 import styles from "./TimerPage.module.css";
@@ -34,6 +33,7 @@ export function TimerPage() {
 
   const flavorLabel = t(`flavorLabels.${flavor}`);
   const isFinishStep = currentStep?.actionType === "none";
+  const brewStepCount = steps.filter((step) => step.actionType !== "none").length;
   const { debugEnabled, debugSpeed, setDebugSpeed, language } = useSettingsStore();
   const { news, loading: newsLoading } = useCoffeeNews(language);
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
@@ -50,11 +50,16 @@ export function TimerPage() {
   return (
     <main className="content">
       <section className="card">
-        <div>{t("timer.recipe")}</div>
         <div className={styles.chipRow}>
-          <span className={styles.chip}>{t("timer.beansChipLabel")} {beans}g</span>
-          <span className={styles.chip}>{flavorLabel}</span>
-          <span className={styles.chip}>{t("timer.waterChipLabel")} {totalWater}g</span>
+          <span className={styles.chip}>
+            {t("timer.beansChipLabel")} <span className={styles.chipValue}>{beans}g</span>
+          </span>
+          <span className={styles.chip}>
+            {t("timer.waterChipLabel")} <span className={styles.chipValue}>{totalWater}g</span>
+          </span>
+          <span className={styles.chip}>
+            {t("timer.flavorChipLabel")} <span className={styles.chipValue}>{flavorLabel}</span>
+          </span>
         </div>
         <button className={styles.textLink} onClick={() => navigate("/setup")}>
           {t("timer.editParams")}
@@ -65,24 +70,39 @@ export function TimerPage() {
         <StepCard
           step={currentStep}
           stepIndex={timer.currentStepIndex}
-          totalSteps={steps.length}
+          totalSteps={brewStepCount}
           remainingSeconds={remainingToNext}
           progress={progress}
           isImminent={isImminent}
+          hideTargetAmount={
+            timer.status === "idle" &&
+            timer.currentStepIndex === 0 &&
+            timer.currentTime === 0
+          }
+          nextStepPreview={
+            overlayStep && animation && steps[overlayStep.index] ? (
+              <NextStepPreview
+                step={steps[overlayStep.index]}
+                prevCumulative={overlayStep.prevCumulative}
+                visible
+                isFirstStep={overlayStep.index === 0}
+              />
+            ) : undefined
+          }
+          steps={steps}
+          currentTime={timer.currentTime}
         />
       )}
 
       {currentStep?.actionType === "none" && (
         <FinishCard
-          stepIndex={timer.currentStepIndex}
-          totalSteps={steps.length}
           news={news}
           newsLoading={newsLoading}
         />
       )}
 
-      <section className={styles.controls}>
-        {!isFinishStep && (
+      {!isFinishStep && (
+        <section className={styles.controls}>
           <div className={styles.primaryControlRow}>
             <button className={`${styles.btn} ${styles.primary}`} onClick={handlePlayPause}>
               {isRunningOrStarting ? t("timer.pause") : t("timer.play")}
@@ -96,25 +116,11 @@ export function TimerPage() {
               </button>
             )}
           </div>
-        )}
-        <button className={`${styles.btn} ${styles.outline}`} onClick={handleResetTimer}>
-          {t("timer.reset")}
-        </button>
-      </section>
-
-      {overlayStep && animation && steps[overlayStep.index] && (
-        <NextStepPreview
-          step={steps[overlayStep.index]}
-          prevCumulative={overlayStep.prevCumulative}
-          visible={true}
-        />
+          <button className={`${styles.btn} ${styles.outline}`} onClick={handleResetTimer}>
+            {t("timer.reset")}
+          </button>
+        </section>
       )}
-
-      <Timeline
-        steps={steps}
-        currentStepIndex={timer.currentStepIndex}
-        currentTime={timer.currentTime}
-      />
 
       <ConfirmDialog
         open={resetDialogOpen}
