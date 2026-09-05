@@ -1,14 +1,11 @@
 .cardFrame > :global(.card) {
-  width: 100%;
-}
-
-.cardFrameWithPreview > :global(.card) {
   display: flex;
+  width: 100%;
   min-height: 320px;
   flex-direction: column;
 }
 
-.cardFrameWithPreview > :global(.card) > :last-child {
+.cardFrame > :global(.card) > :last-child {
   margin-top: auto;
 }
 

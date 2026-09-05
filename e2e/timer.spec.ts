@@ -34,6 +34,12 @@ test("setup carries the chosen amount into a brew that reaches completion", asyn
   await expect(page.getByText("300g", { exact: true })).toBeVisible();
   await expect(page.getByText("1:15", { exact: true })).toBeVisible();
   await expect(page.getByRole("img", { name: "Timeline" })).toHaveCount(0);
+  const sweetBox = await page.getByRole("button", { name: "Sweet", exact: true }).boundingBox();
+  const sourBox = await page.getByRole("button", { name: "Sour", exact: true }).boundingBox();
+  expect(sweetBox).not.toBeNull();
+  expect(sourBox).not.toBeNull();
+  const flavorGroupCenter = (sweetBox!.x + sourBox!.x + sourBox!.width) / 2;
+  expect(Math.abs(flavorGroupCenter - 195)).toBeLessThan(1);
 
   await page.getByText("View", { exact: true }).click();
   await expect(page.getByText("STEP 5", { exact: true })).toBeVisible();
@@ -56,9 +62,11 @@ test("setup carries the chosen amount into a brew that reaches completion", asyn
   await expect(mainCard.getByRole("img", { name: "Timeline" })).toBeVisible();
   await expect(mainCard.getByRole("status", { name: "First" })).toBeVisible();
   await expect(page.getByRole("img", { name: "Timeline" })).toHaveCount(1);
+  const heightWithPreview = (await mainCard.boundingBox())?.height;
 
   await page.clock.runFor(6_000);
   await expect(mainCard.getByRole("status", { name: "First" })).toHaveCount(0);
+  expect((await mainCard.boundingBox())?.height).toBe(heightWithPreview);
   const before = await remaining(page).innerText();
   await page.clock.runFor(2_000);
   await expect(remaining(page)).not.toHaveText(before);

@@ -60,9 +60,13 @@
 
 .flavorRow {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 14px;
+}
+
+.flavorRow::after {
+  content: "";
 }
 
 .btnPrimary {

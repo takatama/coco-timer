@@ -14,9 +14,11 @@ The setup screen now aligns the bean label with its controls, shows the calculat
 
 The timer header uses bean, water, flavor order. The cool-water instruction is explicitly split into two lines in both the current instruction and animation preview. The taller preview card keeps its label, animation, description, and progress bar separate. The finished card has no step counter or reset button.
 
-| Cool-step preview | Cool step | Finished |
-| --- | --- | --- |
-| ![COCO cool-step preview](coco-cool-preview-ja.png) | ![COCO cool step](coco-cool-step-ja.png) | ![COCO finished](coco-finished.png) |
+The three flavor buttons are centered as a group. The main timer card keeps the same 320 px minimum height when animation is hidden, so the surrounding controls do not jump.
+
+| Animation hidden | Cool-step preview | Cool step | Finished |
+| --- | --- | --- | --- |
+| ![COCO timer with animation hidden](coco-running-animation-hidden.png) | ![COCO cool-step preview](coco-cool-preview-ja.png) | ![COCO cool step](coco-cool-step-ja.png) | ![COCO finished](coco-finished.png) |
 
 | State | Neo Brew Timer | COCO Timer |
 | --- | --- | --- |
