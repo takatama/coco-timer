@@ -1,3 +1,25 @@
+.cardFrame > :global(.card) {
+  width: 100%;
+}
+
+.cardFrameWithPreview > :global(.card) {
+  display: flex;
+  min-height: 320px;
+  flex-direction: column;
+}
+
+.cardFrameWithPreview > :global(.card) > :last-child {
+  margin-top: auto;
+}
+
+.cardFrameWithPreview > :global(.card) > :first-child > :last-child {
+  right: 24px;
+}
+
+.cardFrameWithPreview .stepSub {
+  max-width: 140px;
+}
+
 .stepVerb {
   font-size: 2.6rem;
   font-weight: 800;

@@ -72,7 +72,11 @@ function InstructionText({ step }: { step: ComputedStep }) {
       <Trans
         i18nKey="timer.pourCoolTo"
         values={{ amount }}
-        components={{ num: <span className="pour-number" />, unit: <span className="pour-unit" /> }}
+        components={{
+          num: <span className="pour-number" />,
+          unit: <span className="pour-unit" />,
+          br: <br />,
+        }}
       />
     );
   }
@@ -94,7 +98,8 @@ export function StepCard({
 }: Props) {
   const { t } = useTranslation();
   return (
-    <BrewStepCardFrame
+    <div className={`${styles.cardFrame}${nextStepPreview ? ` ${styles.cardFrameWithPreview}` : ""}`}>
+      <BrewStepCardFrame
       ariaLabel={t("timer.currentStep")}
       stepLabel={<>STEP {stepIndex + 1} / {totalSteps}</>}
       timeline={(
@@ -127,6 +132,7 @@ export function StepCard({
         />
       )}
       isImminent={isImminent}
-    />
+      />
+    </div>
   );
 }

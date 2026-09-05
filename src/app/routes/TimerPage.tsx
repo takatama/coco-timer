@@ -50,11 +50,16 @@ export function TimerPage() {
   return (
     <main className="content">
       <section className="card">
-        <div>{t("timer.recipe")}</div>
         <div className={styles.chipRow}>
-          <span className={styles.chip}>{t("timer.beansChipLabel")} {beans}g</span>
-          <span className={styles.chip}>{flavorLabel}</span>
-          <span className={styles.chip}>{t("timer.waterChipLabel")} {totalWater}g</span>
+          <span className={styles.chip}>
+            {t("timer.beansChipLabel")} <span className={styles.chipValue}>{beans}g</span>
+          </span>
+          <span className={styles.chip}>
+            {t("timer.waterChipLabel")} <span className={styles.chipValue}>{totalWater}g</span>
+          </span>
+          <span className={styles.chip}>
+            {t("timer.flavorChipLabel")} <span className={styles.chipValue}>{flavorLabel}</span>
+          </span>
         </div>
         <button className={styles.textLink} onClick={() => navigate("/setup")}>
           {t("timer.editParams")}
@@ -91,15 +96,13 @@ export function TimerPage() {
 
       {currentStep?.actionType === "none" && (
         <FinishCard
-          stepIndex={timer.currentStepIndex}
-          totalSteps={steps.length}
           news={news}
           newsLoading={newsLoading}
         />
       )}
 
-      <section className={styles.controls}>
-        {!isFinishStep && (
+      {!isFinishStep && (
+        <section className={styles.controls}>
           <div className={styles.primaryControlRow}>
             <button className={`${styles.btn} ${styles.primary}`} onClick={handlePlayPause}>
               {isRunningOrStarting ? t("timer.pause") : t("timer.play")}
@@ -113,11 +116,11 @@ export function TimerPage() {
               </button>
             )}
           </div>
-        )}
-        <button className={`${styles.btn} ${styles.outline}`} onClick={handleResetTimer}>
-          {t("timer.reset")}
-        </button>
-      </section>
+          <button className={`${styles.btn} ${styles.outline}`} onClick={handleResetTimer}>
+            {t("timer.reset")}
+          </button>
+        </section>
+      )}
 
       <ConfirmDialog
         open={resetDialogOpen}

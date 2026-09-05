@@ -43,7 +43,11 @@ function AnimationInstructionText({
       <Trans
         i18nKey="timer.pourCoolTo"
         values={{ amount: displayAmount }}
-        components={{ num: <span className="pour-number" />, unit: <span className="pour-unit" /> }}
+        components={{
+          num: <span className="pour-number" />,
+          unit: <span className="pour-unit" />,
+          br: <br />,
+        }}
       />
     );
   }

@@ -31,11 +31,25 @@ test.beforeEach(async ({ page, baseURL }) => {
 const remaining = (page: Page) => page.getByRole("timer");
 
 test("setup carries the chosen amount into a brew that reaches completion", async ({ page }) => {
+  await expect(page.getByText("300g", { exact: true })).toBeVisible();
+  await expect(page.getByText("1:15", { exact: true })).toBeVisible();
+  await expect(page.getByRole("img", { name: "Timeline" })).toHaveCount(0);
+
+  await page.getByText("View", { exact: true }).click();
+  await expect(page.getByText("STEP 5", { exact: true })).toBeVisible();
+  await expect(page.getByText("STEP 6", { exact: true })).toHaveCount(0);
+  await expect(page.getByText("40 sec", { exact: true })).toHaveCount(2);
+  await expect(page.getByText("50 sec", { exact: true })).toBeVisible();
+  await expect(page.getByText("35 sec", { exact: true })).toBeVisible();
+  await expect(page.getByText("45 sec", { exact: true })).toBeVisible();
+
   await page.getByRole("button", { name: "increase", exact: true }).click();
   await page.getByRole("button", { name: "Start Timer", exact: true }).click();
   await expect(page).toHaveURL(/\/timer$/);
   await expect(page.getByText("Beans 21g", { exact: true })).toBeVisible();
   await expect(page.getByText("Water 315g", { exact: true })).toBeVisible();
+  await expect(page.getByText("Flavor Balance", { exact: true })).toBeVisible();
+  await expect(page.getByText("New Hybrid Method", { exact: true })).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Pause", exact: true })).toBeVisible();
 
   const mainCard = page.getByRole("region", { name: "Current Step" });
@@ -50,7 +64,9 @@ test("setup carries the chosen amount into a brew that reaches completion", asyn
   await expect(remaining(page)).not.toHaveText(before);
   await page.clock.fastForward("04:00");
   await expect(page.getByText(/Enjoy your coffee/)).toBeVisible();
+  await expect(page.getByText(/^STEP /)).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Pause", exact: true })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Reset", exact: true })).toHaveCount(0);
 });
 
 test("pause holds time, resume advances it, and confirmed reset returns to idle", async ({ page }) => {

@@ -49,6 +49,7 @@
     "equipment": "必要な器具",
     "affiliate": "Amazonのアソシエイトとして、COCO Timerは適格販売により収入を得ています。",
     "water": "湯量",
+    "stepDuration": "{{seconds}} 秒",
     "debugBgmType": "デバッグBGMタイプ",
     "debugBgmWeekday": "平日",
     "debugBgmHoliday": "休日",
@@ -88,13 +89,14 @@
     "screenOn": "画面はオンのままです",
     "closePourTo": "閉じて <num>{{amount}}</num><unit>g</unit> まで注ぐ",
     "openPourTo": "開けて <num>{{amount}}</num><unit>g</unit> まで注ぐ",
-    "pourCoolTo": "<num>{{amount}}</num><unit>g</unit> まで注ぎ、<num>70</num><unit>℃</unit> まで下げる",
+    "pourCoolTo": "<num>{{amount}}</num><unit>g</unit> まで注ぎ、<br/><num>70</num><unit>℃</unit>まで下げる",
     "beansLabel": "豆量",
     "flavorLabel": "味わい",
     "waterLabel": "抽出量",
     "pourToAmount": "<num>{{amount}}</num><unit>g</unit> まで注ぐ",
     "beansChipLabel": "豆",
-    "waterChipLabel": "湯量"
+    "waterChipLabel": "湯量",
+    "flavorChipLabel": "味わい"
   },
   "stepLabels": [
     "閉じて蒸らし",

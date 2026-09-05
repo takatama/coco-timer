@@ -91,4 +91,40 @@ describe("COCO timer card", () => {
     expect(within(card).getByText("CLOSE")).toBeVisible();
     expect(screen.queryAllByRole("region", { name: "Current Step" })).toHaveLength(1);
   });
+
+  it("breaks the cool-pour instruction into two lines in both locations", async () => {
+    await act(async () => i18n.changeLanguage("en"));
+    const coolStep: ComputedStep = {
+      timeSec: 90,
+      actionType: "pour_cool",
+      waterAmountType: "strength",
+      cumulative: 210,
+      increment: 90,
+    };
+
+    render(
+      <StepCard
+        step={coolStep}
+        stepIndex={2}
+        totalSteps={5}
+        remainingSeconds={40}
+        progress={0}
+        isImminent
+        nextStepPreview={(
+          <NextStepPreview
+            step={coolStep}
+            prevCumulative={120}
+            visible
+          />
+        )}
+        steps={[steps[0], steps[1], coolStep, steps[2]]}
+        currentTime={90}
+      />,
+    );
+
+    const card = screen.getByRole("region", { name: "Current Step" });
+    expect(within(card).getByText("210")).toBeVisible();
+    expect(within(card).getAllByText("70")).toHaveLength(2);
+    expect(card.querySelectorAll("br")).toHaveLength(2);
+  });
 });
