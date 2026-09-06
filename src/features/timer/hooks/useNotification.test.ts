@@ -1,6 +1,7 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useSettingsStore } from "../../settings/store";
+import type { DisplayLanguage } from "../../../shared/i18n/routing";
 import { useNotification } from "./useNotification";
 
 interface MockAudio {
@@ -43,25 +44,23 @@ describe("useNotification", () => {
     vi.unstubAllGlobals();
   });
 
-  it("uses first-step only for the first message type", async () => {
-    const { result } = renderHook(() => useNotification());
+  it("uses first only at startup and the URL language for the next message", async () => {
+    const { result, rerender } = renderHook(
+      ({ language }: { language: DisplayLanguage }) => useNotification(language),
+      { initialProps: { language: "ja" } },
+    );
     const first = audioByPath.get("/assets/audio/ja-female-first-step.wav");
-    const next = audioByPath.get("/assets/audio/ja-female-next-step.wav");
-    const finish = audioByPath.get("/assets/audio/ja-female-finish.wav");
-
     expect(first).toBeDefined();
-    expect(next).toBeDefined();
-    expect(finish).toBeDefined();
 
     act(() => result.current.playFirstSound());
     await waitFor(() => expect(first!.play).toHaveBeenCalledOnce());
-    expect(next!.play).not.toHaveBeenCalled();
-    expect(finish!.play).not.toHaveBeenCalled();
 
+    rerender({ language: "en" });
+    expect(first!.pause).not.toHaveBeenCalled();
+
+    const next = audioByPath.get("/assets/audio/en-female-next-step.wav");
+    expect(next).toBeDefined();
     act(() => result.current.playSound(false));
     await waitFor(() => expect(next!.play).toHaveBeenCalledOnce());
-
-    act(() => result.current.playSound(true));
-    await waitFor(() => expect(finish!.play).toHaveBeenCalledOnce());
   });
 });
