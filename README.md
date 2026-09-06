@@ -6,11 +6,14 @@ COCO Timer is a React SPA, step-driven brewing timer designed for hands-busy cof
 
 ## Pages
 
-- `/intro` – first-time intro (image, description, YouTube)
-- `/setup` – beans + flavor selection, step water preview
-- `/timer` – main timer UI
+- `/{lang}/intro` – first-time intro (image, description, YouTube)
+- `/{lang}/setup` – beans + flavor selection, step water preview
+- `/{lang}/timer` – main timer UI
 
-`/` automatically routes first-time users to Intro and returning users to Setup.
+`lang` is `ja` or `en`. `/` automatically chooses the saved language (or the
+browser language when there is no saved choice) and routes first-time users to
+Intro and returning users to Setup. The old `/intro`, `/setup`, and `/timer`
+URLs are redirected to their language-prefixed equivalents.
 
 ## Settings
 
@@ -31,7 +34,7 @@ Where:
 
 - `lang`: `ja` or `en`
 - `voice`: `male` or `female`
-- `type`: `next-step` or `finish`
+- `type`: `first-step`, `next-step`, or `finish`
 
 ## Development (Vite)
 
